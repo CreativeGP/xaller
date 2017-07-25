@@ -1,0 +1,85 @@
+USE_JQUERY ON
+
+`~!@#$%^&*()_+-={}[]:";'<>?,./|\
+
++-*/ = % |&^~ -- FOR PROCESSER
+
+! # -- TO COMMENT
+
+' -- TO MAKE STRING EASILY
+
+() -- TO DESCRIBE LIST
+
+_ -- USED IN SYSTEM VARIABLE
+
+: ? -- TO DESCRIBE BLOCK
+
+<> -- TO DESCRIBE IMPORT EXTERNAL FILE
+
+. -- TO ACCESS THE CLASS MEMER
+
+{} -- 文字列に変数埋め込み
+
+? -- 分岐
+
+@ -- 関数定義
+
+
+`@$";,
+
+'あなたが入力した数値は{a + 3}です。
+
+'シングルクォーテーション{(')str}
+
++(Text1)__input
++(Submit)__btn :
+  --click {
+    +(answer)__label :
+      .text = Text1.text
+  }
+
+
+HTML
+<input type="text" name="Text1" size="30" maxlength="20">
+<input type="button" name="Submit" onClick="Submit_click">
+
+JS
+function Submit_click()
+{
+  $(document).html($('document').html() + $('[name="Text1"]').val());
+}
+
+
+Xaller 構文
+
+Webオブジェクトの定義 +(name)type
+型の定義 -(type): def
+-(lint): [int int]
+-(pair): str int
+-(pairsli): str [int int]
+-(labelinput): (label)_label (input)_input :
+	       .view = (.label.html + .input.html)HTML
+変数定義
+(a)int
+a = 3
+
+値の参照 (list)type
+3 -- 整数の３
+(3) -- 整数の３
+(3)int -- 整数の３
+(3)str -- 文字の３
+
+代入 var = val
+
+繰り返し・分岐構文
+a ?
+a == 3 ?
+
+for i 3 :
+for i 3 :
+
+関数の呼び出し
+(foo 3 5)
+
+関数の定義
+@(foo (a)int (b)int) :
