@@ -1,0 +1,12 @@
++(Text1) input
++(password) btn
++(Text2) input 
++(password) btn
+
++(Submit)__btn {
+    --click{
+        +(answer)__label {
+            .text = Text1.text
+                }
+    }
+}
