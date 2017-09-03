@@ -17,7 +17,27 @@
 
 # if for 配列 プリプロセッサ
 
-# <web.xal>
+# # coding: utf-8
+-(HTML):string {}
+
+-(Button) {
+    (_web)string
+    (text)string
+    @ (__init) {
+        .text = 'Button from xaller.'
+	._web = 'Button'
+    }
+}
+-(Textbox) {
+    (_web)string
+    (rows)int
+    (cols)int
+    @ (__init) {
+	._web = 'Textbox'
+    }
+}
+
+
 
 # +(button1)Button
 # # var s;
