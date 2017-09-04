@@ -65,7 +65,6 @@ def create_external(Name, vtype, pos):
 
     # selector = 'body'
     # func = 'append'
-    print(vtype._name)
     if vtype._name == 'HTML':
         out('$(%s).%s("<ran id=%s></ran>");' % (S(selector), func, S(expid(Name))))
     if vtype._name == 'Label':
@@ -541,8 +540,8 @@ def RUN(rt, sd = []):
         var = get_var(run_tokens[0].string)
         if var is None:
             err("Undefined variable '%s'" % run_tokens[0].string)
-        value = eval_tokens(run_tokens[2:])
-        # その変数がメンバを持っている場合、メンバもすべて代入
+        value = eval_tokens(run_tokens[2:])        # その変数がメンバを持っている場合、メンバもすべて代入
+        var.subst(value)
         if len(run_tokens) == 3 and len(var._value._type._variables) > 0 and get_var(run_tokens[2].string) is not None:
             varsrc = get_var(run_tokens[2].string)
             if var._value._type != varsrc._value._type:
@@ -551,18 +550,8 @@ def RUN(rt, sd = []):
             memsrc = get_members(run_tokens[2].string)
             for i in range(len(memdst)):
                 # NOTE: 宣言順が同じであるという条件のもとの代入（計算量削減）
-                memdst[i]._value = memsrc[i]._value
-                
-        if value is None:
-            err("Invalid value.")
-        if var._value._type._race == value._type._race:
-            dbgprint("ValueClass.Variable changed("+var._name+" -> "+value._string+")")
-            var._value = value
-            if var._external:
-                subst_external(var, value)
-        else:
-            err("Incorrect substituting value which has different race.\n")
-#        return ValueClass.Value(run_tokens[1].string, ValueClass.ValueRace.ValueClass.Variable)
+                memdst[i].subst(memsrc[i])
+#                 memdst[i]._value = memsrc[i]._value
     
     # プログラム変数作成 ^( name ) race
     elif len(run_tokens) >= 4 and \

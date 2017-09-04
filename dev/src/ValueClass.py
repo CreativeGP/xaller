@@ -31,13 +31,27 @@ class Variable:
         self._value = _value
         self._external = False
 
-    def subst(self, value):
-        if self._value._type._name == value._type._name:
+    def subst(self, v):
+        value = v
+        if type(v) == 'Variable':
+            value = v._value
+            
+        if value is None:
+            err("Invalid value.")
+        if self._value._type._race == value._type._race:
+            genfunc.dbgprint("ValueClass.Variable changed("+self._name+" -> "+value._string+")")
             self._value = value
-#            if self._value._type._race == "Dirty":
-#                pass
+            if self._external:
+                genfunc.subst_external(self, value)
         else:
-            err("Invalid substituting value which has different TYPE.")
+            err("Incorrect substituting value which has different race.\n")
+
+#         if self._value._type._name == value._type._name:
+#             self._value = value
+# #            if self._value._type._race == "Dirty":
+# #                pass
+#         else:
+#             err("Invalid substituting value which has different TYPE.")
 
     # 変数の作成を型どおりにやる
     def create(var, variables = None, external = False, pos = 'at end'):

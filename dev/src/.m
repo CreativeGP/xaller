@@ -39,5 +39,8 @@
 
 
 +(button1)Button
+button1.text = 'Xaller'
+
+
 
 end
