@@ -1,0 +1,7 @@
++(text)input
++(answer)label
++(submit)button {
+@ (clicked) {
+answer.html = ('Your answer is {text.value}')HTML
+}
+}
