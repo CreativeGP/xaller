@@ -1,0 +1,55 @@
+# coding: utf-8
+-(HTML):string {}
+
+-(Button) {
+    (_web)string
+    (text)string
+    @ (__init) {
+        .text = 'Button from xaller.'
+	._web = 'Button'
+    }
+}
+-(Textbox) {
+    (_web)string
+    (rows)int
+    (cols)int
+    @ (__init) {
+	._web = 'Textbox'
+    }
+}
+
+-(numbtn):Button {
+    (num)int
+    @ (set_num (num)int) {
+        .num = num
+        .text = (num)string
+    }
+    @ (click) {
+        # 文字を後ろにくっつける
+        view.text = (strcat view.text (.num)string)
+    }
+}
+
++(view)Textbox
+
+(i)int
+loop {
+    i = (+ i 1)
+    +(button$i$)numbtn
+    (button$i$.set_num i)
+    (eq i 9) ? {
+        escape
+    }
+    continue
+}
++(eq_btn)Button
+eq_btn.text = '='
+@ (eq_btn.click) {
+    
+}
+
++(plus_btn)Button
+plus_btn.text = '+'
+@ (plus_btn.clock) {
+    view.text = (strcat view.text '+')
+}
