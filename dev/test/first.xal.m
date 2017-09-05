@@ -38,6 +38,10 @@
 
 
 
+(i)int
+i = 3
+
 +(button1)Button
+button1.text = 'Xaller'
 
 end

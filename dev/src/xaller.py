@@ -49,12 +49,12 @@ if '-h' in args:
 if '-o' in args and args.index('-o')+1 < len(args):
     Global.output = args[args.index('-o')+1]
 if '-i' in args and args.index('-i')+1 < len(args):
-    input = args[args.index('-i')+1]
+    Global.input = args[args.index('-i')+1]
 if Global.output == '':
-    Global.output = input
+    Global.output = Global.input
 if '-d' in args:
     Global.bDbg = True
-genfunc.dbgprint('Input file name: ' + input)
+genfunc.dbgprint('Input file name: ' + Global.input)
 
 html = open('%s.html' % Global.input[:Global.input.rfind(".")], 'w')
 html.write("""
@@ -73,8 +73,10 @@ html.close()
 
 # Mean tokens(basic)
 
+# TODO: インポート時のエラー行調整
+header = 0
 # TODO: このままだとコメントが反映されないので一回トークン解析してからもとのファイルに戻す
-with open(input, 'r') as myfile:
+with open(Global.input, 'r') as myfile:
     data = myfile.read()
     offset = 0
     while data.find('<', offset) != -1:
@@ -86,14 +88,16 @@ with open(input, 'r') as myfile:
                 filename = path + filename
                 break
         with open(filename, 'r') as f:
+#            tmp = data.count('\n')
             data = re.sub('<.*>', f.read() + "\n", data)
+#            header += data.count('\n') - tmp
 
 with open(Global.input+".m", 'w') as myfile:
     myfile.write(data)
 
 Global.tokens = TokenClass.Token.tokenize(Global.input+".m")
 Global.blocks = TokenClass.Block.parse(Global.tokens)
-Global.lines = TokenClass.Line.parse(Global.tokens)
+Global.lines = TokenClass.Line.parse(Global.tokens, header)
 
 # RUN!!!!!
 while True:
@@ -105,7 +109,6 @@ while True:
     Global.exel += 1
 
 # os.remove(Global.input)
-
 
 js = open(Global.input[:Global.input.rfind(".")]+".js", 'w')
 js.write(Global.outjs)

@@ -33,25 +33,53 @@ class Variable:
 
     def subst(self, v):
         value = v
-        if type(v) == 'Variable':
-            value = v._value
-            
+        genfunc.outnoln(genfunc.expname(self._name) + " = ")
+        if str(type(v)) == "<class 'ValueClass.Variable'>":
+            value = v.refer() # NOTE: JS output!!
+        else:
+            genfunc.outnoln(genfunc.expvalue(v)) # NOTE: JS output!!
+        # if genfunc.is_var_web (self):
+
+        if genfunc.is_var_web (self):
+            genfunc.out(";")
+            name = self._name[self._name.find('.')+1:]
+            uniquename = self._name[:self._name.find('.')]
+            if name == 'text':
+                genfunc.outnoln("$(%s).html(" % genfunc.S("#" + genfunc.expid(uniquename)))
+                if str(type(v)) == "<class 'ValueClass.Variable'>":
+                    value = v.refer()    # NOTE: JS出力のため再度呼び出し
+                else :
+                    genfunc.outnoln(genfunc.expvalue(v)) # NOTE: JS output!!
+                genfunc.outnoln(")")
+
+
+
         if value is None:
-            err("Invalid value.")
+            genfunc.err("Invalid value.")
         if self._value._type._race == value._type._race:
             genfunc.dbgprint("ValueClass.Variable changed("+self._name+" -> "+value._string+")")
             self._value = value
-            if self._external:
-                genfunc.subst_external(self, value)
+            # if self._external:
+            #     genfunc.subst_external(self, value)
         else:
-            err("Incorrect substituting value which has different race.\n")
+            genfunc.err("Incorrect substituting value which has different race.\n")
 
 #         if self._value._type._name == value._type._name:
 #             self._value = value
 # #            if self._value._type._race == "Dirty":
 # #                pass
 #         else:
-#             err("Invalid substituting value which has different TYPE.")
+#             genfunc.err("Invalid substituting value which has different TYPE.")
+
+    def refer(self):
+        if self._external and genfunc.get_var(self._name[:self._name.rfind(".")]+"._web") != -1:
+            typename = genfunc.get_var(self._name[:self._name.rfind(".")]+"._web")._value._string
+            name = self._name[self._name.rfind(".")+1:]
+            uniquename = self._name[:self._name.rfind(".")]
+            if name == "text":
+                genfunc.outnoln("$(" + genfunc.S(genfunc.expid(uniquename)) + ").html()")
+        return self._value
+    
 
     # 変数の作成を型どおりにやる
     def create(var, variables = None, external = False, pos = 'at end'):

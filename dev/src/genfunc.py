@@ -22,6 +22,9 @@ def is_string(t):
 def is_bool(t):
     return is_plain(t) and (t.string == 'true' or t.string == 'false')
 
+def is_var_web(v):
+    return v._external and get_var(v._name[:v._name.rfind(".")]+"._web") != -1 and get_var(v._name[:v._name.rfind(".")]+"._web") is not v
+
 def dbgprint(s):
     if Global.bDbg: print(s)
 
@@ -32,17 +35,26 @@ def err(string):
     # 便利なように自動的に実行行を見つけるようにする
     for t in Global.tokens:
         if Global.exel == t.line:
-                dbgprint(input+":"+str(t.real_line)+": "+string)
+                dbgprint(Global.input+":"+str(t.real_line)+": "+string)
                 sys.exit(1)
     # もし実行業がみつからなかったときには、適当に出力しておく
-    dbgprint(input+":"+"???"+string)
+    dbgprint(Global.input+":"+"0: "+string)
     sys.exit(1)
 
 def out(s):
     Global.outjs += s + "\n"
 
+def outnoln(s):
+    Global.outjs += s
+
 def expid(s):
     return s.replace('.', '-')
+
+def expname(s):
+    return s.replace('.', '$')
+
+def expvalue(v):
+    return S(v._string) if v._type._race == 'String' else v._string
 
 def create_external(Name, vtype, pos):
     selector = ""
@@ -132,6 +144,10 @@ def get_var(s):
         if s == v._name:
             return v
     return None
+
+def is_var_exists(s):
+    return get_var(s) is not None
+
 
 # 親の名前からそのスコープから見える変数すべてのそのメンバを返す(ValueClass.Variable[])
 def get_members(parent_name):
@@ -246,7 +262,7 @@ def eval_tokens(token_list):
         if token_list[0].string == ',': return None
         if get_var(token_list[0].string) is not None:
             var = get_var(token_list[0].string)
-            return var._value
+            return var.refer()
         if not is_number(token_list[0]) and not is_string(token_list[0]):
             err("Undefined variable '%s'" % token_list[0].string)
         # 変数ではない場合 
@@ -414,10 +430,15 @@ def add_type(block_ind):
     Global.vtypes.append(t)
 
 def RUN(rt, sd = []):
+    # NOTE: 疑似関数内static変数の準備
     if not hasattr(RUN, 'element_stack'):
         RUN.element_stack = sd
-
     run_tokens = copy.deepcopy(rt)
+
+    # コメント業の場合処理を飛ばす
+    # NOTE: ここでreturnしているのはJSにセミコロンを出力させないためでもある
+    if len(rt) > 0 and rt[0].ttype.Comment:
+        return True
 
     for t in run_tokens:
         if '$' in t.string and not t.ttype.Comment:
@@ -425,6 +446,9 @@ def RUN(rt, sd = []):
             dbgprint(t.string)
         
 
+    # NOTE: この先具体的な構文処理：returnしているところはJSへのセミコロン出力を防ぐため
+    if len(rt) == 1 and rt[0].string == "{":
+        return True
     if Global.fs[-1] != -1 and \
        ((is_plain(run_tokens[0]) and run_tokens[0].string == 'return') or \
        Global.exel == Global.blocks[Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])]._block_ind].body[-1].line):
@@ -530,18 +554,24 @@ def RUN(rt, sd = []):
                 add_type(i)
                 Global.exel = b.body[-1].line
                 break
+        return True
 
     # 変数に代入 ^known-name = value
     # and get_var(run_tokens[0].string) is not None and
     elif len(run_tokens) >= 3 and \
        is_plain(run_tokens[0]) and \
-       is_plain(run_tokens[1]) and run_tokens[1].string == '=' :
+       is_plain(run_tokens[1]) and run_tokens[1].string == '=':
         # その変数自体に代入
         var = get_var(run_tokens[0].string)
         if var is None:
             err("Undefined variable '%s'" % run_tokens[0].string)
-        value = eval_tokens(run_tokens[2:])        # その変数がメンバを持っている場合、メンバもすべて代入
-        var.subst(value)
+        s = run_tokens[2].string
+        if len(run_tokens) == 3 and is_var_exists(s):
+            var.subst(get_var(s))
+        else:
+            value = eval_tokens(copy.deepcopy(run_tokens[2:]))        # その変数がメンバを持っている場合、メンバもすべて代入
+            var.subst(value)
+            
         if len(run_tokens) == 3 and len(var._value._type._variables) > 0 and get_var(run_tokens[2].string) is not None:
             varsrc = get_var(run_tokens[2].string)
             if var._value._type != varsrc._value._type:
@@ -551,6 +581,7 @@ def RUN(rt, sd = []):
             for i in range(len(memdst)):
                 # NOTE: 宣言順が同じであるという条件のもとの代入（計算量削減）
                 memdst[i].subst(memsrc[i])
+                out(";")
 #                 memdst[i]._value = memsrc[i]._value
     
     # プログラム変数作成 ^( name ) race
@@ -573,8 +604,10 @@ def RUN(rt, sd = []):
             runf = Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])]
             variables = runf._vars[-1]
         ValueClass.Variable.create(ValueClass.Variable(name, get_default_value(vt)), variables)
+        return True
 
     # 外部変数作成 ^+( name ) race
+    # NOTE: 普通の変数作成と違うのは部分埋め込みがサポートされている点と、Web用変数しか作成できない点
     elif (len(run_tokens) >= 5 or len(run_tokens) >= 7) and \
          is_plain(run_tokens[0]) and run_tokens[0].string == '+' and \
          is_plain(run_tokens[1]) and run_tokens[1].string == '(' and \
@@ -598,12 +631,16 @@ def RUN(rt, sd = []):
         if vt is None:
             err("Undefined type '%s'" % run_tokens[4].string)
         ValueClass.Variable.create(ValueClass.Variable(name, get_default_value(vt)), None, True, pos)
+        return True
 
     # 関数呼び出し（一行） ^( func args )
     elif len(run_tokens) >= 3 and \
          is_plain(run_tokens[0]) and run_tokens[0].string == '(' and \
          is_plain(run_tokens[-1]) and run_tokens[-1].string == ')':
         eval_tokens(run_tokens)
+
+    log_ts("rt", rt)
+    out(";")
 
 
     return True
