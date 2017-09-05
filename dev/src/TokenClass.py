@@ -109,13 +109,13 @@ class Line:
         self.num = num
         self.token_ind = 0
 
-    def parse(tokens):
+    def parse(tokens, header):
         lc = 1
         lines = []
         lines.append(Line(lc))
         lines[0].token_ind = 0
         for idx, t in enumerate(tokens):
-            t.line = lc
+            t.line = lc - header
             lines[lc-1].tokens.append(t)
             if t.ttype.Return:
                 lines.append(Line(lc))

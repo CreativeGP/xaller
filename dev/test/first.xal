@@ -18,9 +18,10 @@
 # if for 配列 プリプロセッサ
 <web.xal>
 
+(i)int
+i = 3
+
 +(button1)Button
 button1.text = 'Xaller'
-
-
 
 end
