@@ -45,12 +45,12 @@ i = 3
     return 't'
 }
 
-@ (bar (i)int (j)int) {
+@ (bar (i)int (j)string) {
     return 3
 }
 
 +(button1)Button
 # button1.text = (/ i (+ 1 2))string
-button1.text = (foo (bar 3 2) (bar 5 6))
+button1.text = (foo (bar 3 button1.text) (bar 5 button1.text))
 
 end

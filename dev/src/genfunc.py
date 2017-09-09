@@ -264,6 +264,7 @@ def eval_tokens(token_list, js = True):
         if token_list[0].string == ',': return None
         if get_var(token_list[0].string) is not None:
             var = get_var(token_list[0].string)
+            print(js)
             return var.refer(js)
         if not is_number(token_list[0]) and not is_string(token_list[0]):
             err("Undefined variable '%s'" % token_list[0].string)
@@ -277,7 +278,6 @@ def eval_tokens(token_list, js = True):
         # 関数呼び出しなので、token_listに括弧がなくなったときにreturnする
         # 最初から)を探して、それから遡って最初の(までを再帰的に_Global.tokensに渡していく
         log_ts("func_list", token_list)
-        print(js)
         
         # 引数の値を計算 ^@ ( name arg ... )
         # 変数だったときは変数の値を取得
@@ -294,6 +294,7 @@ def eval_tokens(token_list, js = True):
             if js:
                 lvl = 0
                 con = -1
+                buildin = [',']
                 for i, t in enumerate(token_list):
                     if i == con: continue
                     if t.string == '(':
@@ -301,20 +302,21 @@ def eval_tokens(token_list, js = True):
                         con = i+1
                         if FunctionClass.Function.n2i(token_list[i+1].string) < -1:
                             # ビルドイン関数なら
-                            pass
+                            buildinp.append(token_list[i+1].string)
                         else:
+                            buildin.append(',')
                             outnoln(token_list[i+1].string + "(")
                     elif t.string == ')':
                         lvl -= 1
                         if lvl == 0 or token_list[i+1].string == ")" :
                             outnoln(')')
                         else:
-                            outnoln('), ')
+                            outnoln(')%s ' % ',' if buildin[-1] == ',' else ' ' + buildin[-1])
+                        del buildin[-1]
                     else:
                         eval_tokens([t])
                         if token_list[i+1].string != ")":
-                            outnoln(", ")
-
+                            outnoln("%s " % ',' if buildin[-1] == ',' else ' ' + buildin[-1])
                 out(";")
 
             arg_values = []
