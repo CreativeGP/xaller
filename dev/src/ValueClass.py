@@ -75,12 +75,15 @@ class Variable:
 
     def refer(self, js = True):
         if js:
-            if self._external and genfunc.get_var(self._name[:self._name.rfind(".")]+"._web") != -1:
+            if genfunc.is_var_web(self):
                 typename = genfunc.get_var(self._name[:self._name.rfind(".")]+"._web")._value._string
                 name = self._name[self._name.rfind(".")+1:]
                 uniquename = self._name[:self._name.rfind(".")]
                 if name == "text":
                     genfunc.outnoln("$(" + genfunc.S(genfunc.expid(uniquename)) + ").html()")
+            else:
+                genfunc.outnoln(genfunc.expname(self._name))
+                
         return self._value
     
 

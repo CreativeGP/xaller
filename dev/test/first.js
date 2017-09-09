@@ -9,6 +9,6 @@ $('body').append("<button type='button' id='button1'></button>");
 button1$text = 'Button from xaller.';
 $('#button1').html('Button from xaller.');
 button1$_web = 'Button';
-button1$text = foo(bar(3, 2), bar(5, 6));
+button1$text = foo(bar(3, $('button1').html()), bar(5, $('button1').html()));
 i = j = i = j = i = j = ;
 $('#button1').html('t');
