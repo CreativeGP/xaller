@@ -1,6 +1,7 @@
 import copy
 
 import TokenClass
+import ValueClass
 import Global
 import genfunc
 
@@ -16,8 +17,8 @@ class Function:
         # 引数リストを作成
         arglist = []
         for i in range(arg_count):
-            arglist.append(Variable(b.root[i*4+4].string,
-                                    Value('', get_value_type(b.root[i*4+6].string))))
+            arglist.append(ValueClass.Variable(b.root[i*4+4].string,
+                                    ValueClass.Value('', genfunc.get_value_type(b.root[i*4+6].string))))
         self._name = b.root[2].string
         self._block_ind = block_ind
         self._args = [arglist]
