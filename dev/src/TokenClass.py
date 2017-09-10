@@ -97,8 +97,16 @@ class Token:
 
         tokens[0].ttype.NL = True
         for idx, t in enumerate(tokens):
-            if t.ttype.Return:
-                if idx+1 <= len(tokens)-1: tokens[idx+1].ttype.NL = True
+            # Avoid exception because there are potentialities to cause an Index Error.
+            try:
+                if t.ttype.Return:
+                    if idx+1 <= len(tokens)-1: tokens[idx+1].ttype.NL = True
+                # Unitify unequal symbols and equal symbol to enable <= and >= of buildin functions.
+                if (t.string == '<' or t.string == '>') and tokens[idx+1].string == '=':
+                    del tokens[idx+1]
+                    t.string += '='
+            except IndexError:
+                pass
         
         return tokens
 
