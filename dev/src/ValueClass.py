@@ -33,26 +33,29 @@ class Variable:
 
     def subst(self, v):
         value = v
+        # NOTE: JS出力用バッファを使うときは関数の処理のときに限る
         genfunc.outnoln(genfunc.expname(self._name) + " = ")
+#        Global.jsbuf += genfunc.expname(self._name) + " = "
         if str(type(v)) == "<class 'list'>":
             value = v = genfunc.eval_tokens(v)
         elif str(type(v)) == "<class 'ValueClass.Variable'>":
             value = v.refer() # NOTE: JS output!!
         # else:
-        #     genfunc.outnoln(genfunc.expvalue(v)) # NOTE: JS output!!
+        #     genfunc.outbuf(genfunc.expvalue(v)) # NOTE: JS output!!
         # if genfunc.is_var_web (self):
 
         if genfunc.is_var_web (self):
+            genfunc.solvebuf()
             genfunc.out(";")
             name = self._name[self._name.find('.')+1:]
             uniquename = self._name[:self._name.find('.')]
             if name == 'text':
-                genfunc.outnoln("$(%s).html(" % genfunc.S("#" + genfunc.expid(uniquename)))
+                Global.jsbuf += "$(%s).html(" % genfunc.S("#" + genfunc.expid(uniquename))
                 if str(type(v)) == "<class 'ValueClass.Variable'>":
                     value = v.refer()    # NOTE: JS出力のため再度呼び出し
                 else :
-                    genfunc.outnoln(genfunc.expvalue(v)) # NOTE: JS output!!
-                genfunc.outnoln(")")
+                    Global.jsbuf += genfunc.expvalue(v) # NOTE: JS output!!
+                Global.jsbuf += ")"
 
 
 
@@ -80,9 +83,9 @@ class Variable:
                 name = self._name[self._name.rfind(".")+1:]
                 uniquename = self._name[:self._name.rfind(".")]
                 if name == "text":
-                    genfunc.outnoln("$(" + genfunc.S(genfunc.expid(uniquename)) + ").html()")
+                    Global.jsbuf += "$(" + genfunc.S(genfunc.expid(uniquename)) + ").html()"
             else:
-                genfunc.outnoln(genfunc.expname(self._name))
+                Global.jsbuf +=  genfunc.expname(self._name)
                 
         return self._value
     

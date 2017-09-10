@@ -8,6 +8,8 @@ import FunctionClass
 import Global
 import buildinfunc
 
+# TODO: エンコードの設定をしておく
+
 def is_plain(t):
     return not t.ttype.Comment and not t.ttype.String
 
@@ -43,12 +45,26 @@ def err(string):
     sys.exit(1)
 
 def out(s):
-    Global.outjs += s + "\n"
+    if Global.fs[-1] == -1: Global.outjs += s + "\n"
     print("JS >>> %s" % s + "\n")
 
 def outnoln(s):
-    Global.outjs += s
+    if Global.fs[-1] == -1: Global.outjs += s
     print("JS >>> %s" % s)
+
+def crfind(srcs, finds, count):
+    for i in range(count):
+        ans = srcs.rfind(finds, 0, ans)
+    return ans
+
+# Export the accumulated buffer to JS file.
+def solvebuf():
+    outnoln(Global.jsbuf)
+    Global.jsbuf = ''
+
+# Add a text behind Global.jsbuf.
+def outbuf(s):
+    Global.jsbuf += s
 
 def expid(s):
     return s.replace('.', '-')
@@ -267,11 +283,12 @@ def eval_tokens(token_list, js = True):
             print(js)
             return var.refer(js)
         if not is_number(token_list[0]) and not is_string(token_list[0]):
+            print(token_list[0].string)
             err("Undefined variable '%s'" % token_list[0].string)
         # 変数ではない場合
         v = ValueClass.Value(token_list[0].string, determine_value_type(token_list))
         if js:
-            outnoln(expvalue(v))
+            Global.jsbuf += expvalue(v)
         return v
     else:
         # 複数項ある場合（関数呼び出し）
@@ -295,28 +312,87 @@ def eval_tokens(token_list, js = True):
                 lvl = 0
                 con = -1
                 buildin = [',']
+                begof = []
+                count = 0
+                sep_type =  {
+                    ',':',',
+                    '+':'+',
+                    '-':'-',
+                    '*':'*',
+                    '/':'/',
+                    '%':'%',
+                    'neg':'-',
+                    'or':'||',
+                    'and':'&&',
+                    'not':'!',
+                    'xor':'^',
+                    'eq':'==',
+                    '<':'<',
+                    '>':'>',
+                    '<=':'<=',
+                    '>=':'>=',
+                    'concat':'+',
+                    'strlen':'',
+                    'substr':'',
+                    'strtrimr':'',
+                    'strtriml':'',
+                    'strtrim':'',
+                    'strmatch':'',
+                    'stridx':'',
+                    'strridx':'',
+                    'strrep':''
+                }
+
                 for i, t in enumerate(token_list):
                     if i == con: continue
-                    if t.string == '(':
-                        lvl += 1
-                        con = i+1
-                        if FunctionClass.Function.n2i(token_list[i+1].string) < -1:
-                            # ビルドイン関数なら
-                            buildinp.append(token_list[i+1].string)
+                    try:
+                        if t.string == '(':
+                            lvl += 1
+                            con = i+1
+                            if FunctionClass.Function.n2i(token_list[i+1].string) < -1:
+                                # ビルドイン関数なら
+                                buildin.append(token_list[i+1].string)
+                                begof.append(len(Global.jsbuf))
+                                Global.jsbuf += "("
+                            else:
+                                # 普通関数の場合
+                                buildin.append(',')
+                                begof.append(len(Global.jsbuf))
+                                Global.jsbuf += "(" + token_list[i+1].string + "("
+                        elif t.string == ')':
+                            lvl -= 1
+                            if lvl == 0:
+                                print('a')
+                                Global.jsbuf += '))'
+                            # elif token_list[i+1].string == ")" :
+                            #     Global.jsbuf += '))'
+                            else:
+                                Global.jsbuf += ')'
+                                if buildin[-1] != ',':
+                                    Global.jsbuf += '))%s ' % ',' if buildin[-1] == ',' else ' ' + sep_type[buildin[-1]] + ' '
+
+                            if get_value_type(token_list[i+1].string) is not None:
+                                # Output casting.
+                                con = i + 1
+
+                                jstype = {'Integer':'Number', 'String':'String', 'Boolean':'Boolean'}
+                                ts = jstype[get_value_type(token_list[i+1].string)._race]
+                                dd = -1 if buildin[-1] != ',' else Global.jsbuf.rfind('(')-1
+    #                            tmp = Global.jsbuf.rfind('(', 0, dd)
+                                tmp = begof[-1]
+                                Global.jsbuf = Global.jsbuf[:tmp] + ts + Global.jsbuf[tmp:]
+
+                            del buildin[-1]
+                            del begof[-1]
                         else:
-                            buildin.append(',')
-                            outnoln(token_list[i+1].string + "(")
-                    elif t.string == ')':
-                        lvl -= 1
-                        if lvl == 0 or token_list[i+1].string == ")" :
-                            outnoln(')')
-                        else:
-                            outnoln(')%s ' % ',' if buildin[-1] == ',' else ' ' + buildin[-1])
-                        del buildin[-1]
-                    else:
-                        eval_tokens([t])
-                        if token_list[i+1].string != ")":
-                            outnoln("%s " % ',' if buildin[-1] == ',' else ' ' + buildin[-1])
+                            eval_tokens([t])
+                            if token_list[i+1].string != ")":
+                                sep = sep_type[buildin[-1]]
+                                print("%s " % ',' if buildin[-1] == ',' else ' ' + sep + ' ')
+                                Global.jsbuf += "%s " % ',' if buildin[-1] == ',' else ' ' + sep + ' '
+                    except IndexError:
+                        pass
+                solvebuf()
                 out(";")
 
             arg_values = []
@@ -335,7 +411,7 @@ def eval_tokens(token_list, js = True):
                 if i >= 2 and indent == 0:
                     last_index = i
                     log_ts("arg_tokens", arg_tokens)
-                    value = eval_tokens(arg_tokens, False) # NOTE: JS
+                    value = eval_tokens(arg_tokens, False)
                     arg_values.append(value)
                     arg_tokens.clear()
                     continue
@@ -363,7 +439,7 @@ def eval_tokens(token_list, js = True):
                 if token_list[1].string == '>': result_value = buildinfunc.xaller_greater(arg_values)
                 if token_list[1].string == '<=': result_value = buildinfunc.xaller_lesseq(arg_values)
                 if token_list[1].string == '>=': result_value = buildinfunc.xaller_greatereq(arg_values)
-                if token_list[1].string == 'strcat': result_value = buildinfunc.xaller_strcat(arg_values)
+                if token_list[1].string == 'concat': result_value = buildinfunc.xaller_concat(arg_values)
                 if token_list[1].string == 'strlen': result_value = buildinfunc.xaller_strlen(arg_values)
                 if token_list[1].string == 'substr': result_value = buildinfunc.xaller_substr(arg_values)
 #                if token_list[1].string == 'strtrimr': result_value = buildinfunc.xaller_strtrimr(arg_value)
@@ -677,6 +753,7 @@ def RUN(rt, sd = []):
         eval_tokens(run_tokens)
 
     log_ts("rt", rt)
+    solvebuf()
     out(";")
 
 
@@ -725,5 +802,4 @@ def report():
     dbgprint("\nVALUE TYPES: "+str(len(Global.vtypes)))
     for vt in Global.vtypes:
         dbgprint(vt._race + ":" + vt._name)
-
 
