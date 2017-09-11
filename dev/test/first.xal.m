@@ -51,7 +51,7 @@
 # button1.text = (/ i (+ 1 2))string
 
 +(button1)Button
-button1.text = i
+button1.text = (i)string
 
 
 end
