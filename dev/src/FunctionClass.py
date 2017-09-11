@@ -84,9 +84,40 @@ class Function:
         elif idx != -1:
             idx = Function.n2i(self._name)
             Global.Funcs[idx] = self
+            # JS Output
+            # $name = (function $name(arg1, arg2 ...) {});
+            try:
+                genfunc.outnoln("%s = function %s (" % (genfunc.expname(self._name), genfunc.expname(self._name)))
+                for v in self._args[-1][:-1]:
+                    genfunc.outnoln("%s, " % v._name)
+                genfunc.outnoln("%s" % self._args[-1][-1]._name)
+            except IndexError:
+                pass
+            genfunc.out(") {")
+            self.run(copy.deepcopy(self._args[-1]))
+            genfunc.out("});")
         # そうでない場合は新規作成する
         else:
             Global.Funcs.append(self)
+            # JS Output
+            # function $name (arg1, arg2 ...)
+            try:
+                genfunc.outnoln("function %s(" % genfunc.expname(self._name))
+                for v in self._args[-1][:-1]:
+                    genfunc.outnoln("%s, " % v._name)
+                genfunc.outnoln("%s" % self._args[-1][-1]._name)
+            except IndexError:
+                pass
+            genfunc.out(") {")
+            self.run([self._args[-1][i]._value for i in range(len(self._args[-1]))])
+            genfunc.out("}")
+
+    def exam(self):
+        while True:
+            if not genfunc.RUN(Global.lines[Global.exel-1].tokens) : break
+            if Global.exel-1 >= len(Global.lines)-1: break
+            Global.exel += 1
+            
     
     # 関数の処理の実行、戻り値はこの関数の戻り値としてValue型で返される
     def run(self, args):
@@ -104,14 +135,13 @@ class Function:
 
         # 関数に渡された引数の処理
         for i in range(len(args)):
-            self._args[-1][i].subst(args[i])
+            self._args[-1][i].subst(args[i], False)
             genfunc.dbgprint("ArGlobal.Variable changed("+self._args[-1][i]._name+" -> "+args[i]._string+")")
 
         while True:
             if not genfunc.RUN(Global.lines[Global.exel-1].tokens) : break
             if Global.exel-1 >= len(Global.lines)-1: break
             Global.exel += 1
-
         return self._return
 
     def rtrn():

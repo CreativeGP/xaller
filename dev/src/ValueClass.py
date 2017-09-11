@@ -31,10 +31,10 @@ class Variable:
         self._value = _value
         self._external = False
 
-    def subst(self, v):
+    def subst(self, v, js = True):
         value = v
         # NOTE: JS出力用バッファを使うときは関数の処理のときに限る
-        genfunc.outnoln(genfunc.expname(self._name) + " = ")
+        if js: genfunc.outnoln(genfunc.expname(self._name) + " = ")
 #        Global.jsbuf += genfunc.expname(self._name) + " = "
         if str(type(v)) == "<class 'list'>":
             value = v = genfunc.eval_tokens(v)
@@ -45,17 +45,17 @@ class Variable:
         # if genfunc.is_var_web (self):
 
         if genfunc.is_var_web (self):
-            genfunc.solvebuf()
-            genfunc.out(";")
+            if js: genfunc.solvebuf()
+            if js: genfunc.out(";")
             name = self._name[self._name.find('.')+1:]
             uniquename = self._name[:self._name.find('.')]
             if name == 'text':
-                Global.jsbuf += "$(%s).html(" % genfunc.S("#" + genfunc.expid(uniquename))
+                if js: Global.jsbuf += "$(%s).html(" % genfunc.S("#" + genfunc.expid(uniquename))
                 if str(type(v)) == "<class 'ValueClass.Variable'>":
                     value = v.refer()    # NOTE: JS出力のため再度呼び出し
                 else :
-                    Global.jsbuf += genfunc.expvalue(v) # NOTE: JS output!!
-                Global.jsbuf += ")"
+                    if js: Global.jsbuf += genfunc.expvalue(v) # NOTE: JS output!!
+                if js: Global.jsbuf += ")"
 
 
 
@@ -67,7 +67,7 @@ class Variable:
             # if self._external:
             #     genfunc.subst_external(self, value)
         else:
-            genfunc.err("Incorrect substituting value which has different race.\n")
+            genfunc.err("Incorrect substituting value which has different race. \n(%s(%s) << %s)" % (self._name, self._value._type._race, value._type._race))
 
 #         if self._value._type._name == value._type._name:
 #             self._value = value
@@ -95,22 +95,23 @@ class Variable:
         if variables is None:
             variables = Global.Vars
 
+        # 型にメンバがある場合はそれも実際に作成
+        for v in var._value._type._variables:
+            ValueClass.Variable.create(
+                ValueClass.Variable(var._name+"."+v._name,
+                                    genfunc.get_default_value(v._value._type)), variables, external)
+
         # 作成予定関数を実際に作成
         for f in var._value._type._functions:
             new = copy.deepcopy(f)
             f = FunctionClass.Function(new._block_ind)
             f._name = var._name+"."+new._name
             FunctionClass.Function.add(f)
-        # 型にメンバがある場合はそれも実際に作成
-        for v in var._value._type._variables:
-            ValueClass.Variable.create(
-                ValueClass.Variable(var._name+"."+v._name,
-                                    genfunc.get_default_value(v._value._type)), variables, external)
         
         # 実際に変数を作る
         if var._value._type._race == 'Dirty':
             var._value._string = var._name
-        genfunc.out("var "+var._name.replace('.', '$')+";")
+        genfunc.out("var "+var._name.replace('.', '$')+" = %s;" % genfunc.expvalue(genfunc.get_default_value(genfunc.get_value_type(var._value._type._name))))
         if Global.fs[-1] != -1:
             Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])]._vars[-1].append(var)
         else:
