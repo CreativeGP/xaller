@@ -76,6 +76,7 @@ class Variable:
 #         else:
 #             genfunc.err("Invalid substituting value which has different TYPE.")
 
+    # NOTE: JS出力はバッファに行います
     def refer(self, js = True):
         if js:
             if genfunc.is_var_web(self):

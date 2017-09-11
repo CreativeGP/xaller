@@ -15,5 +15,5 @@ $('body').append("<button type='button' id='button1'></button>");
 button1$text = 'Button from xaller.';
 $('#button1').html('Button from xaller.');
 button1$_web = 'Button';
-button1$text = i;
-$('#button1').html(i);
+button1$text = String(i);
+$('#button1').html('');

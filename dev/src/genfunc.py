@@ -298,8 +298,15 @@ def eval_tokens(token_list, js = True):
         # 引数の値を計算 ^@ ( name arg ... )
         # 変数だったときは変数の値を取得
         if get_var(token_list[1].string) is not None:
-            result_value = get_var(token_list[1].string)._value
+            var = get_var(token_list[1].string)
+            result_value = var._value
             last_index = 2
+            jstype = {'Integer':'Number', 'String':'String', 'Boolean':'Boolean'}
+            ts = jstype[var._value._type._race]
+            outnoln(ts + "(")
+            var.refer(js)
+            solvebuf()
+            outnoln(")")
         # そうでなかった場合は関数呼び出しなので引数の処理をする
         else:
             if js:
