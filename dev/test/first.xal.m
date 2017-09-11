@@ -38,11 +38,10 @@
 
 
 
-# (i)int
-# i = 3
+(i)string
 
-@ (foo (i)int (j)int) {
-    return 't'
+@ (foo (i)string (j)int) {
+    i = '3'
 }
 
 # @ (bar (i)int (j)string) {
@@ -52,8 +51,7 @@
 # button1.text = (/ i (+ 1 2))string
 
 +(button1)Button
-button1.text = (foo 1 5)string
-
+button1.text = i
 
 
 end

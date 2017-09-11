@@ -44,12 +44,12 @@ def err(string):
     dbgprint(Global.input+":"+"0: "+string)
     sys.exit(1)
 
-def out(s):
-    if Global.fs[-1] == -1: Global.outjs += s + "\n"
+def out(s, f = False):
+    Global.outjs += s + "\n"
     print("JS >>> %s" % s + "\n")
 
-def outnoln(s):
-    if Global.fs[-1] == -1: Global.outjs += s
+def outnoln(s, f = False):
+    Global.outjs += s
     print("JS >>> %s" % s)
 
 def crfind(srcs, finds, count):
@@ -73,7 +73,7 @@ def expname(s):
     return s.replace('.', '$')
 
 def expvalue(v):
-    return S(v._string) if v._type._race == 'String' else v._string
+    return S(v._string) if v._type._race == 'String' or v._type._race == 'Dirty' else v._string
 
 def create_external(Name, vtype, pos):
     selector = ""
@@ -158,7 +158,7 @@ def get_var(s):
         for v in runf._vars[-1]:
             if s == v._name:
                 return v
-        
+
     for v in Global.Vars:
         if s == v._name:
             return v
@@ -280,7 +280,6 @@ def eval_tokens(token_list, js = True):
         if token_list[0].string == ',': return None
         if get_var(token_list[0].string) is not None:
             var = get_var(token_list[0].string)
-            print(js)
             return var.refer(js)
         if not is_number(token_list[0]) and not is_string(token_list[0]):
             print(token_list[0].string)
@@ -298,12 +297,7 @@ def eval_tokens(token_list, js = True):
         
         # 引数の値を計算 ^@ ( name arg ... )
         # 変数だったときは変数の値を取得
-        if token_list[2].string == '=':
-            print("aA!!!!!!!!")
-            del token_list[2]
-            token_list[1].string += '='
         if get_var(token_list[1].string) is not None:
-            print("aA!!!!!!!!")
             result_value = get_var(token_list[1].string)._value
             last_index = 2
         # そうでなかった場合は関数呼び出しなので引数の処理をする
@@ -542,12 +536,13 @@ def add_type(block_ind):
             token_list.clear()
     Global.vtypes.append(t)
 
-def RUN(rt, sd = []):
+def RUN(rt, sd = [], funcexam = False):
     # NOTE: 疑似関数内static変数の準備
     if not hasattr(RUN, 'element_stack'):
         RUN.element_stack = sd
     run_tokens = copy.deepcopy(rt)
 
+    log_ts("rt", rt)
     # コメント業の場合処理を飛ばす
     # NOTE: ここでreturnしているのはJSにセミコロンを出力させないためでもある
     if len(rt) > 0 and rt[0].ttype.Comment:
@@ -565,10 +560,16 @@ def RUN(rt, sd = []):
     if Global.fs[-1] != -1 and \
        ((is_plain(run_tokens[0]) and run_tokens[0].string == 'return') or \
        Global.exel == Global.blocks[Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])]._block_ind].body[-1].line):
-        if len(run_tokens) != 1:
-            Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])]._return = eval_tokens(run_tokens[1:], False)
         dbgprint("Return from func.")
-        FunctionClass.Function.rtrn()
+        try:
+            f = Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])]
+            FunctionClass.Function.rtrn()
+            if funcexam: outnoln("return ", True)
+            f._return = eval_tokens(run_tokens[1:], funcexam)
+            if funcexam: solvebuf()
+        except IndexError:
+            pass
+        if funcexam: out(";")
         return False
 
     elif len(run_tokens) == 1 and \
@@ -579,9 +580,9 @@ def RUN(rt, sd = []):
          is_plain(run_tokens[0]) and run_tokens[0].string == 'escape':
         idx = -1
         line_idx = -1
-        for l in lines[Global.exel::-1]:
-            if len(l.Global.tokens) == 1:
-                if l.Global.tokens[0].string == 'loop':
+        for l in Global.lines[Global.exel::-1]:
+            if len(Global.tokens) == 1:
+                if Global.tokens[0].string == 'loop':
                     line_idx = l.num
                     break
         for i, b in enumerate(Global.blocks):
@@ -590,15 +591,15 @@ def RUN(rt, sd = []):
                 break
         if idx == -1: err("It is impossible to use 'escape' outside of Global.blocks.")
         Global.exel = Global.blocks[idx].body[-1].line
-        out("}")
+        out("break")
 
     elif len(run_tokens) == 1 and \
          is_plain(run_tokens[0]) and run_tokens[0].string == 'continue':
         idx = -1
         line_idx = -1
-        for l in lines[Global.exel::-1]:
-            if len(l.Global.tokens) == 1:
-                if l.Global.tokens[0].string == 'loop':
+        for l in Global.lines[Global.exel::-1]:
+            if len(Global.tokens) == 1:
+                if Global.tokens[0].string == 'loop':
                     line_idx = l.num
                     break
         for i, b in enumerate(Global.blocks):
@@ -625,6 +626,8 @@ def RUN(rt, sd = []):
                 FunctionClass.Function(i).add()
                 Global.exel = b.body[-1].line
                 break
+        out("")
+        return True
 
     # 条件分岐文 (.. ?$) (^else ... ?$)
     elif len(run_tokens) >= 1 and \
@@ -752,7 +755,6 @@ def RUN(rt, sd = []):
          is_plain(run_tokens[-1]) and run_tokens[-1].string == ')':
         eval_tokens(run_tokens)
 
-    log_ts("rt", rt)
     solvebuf()
     out(";")
 
