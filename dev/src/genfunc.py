@@ -271,6 +271,122 @@ def cast_value(value, nextvt):
 
     return res
 
+def get_func_idx(string):
+    ans = -1
+    for f in Global.Funcs:
+        if f._name == string:
+            ans = f._func_ind
+    return ans
+
+def out_expression(token_list):
+    lvl = 0
+    con = -1
+    buildin = [',']
+    begof = []
+    count = 0
+    sep_type =  {
+        ',':',',
+        '+':'+',
+        '-':'-',
+        '*':'*',
+        '/':'/',
+        '%':'%',
+        'neg':'-',
+        'or':'||',
+        'and':'&&',
+        'not':'!',
+        'xor':'^',
+        'eq':'==',
+        '<':'<',
+        '>':'>',
+        '<=':'<=',
+        '>=':'>=',
+        'concat':'+',
+        'strlen':'',
+        'substr':'',
+        'strtrimr':'',
+        'strtriml':'',
+        'strtrim':'',
+        'strmatch':'',
+        'stridx':'',
+        'strridx':'',
+        'strrep':''
+    }
+
+    for i, t in enumerate(token_list):
+        if i == con: continue
+        try:
+            if t.string == '(':
+                # 関数の始まりの場合:
+                # 関数の始まりの場合は次の関数名を飛ばす
+                # 関数ではない場合があるのでその場合は値か変数
+                lvl += 1
+                con = i+1
+                if is_string(token_list[i+1]) or is_number(token_list[i+1]):
+                    # 関数ではない場合:
+                    con = 0
+                    buildin.append(' ')
+                    begof.append(len(Global.jsbuf))
+                    Global.jsbuf += "("
+                elif FunctionClass.Function.n2i(token_list[i+1].string) < -1:
+                    # ビルドイン関数の場合:
+                    # ビルドイン記号と関数の開始位置を更新して開始用カッコをつける
+                    buildin.append(token_list[i+1].string)
+                    begof.append(len(Global.jsbuf))
+                    Global.jsbuf += "("
+                else:
+                    # 普通関数の場合:
+                    # コンマと関数の開始位置を更新して関数名と開始用カッコをつける
+                    buildin.append(',')
+                    begof.append(len(Global.jsbuf))
+                    Global.jsbuf += token_list[i+1].string + "("
+            elif t.string == ')':
+                # 関数終了の場合:
+                # 原則として終了用途じカッコをつける処理が主
+                # 確かめることは
+                # ・型キャストの有無
+                # ・それが引数として扱われているかどうか
+
+                Global.jsbuf += ')'
+
+                lvl -= 1
+                is_arg = token_list[i+1].string != ")"
+                if get_value_type(token_list[i+1].string) is not None:
+                    # キャストがあった場合:
+                    # ある場合は関数の開始位置に型変換関数名追加して式全体を括弧で括る
+                    # Output casting.
+                    con = i + 1
+
+                    jstype = {'Integer':'Number', 'String':'String', 'Boolean':'Boolean'}
+                    ts = jstype[get_value_type(token_list[i+1].string)._race]
+                    tmp = begof[-1]
+                    Global.jsbuf = Global.jsbuf[:tmp] + ts + "(" + Global.jsbuf[tmp:] + ")"
+                    is_arg = token_list[i+2].string != ")"
+
+                if is_arg:
+                    # 引数だった場合
+                    # 区切り文字を加える (cp L414 415)
+                    sep = sep_type[buildin[-1]]
+                    Global.jsbuf += "%s " % ',' if buildin[-1] == ',' else ' ' + sep + ' '
+
+                del buildin[-1]
+                del begof[-1]
+            else:
+                # その他の場合:
+                # 基本的に引数が回ってくるはずなので区切り文字で区切って出力する
+                # NOTE: 評価した値ではなく、そのまま、書かれたままを出力する
+                # TODO: これだけでは値が定義されていなかった場合の処理が適切ではないので改善する
+                # eval_tokens([t])
+                Global.jsbuf += "'" + t.string + "'" if t.ttype.String else t.string
+                if token_list[i+1].string != ")":
+                    sep = sep_type[buildin[-1]]
+                    Global.jsbuf += "%s " % ',' if buildin[-1] == ',' else ' ' + sep + ' '
+        except IndexError:
+            pass
+    solvebuf()
+    out(";")
+
+
 # NOTE: jsがFalseだったときにはJS出力はしない
 def eval_tokens(token_list, js = True):
     if len(token_list) == 1:
@@ -294,175 +410,62 @@ def eval_tokens(token_list, js = True):
         # 関数呼び出しなので、token_listに括弧がなくなったときにreturnする
         # 最初から)を探して、それから遡って最初の(までを再帰的に_Global.tokensに渡していく
         log_ts("func_list", token_list)
-        
-        # 引数の値を計算 ^@ ( name arg ... )
-        # 変数だったときは変数の値を取得
-        if get_var(token_list[1].string) is not None:
-            var = get_var(token_list[1].string)
-            result_value = var._value
-            last_index = 2
-            jstype = {'Integer':'Number', 'String':'String', 'Boolean':'Boolean'}
-            ts = jstype[var._value._type._race]
-            outnoln(ts + "(")
-            var.refer(js)
-            solvebuf()
-            outnoln(")")
-        # そうでなかった場合は関数呼び出しなので引数の処理をする
-        else:
-            if js:
-                lvl = 0
-                con = -1
-                buildin = [',']
-                begof = []
-                count = 0
-                sep_type =  {
-                    ',':',',
-                    '+':'+',
-                    '-':'-',
-                    '*':'*',
-                    '/':'/',
-                    '%':'%',
-                    'neg':'-',
-                    'or':'||',
-                    'and':'&&',
-                    'not':'!',
-                    'xor':'^',
-                    'eq':'==',
-                    '<':'<',
-                    '>':'>',
-                    '<=':'<=',
-                    '>=':'>=',
-                    'concat':'+',
-                    'strlen':'',
-                    'substr':'',
-                    'strtrimr':'',
-                    'strtriml':'',
-                    'strtrim':'',
-                    'strmatch':'',
-                    'stridx':'',
-                    'strridx':'',
-                    'strrep':''
-                }
+        arg_values = []
+        # NOTE: インデントはリストの最初のカッコを加味して初期値-1
+        indent = -1
+        arg_tokens = []
+        last_index = 0
+        for i in range(len(token_list)-1):
+            if token_list[i].string == '(': indent += 1
+            if token_list[i].string == ')': indent -= 1
+            if i >= 2 and indent != -1: arg_tokens.append(token_list[i])
+            # キャストだった場合の処理
+            if len(token_list) >= i+1 and get_value_type(token_list[i+1].string) is not None:
+                continue
+            # 引数トークンを見分けて実際に計算
+            if i >= 2 and indent == 0:
+                last_index = i
+                log_ts("arg_tokens", arg_tokens)
+                value = eval_tokens(arg_tokens, False)
+                arg_values.append(value)
+                arg_tokens.clear()
+                continue
 
-                for i, t in enumerate(token_list):
-                    if i == con: continue
-                    try:
-                        if t.string == '(':
-                            # 関数の始まりの場合:
-                            # 関数の始まりの場合は次の関数名を飛ばす
-                            lvl += 1
-                            con = i+1
-                            if FunctionClass.Function.n2i(token_list[i+1].string) < -1:
-                                # ビルドイン関数の場合:
-                                # ビルドイン記号と関数の開始位置を更新して開始用カッコをつける
-                                buildin.append(token_list[i+1].string)
-                                begof.append(len(Global.jsbuf))
-                                Global.jsbuf += "("
-                            else:
-                                # 普通関数の場合:
-                                # コンマと関数の開始位置を更新して関数名と開始用カッコをつける
-                                buildin.append(',')
-                                begof.append(len(Global.jsbuf))
-                                Global.jsbuf += token_list[i+1].string + "("
-                        elif t.string == ')':
-                            # 関数終了の場合:
-                            # 原則として終了用途じカッコをつける処理が主
-                            # 確かめることは
-                            # ・型キャストの有無
-                            # ・それが引数として扱われているかどうか
-                            
-                            Global.jsbuf += ')'
-                            
-                            lvl -= 1
-                            is_arg = token_list[i+1].string != ")"
-                            if get_value_type(token_list[i+1].string) is not None:
-                                # キャストがあった場合:
-                                # ある場合は関数の開始位置に型変換関数名追加して式全体を括弧で括る
-                                # Output casting.
-                                con = i + 1
-
-                                jstype = {'Integer':'Number', 'String':'String', 'Boolean':'Boolean'}
-                                ts = jstype[get_value_type(token_list[i+1].string)._race]
-                                tmp = begof[-1]
-                                Global.jsbuf = Global.jsbuf[:tmp] + ts + "(" + Global.jsbuf[tmp:] + ")"
-                                is_arg = token_list[i+2].string != ")"
-
-                            if is_arg:
-                                # 引数だった場合
-                                # 区切り文字を加える (cp L414 415)
-                                sep = sep_type[buildin[-1]]
-                                Global.jsbuf += "%s " % ',' if buildin[-1] == ',' else ' ' + sep + ' '
-
-                            del buildin[-1]
-                            del begof[-1]
-                        else:
-                            # その他の場合:
-                            # 基本的に引数が回ってくるはずなので区切り文字で区切って出力する
-                            eval_tokens([t])
-                            if token_list[i+1].string != ")":
-                                sep = sep_type[buildin[-1]]
-                                Global.jsbuf += "%s " % ',' if buildin[-1] == ',' else ' ' + sep + ' '
-                    except IndexError:
-                        pass
-                solvebuf()
-                out(";")
-
-            arg_values = []
-            # NOTE: インデントはリストの最初のカッコを加味して初期値-1
-            indent = -1
-            arg_tokens = []
-            last_index = 0
-            for i in range(len(token_list)-1):
-                if token_list[i].string == '(': indent += 1
-                if token_list[i].string == ')': indent -= 1
-                if i >= 2 and indent != -1: arg_tokens.append(token_list[i])
-                # キャストだった場合の処理
-                if len(token_list) >= i+1 and get_value_type(token_list[i+1].string) is not None:
-                    continue
-                # 引数トークンを見分けて実際に計算
-                if i >= 2 and indent == 0:
-                    last_index = i
-                    log_ts("arg_tokens", arg_tokens)
-                    value = eval_tokens(arg_tokens, False)
-                    arg_values.append(value)
-                    arg_tokens.clear()
-                    continue
-
-            # 関数処理
-            dbgprint("Func call: '"+token_list[1].string+"'")
-            func_ind = FunctionClass.Function.n2i(token_list[1].string)
-            if func_ind == -1:
-                err("FunctionClass.Function '"+token_list[1].string+"' is not defined.")
-            elif func_ind < -1:
-                # ビルドイン関数の実行
-                # ビルドイン関数のJS出力は各関数内で
-                if token_list[1].string == '+': result_value = buildinfunc.xaller_plus(arg_values)
-                if token_list[1].string == '-': result_value = buildinfunc.xaller_sub(arg_values)
-                if token_list[1].string == '*': result_value = buildinfunc.xaller_product(arg_values)
-                if token_list[1].string == '/': result_value = buildinfunc.xaller_divide(arg_values)
-                if token_list[1].string == '%': result_value = buildinfunc.xaller_remain(arg_values)
-                if token_list[1].string == 'neg': result_value = buildinfunc.xaller_neg(arg_values)
-                if token_list[1].string == 'or': result_value = buildinfunc.xaller_or(arg_values)
-                if token_list[1].string == 'and': result_value = buildinfunc.xaller_and(arg_values)
-                if token_list[1].string == 'not': result_value = buildinfunc.xaller_not(arg_values)
-                if token_list[1].string == 'xor': result_value = buildinfunc.xaller_xor(arg_values)
-                if token_list[1].string == 'eq': result_value = buildinfunc.xaller_eq(arg_values)
-                if token_list[1].string == '<': result_value = buildinfunc.xaller_less(arg_values)
-                if token_list[1].string == '>': result_value = buildinfunc.xaller_greater(arg_values)
-                if token_list[1].string == '<=': result_value = buildinfunc.xaller_lesseq(arg_values)
-                if token_list[1].string == '>=': result_value = buildinfunc.xaller_greatereq(arg_values)
-                if token_list[1].string == 'concat': result_value = buildinfunc.xaller_concat(arg_values)
-                if token_list[1].string == 'strlen': result_value = buildinfunc.xaller_strlen(arg_values)
-                if token_list[1].string == 'substr': result_value = buildinfunc.xaller_substr(arg_values)
+        # 関数処理
+        dbgprint("Func call: '"+token_list[1].string+"'")
+        func_ind = FunctionClass.Function.n2i(token_list[1].string)
+        if func_ind == -1:
+            err("FunctionClass.Function '"+token_list[1].string+"' is not defined.")
+        elif func_ind < -1:
+            # ビルドイン関数の実行
+            # ビルドイン関数のJS出力は各関数内で
+            if token_list[1].string == '+': result_value = buildinfunc.xaller_plus(arg_values)
+            if token_list[1].string == '-': result_value = buildinfunc.xaller_sub(arg_values)
+            if token_list[1].string == '*': result_value = buildinfunc.xaller_product(arg_values)
+            if token_list[1].string == '/': result_value = buildinfunc.xaller_divide(arg_values)
+            if token_list[1].string == '%': result_value = buildinfunc.xaller_remain(arg_values)
+            if token_list[1].string == 'neg': result_value = buildinfunc.xaller_neg(arg_values)
+            if token_list[1].string == 'or': result_value = buildinfunc.xaller_or(arg_values)
+            if token_list[1].string == 'and': result_value = buildinfunc.xaller_and(arg_values)
+            if token_list[1].string == 'not': result_value = buildinfunc.xaller_not(arg_values)
+            if token_list[1].string == 'xor': result_value = buildinfunc.xaller_xor(arg_values)
+            if token_list[1].string == 'eq': result_value = buildinfunc.xaller_eq(arg_values)
+            if token_list[1].string == '<': result_value = buildinfunc.xaller_less(arg_values)
+            if token_list[1].string == '>': result_value = buildinfunc.xaller_greater(arg_values)
+            if token_list[1].string == '<=': result_value = buildinfunc.xaller_lesseq(arg_values)
+            if token_list[1].string == '>=': result_value = buildinfunc.xaller_greatereq(arg_values)
+            if token_list[1].string == 'concat': result_value = buildinfunc.xaller_concat(arg_values)
+            if token_list[1].string == 'strlen': result_value = buildinfunc.xaller_strlen(arg_values)
+            if token_list[1].string == 'substr': result_value = buildinfunc.xaller_substr(arg_values)
 #                if token_list[1].string == 'strtrimr': result_value = buildinfunc.xaller_strtrimr(arg_value)
 #                if token_list[1].string == 'strtriml': result_value = buildinfunc.xaller_strtriml(arg_values)
 #                if token_list[1].string == 'strtrim': result_value = buildinfunc.xaller_strtrim(arg_values)
 #                if token_list[1].string == 'strmatch': result_value = buildinfunc.xaller_strmatch(arg_values)
-                if token_list[1].string == 'stridx': result_value = buildinfunc.xaller_stridx(arg_values)
-                if token_list[1].string == 'strridx': result_value = buildinfunc.xaller_strridx(arg_values)
+            if token_list[1].string == 'stridx': result_value = buildinfunc.xaller_stridx(arg_values)
+            if token_list[1].string == 'strridx': result_value = buildinfunc.xaller_strridx(arg_values)
 #                if token_list[1].string == 'strrep': result_value = buildinfunc.xaller_strrep(arg_values)     
-            else:
-                result_value = Global.Funcs[func_ind].run(arg_values)
+        else:
+            result_value = Global.Funcs[func_ind].run(arg_values)
 
         # 値のキャスト
         if last_index <= len(token_list)-1 and token_list[-1].string != ')':
@@ -571,9 +574,6 @@ def translate(rt, sd = []):
             t.string = prepro(t.string)
             dbgprint(t.string)
 
-    # インデント追加
-    for i in range(Global.indent):
-        Global.outjs += '\t'
 
     # NOTE: この先具体的な構文処理：returnしているところはJSへのセミコロン出力を防ぐため
     if len(rt) == 1 and rt[0].string == "{":
@@ -583,11 +583,13 @@ def translate(rt, sd = []):
         Global.indent -= 1
         out("}")
         return True
-    if Global.fs[-1] != -1 and \
-       ((is_plain(run_tokens[0]) and run_tokens[0].string == 'return')):
+    # インデント追加
+    for i in range(Global.indent):
+        Global.outjs += '\t'
+    if len(run_tokens) > 0 and is_plain(run_tokens[0]) and run_tokens[0].string == 'return':
         try:
             outnoln("return ", True)
-            eval_tokens(run_tokens[1:])
+            out_expression(run_tokens[1:])
             solvebuf()
         except IndexError:
             pass
@@ -644,7 +646,7 @@ def translate(rt, sd = []):
        is_plain(run_tokens[1]) and run_tokens[1].string == "(" and \
        is_plain(run_tokens[-1]) and run_tokens[-1].string == ")":
         for i, b in enumerate(Global.blocks):
-            if b.root[0].line == Global.exel:
+            if b.root[0].line == run_tokens[0].line:
                 FunctionClass.Function(i).add()
                 break
         out("")
@@ -691,27 +693,29 @@ def translate(rt, sd = []):
     elif len(run_tokens) >= 3 and \
        is_plain(run_tokens[0]) and \
        is_plain(run_tokens[1]) and run_tokens[1].string == '=':
-        # その変数自体に代入
-        var = get_var(run_tokens[0].string)
-        if var is None:
-            err("Undefined variable '%s'" % run_tokens[0].string)
-        s = run_tokens[2].string
-        if len(run_tokens) == 3 and is_var_exists(s):
-            var.subst(get_var(s))
-        else:
-            log_ts("run_tokens[2:]", run_tokens[2:])
-            var.subst(copy.deepcopy(run_tokens[2:]))
+        outnoln(run_tokens[0].string + " = ")
+        out_expression(run_tokens[2:])
+        # # その変数自体に代入
+        # var = get_var(run_tokens[0].string)
+        # if var is None:
+        #     err("Undefined variable '%s'" % run_tokens[0].string)
+        # s = run_tokens[2].string
+        # if len(run_tokens) == 3 and is_var_exists(s):
+        #     var.subst(get_var(s))
+        # else:
+        #     log_ts("run_tokens[2:]", run_tokens[2:])
+        #     var.subst(copy.deepcopy(run_tokens[2:]))
             
-        if len(run_tokens) == 3 and len(var._value._type._variables) > 0 and get_var(run_tokens[2].string) is not None:
-            varsrc = get_var(run_tokens[2].string)
-            if var._value._type != varsrc._value._type:
-                err("Incorrect substituting value which has different member.")
-            memdst = get_members(run_tokens[0].string)
-            memsrc = get_members(run_tokens[2].string)
-            for i in range(len(memdst)):
-                # NOTE: 宣言順が同じであるという条件のもとの代入（計算量削減）
-                memdst[i].subst(memsrc[i])
-                out(";")
+        # if len(run_tokens) == 3 and len(var._value._type._variables) > 0 and get_var(run_tokens[2].string) is not None:
+        #     varsrc = get_var(run_tokens[2].string)
+        #     if var._value._type != varsrc._value._type:
+        #         err("Incorrect substituting value which has different member.")
+        #     memdst = get_members(run_tokens[0].string)
+        #     memsrc = get_members(run_tokens[2].string)
+        #     for i in range(len(memdst)):
+        #         # NOTE: 宣言順が同じであるという条件のもとの代入（計算量削減）
+        #         memdst[i].subst(memsrc[i])
+        #         out(";")
 #                 memdst[i]._value = memsrc[i]._value
     
     # プログラム変数作成 ^( name ) race
