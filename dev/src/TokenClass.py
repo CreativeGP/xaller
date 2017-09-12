@@ -29,7 +29,8 @@ class Token:
                 return True
         return False
 
-    def tokenize(filename):
+    def tokenize(filename, header):
+        header = 0
         comment = False
         string = False
         bufferstr = ''
@@ -43,7 +44,7 @@ class Token:
                 if not comment and string and line[i] == '\'':
                     t = Token(lc, bufferstr)
                     t.ttype.String = True
-                    t.real_line = lc
+                    t.real_line = lc - header
                     tokens.append(t)
                     string = False
                     bufferstr = ''
@@ -57,7 +58,7 @@ class Token:
                 if not string and comment and line[i] == '\n':
                     t = Token(lc, bufferstr)
                     t.ttype.Comment = True
-                    t.real_line = lc
+                    t.real_line = lc - header
                     tokens.append(t)
                     comment = False
                     bufferstr = ''
@@ -71,16 +72,16 @@ class Token:
                     if re.match("[!-/:-@[-`{-~]", line[i]) and line[i] != '_' and line[i] != '$' and line[i] != '.':
                         if bufferstr != '':
                             t = Token(lc, bufferstr)
-                            t.real_line = lc
+                            t.real_line = lc - header
                             tokens.append(t)
                             bufferstr = ''
                         t = Token(lc, line[i])
-                        t.real_line = lc
+                        t.real_line = lc - header
                         tokens.append(t)
                     elif re.match("\s", line[i]):
                         if bufferstr != '':
                             t = Token(lc, bufferstr)
-                            t.real_line = lc
+                            t.real_line = lc - header
                             tokens.append(t)
                             bufferstr = ''
                     else:
@@ -123,7 +124,7 @@ class Line:
         lines.append(Line(lc))
         lines[0].token_ind = 0
         for idx, t in enumerate(tokens):
-            t.line = lc - header
+            t.line = lc # - header
             lines[lc-1].tokens.append(t)
             if t.ttype.Return:
                 lines.append(Line(lc))

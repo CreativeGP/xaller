@@ -16,42 +16,13 @@
 # 型システム完成
 
 # if for 配列 プリプロセッサ
-# coding: utf-8
--(HTML):string {}
 
--(Button) {
-    (_web)string
-    (text)string
-    @ (__init) {
-        .text = 'Button from xaller.'
-	._web = 'Button'
-    }
+@ (foo (s)string)
+{
+    return (concat s '33')
 }
--(Textbox) {
-    (_web)string
-    (rows)int
-    (cols)int
-    @ (__init) {
-	._web = 'Textbox'
-    }
-}
-
-
 
 (i)string
-
-@ (foo (i)string (j)int) {
-    i = '3'
-}
-
-# @ (bar (i)int (j)string) {
-#     return 3
-# }
-
-# button1.text = (/ i (+ 1 2))string
-
-+(button1)Button
-button1.text = (i)string
-
+i = (foo 'hello')
 
 end

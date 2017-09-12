@@ -6,9 +6,6 @@ import genfunc
 def xaller_plus(arg):
     ans  = 0
     for i in range(len(arg)):
-        if i != 0:
-            genfunc.outnoln ("+ ")
-        genfunc.outnoln (arg[i]._string + " ")
         if arg[i]._type._race == 'Integer':
             ans += int(arg[i]._string)
         else:
@@ -19,8 +16,6 @@ def xaller_plus(arg):
 def xaller_product(arg):
     ans  = int(arg[0]._string)
     for i in range(1, len(arg)):
-        if i != 0:
-            genfunc.outnoln ("* ")
         if arg[i]._type._race == 'Integer':
             ans *= int(arg[i]._string)
         else:
@@ -30,8 +25,6 @@ def xaller_product(arg):
 def xaller_sub(arg):
     ans  = int(arg[0]._string)
     for i in range(1, len(arg)):
-        genfunc.outnoln (" - ")
-        genfunc.outnoln (arg[i]._string)
         if arg[i]._type._race == 'Integer':
             ans -= int(arg[i]._string)
         else:
@@ -40,10 +33,7 @@ def xaller_sub(arg):
 
 def xaller_divide(arg):
     ans  = int(arg[0]._string)
-    genfunc.outnoln (arg[0]._string + " ")
     for i in range(1, len(arg)):
-        genfunc.outnoln ("/ ")
-        genfunc.outnoln (arg[i]._string + " ")
         if arg[i]._type._race == 'Integer':
             if int(arg[i]._string) == 0:
                 genfunc.err("Couldn't divide by 0.")
@@ -57,9 +47,6 @@ def xaller_remain(arg):
     if len(arg) != 2:
         genfunc.err("Function '%' could receive only two arguments.")
     for i in range(len(arg)):
-        if i != 0:
-            genfunc.outnoln ("% ")
-        genfunc.outnoln (arg[i]._string + " ")
         if arg[i]._type._race == 'Integer':
             ans += int(arg[i]._string)
         else:
@@ -71,9 +58,6 @@ def xaller_neg(arg):
     if len(arg) != 1:
         genfunc.err("Function 'neg' could receive only one arguments.")
     if arg[0]._type._race == 'Integer':
-        if i != 0:
-            genfunc.outnoln ("-")
-        genfunc.outnoln (arg[i]._string + " ")
         ans -= int(arg[0]._string)
     else:
         genfunc.err("Function 'neg' could receive only 'Integer' race arguments.")
@@ -84,9 +68,6 @@ def xaller_and(arg):
     if len(arg) < 2:
         genfunc.err("It is necessary to pass at least two arguments to run function 'and'.")
     for i in range(len(arg)):
-        if i != 0:
-            genfunc.outnoln ("&& ")
-        genfunc.outnoln (arg[i]._string + " ")
         if arg[i]._type._race == 'Boolean':
             ans &= True if arg[i]._string == 'true' else False
         else:
@@ -98,9 +79,6 @@ def xaller_or(arg):
     if len(arg) < 2:
         genfunc.err("It is necessary to pass at least two arguments to run function 'or'.")
     for i in range(len(arg)):
-        if i != 0:
-            genfunc.outnoln ("|| ")
-        genfunc.outnoln (arg[i]._string + " ")
         if arg[i]._type._race == 'Boolean':
             ans |= True if arg[i]._string == 'true' else False
         else:
@@ -111,8 +89,6 @@ def xaller_not(arg):
     ans = True
     if len(arg) != 1:
         genfunc.err("Function 'not' could receive only one argument.")
-    genfunc.outnoln ("!")
-    genfunc.outnoln (arg[i]._string)
     if arg[0]._type._race == 'Boolean':
         ans = False if arg[0]._string == 'true' else True
     else:
@@ -135,10 +111,6 @@ def xaller_eq(arg):
     if len(arg) < 2:
         genfunc.err("It is necessary to pass at least two arguments to run function 'eq'.")
     for i in range(len(arg)):
-        if i != 0:
-            # TODO: === のほうがいい可能性もある
-            genfunc.outnoln ("== ")
-        genfunc.outnoln (arg[i]._string + " ")
         if arg[0]._type._race == arg[i]._type._race:
             if arg[0]._string != arg[i]._string:
                 ans = False
@@ -153,9 +125,6 @@ def xaller_less(arg):
     if arg[0]._type._race != 'Integer':
         genfunc.err("It is impossible to pass function '<' the different race arguments.")
     for i in range(1, len(arg)):
-        if i != 0:
-            genfunc.outnoln ("< ")
-        genfunc.outnoln (arg[i]._string + " ")
         if arg[i]._type._race == 'Integer':
             if not (int(arg[i-1]._string) < int(arg[i]._string)):
                 ans = False
@@ -170,9 +139,6 @@ def xaller_greater(arg):
     if arg[0]._type._race != 'Integer':
         genfunc.err("It is impossible to pass function '>' the different race arguments.")
     for i in range(1, len(arg)):
-        if i != 0:
-            genfunc.outnoln ("> ")
-        genfunc.outnoln (arg[i]._string + " ")
         if arg[i]._type._race == 'Integer':
             if not (int(arg[i-1]._string) > int(arg[i]._string)):
                 ans = False
@@ -187,9 +153,6 @@ def xaller_lesseq(arg):
     if arg[0]._type._race != 'Integer':
         genfunc.err("It is impossible to pass function '<=' the different race arguments.")
     for i in range(1, len(arg)):
-        if i != 0:
-            genfunc.outnoln ("<= ")
-        genfunc.outnoln (arg[i]._string + " ")
         if arg[i]._type._race == 'Integer':
             if not (int(arg[i-1]._string) <= int(arg[i]._string)):
                 ans = False
@@ -204,9 +167,6 @@ def xaller_greatereq(arg):
     if arg[0]._type._race != 'Integer':
         genfunc.err("It is impossible to pass function '>=' the different race arguments.")
     for i in range(1, len(arg)):
-        if i != 0:
-            genfunc.outnoln (">= ")
-        genfunc.outnoln (arg[i]._string + " ")
         if arg[i]._type._race == 'Integer':
             if not (int(arg[i-1]._string) >= int(arg[i]._string)):
                 ans = False
@@ -219,9 +179,6 @@ def xaller_strcat(arg):
     if len(arg) < 2:
         genfunc.err("It is necessary to pass at least two arguments to run function 'strcat'.")
     for i in range(len(arg)):
-        if i != 0:
-            genfunc.outnoln ("+ ")
-        genfunc.outnoln (arg[i]._string + " ")
         if arg[i]._type._race == 'String':
             ans += arg[i]._string
         else:
