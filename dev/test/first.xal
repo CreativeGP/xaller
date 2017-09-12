@@ -16,22 +16,13 @@
 # 型システム完成
 
 # if for 配列 プリプロセッサ
-<web.xal>
 
-(i)string
-
-@ (foo (i)string (j)int) {
-    i = '3'
+@ (foo (s)string)
+{
+    return (concat s '33')
 }
 
-# @ (bar (i)int (j)string) {
-#     return 3
-# }
-
-# button1.text = (/ i (+ 1 2))string
-
-+(button1)Button
-button1.text = (i)string
-
+(i)string
+i = (foo 'hello')
 
 end

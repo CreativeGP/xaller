@@ -88,25 +88,39 @@ with open(Global.input, 'r') as myfile:
                 filename = path + filename
                 break
         with open(filename, 'r') as f:
-#            tmp = data.count('\n')
+            tmp = data.count('\n')
             data = re.sub('<.*>', f.read() + "\n", data)
-#            header += data.count('\n') - tmp
+            header += data.count('\n') - tmp
 
 with open(Global.input+".m", 'w') as myfile:
     myfile.write(data)
 
-Global.tokens = TokenClass.Token.tokenize(Global.input+".m")
+Global.tokens = TokenClass.Token.tokenize(Global.input+".m", header)
 Global.blocks = TokenClass.Block.parse(Global.tokens)
 Global.lines = TokenClass.Line.parse(Global.tokens, header)
 
+# 前出力
+genfunc.out("$(function() {")
+Global.indent += 1
+
 # RUN!!!!!
-while True:
-    if not genfunc.RUN(Global.lines[Global.exel-1].tokens): break
-    if len(genfunc.RUN.element_stack) > 0 and Global.blocks[genfunc.RUN.element_stack[-1]].body[-1].line <= Global.exel:
-        genfunc.RUN.element_stack.pop()
-    if Global.exel-1 >= len(Global.lines)-1:
-        break
-    Global.exel += 1
+# 静的な翻訳
+for l in Global.lines:
+    if len(l.tokens) > 0: Global.exel = l.tokens[0].real_line
+    genfunc.translate(l.tokens)
+    if len(genfunc.translate.element_stack) > 0 and Global.blocks[genfunc.translate.element_stack[-1]].body[-1].line <= Global.exel:
+        genfunc.translate.element_stack.pop()
+
+Global.indent -= 1
+genfunc.out("});")
+
+# while True:
+#     if not genfunc.RUN(Global.lines[Global.exel-1].tokens): break
+#     if len(genfunc.RUN.element_stack) > 0 and Global.blocks[genfunc.RUN.element_stack[-1]].body[-1].line <= Global.exel:
+#         genfunc.RUN.element_stack.pop()
+#     if Global.exel-1 >= len(Global.lines)-1:
+#         break
+#     Global.exel += 1
 
 # os.remove(Global.input)
 

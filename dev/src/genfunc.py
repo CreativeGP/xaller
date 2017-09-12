@@ -348,48 +348,59 @@ def eval_tokens(token_list, js = True):
                     if i == con: continue
                     try:
                         if t.string == '(':
+                            # 関数の始まりの場合:
+                            # 関数の始まりの場合は次の関数名を飛ばす
                             lvl += 1
                             con = i+1
                             if FunctionClass.Function.n2i(token_list[i+1].string) < -1:
-                                # ビルドイン関数なら
+                                # ビルドイン関数の場合:
+                                # ビルドイン記号と関数の開始位置を更新して開始用カッコをつける
                                 buildin.append(token_list[i+1].string)
                                 begof.append(len(Global.jsbuf))
                                 Global.jsbuf += "("
                             else:
-                                # 普通関数の場合
+                                # 普通関数の場合:
+                                # コンマと関数の開始位置を更新して関数名と開始用カッコをつける
                                 buildin.append(',')
                                 begof.append(len(Global.jsbuf))
-                                Global.jsbuf += "(" + token_list[i+1].string + "("
+                                Global.jsbuf += token_list[i+1].string + "("
                         elif t.string == ')':
+                            # 関数終了の場合:
+                            # 原則として終了用途じカッコをつける処理が主
+                            # 確かめることは
+                            # ・型キャストの有無
+                            # ・それが引数として扱われているかどうか
+                            
+                            Global.jsbuf += ')'
+                            
                             lvl -= 1
-                            if lvl == 0:
-                                print('a')
-                                Global.jsbuf += '))'
-                            # elif token_list[i+1].string == ")" :
-                            #     Global.jsbuf += '))'
-                            else:
-                                Global.jsbuf += ')'
-                                if buildin[-1] != ',':
-                                    Global.jsbuf += '))%s ' % ',' if buildin[-1] == ',' else ' ' + sep_type[buildin[-1]] + ' '
-
+                            is_arg = token_list[i+1].string != ")"
                             if get_value_type(token_list[i+1].string) is not None:
+                                # キャストがあった場合:
+                                # ある場合は関数の開始位置に型変換関数名追加して式全体を括弧で括る
                                 # Output casting.
                                 con = i + 1
 
                                 jstype = {'Integer':'Number', 'String':'String', 'Boolean':'Boolean'}
                                 ts = jstype[get_value_type(token_list[i+1].string)._race]
-                                dd = -1 if buildin[-1] != ',' else Global.jsbuf.rfind('(')-1
-    #                            tmp = Global.jsbuf.rfind('(', 0, dd)
                                 tmp = begof[-1]
-                                Global.jsbuf = Global.jsbuf[:tmp] + ts + Global.jsbuf[tmp:]
+                                Global.jsbuf = Global.jsbuf[:tmp] + ts + "(" + Global.jsbuf[tmp:] + ")"
+                                is_arg = token_list[i+2].string != ")"
+
+                            if is_arg:
+                                # 引数だった場合
+                                # 区切り文字を加える (cp L414 415)
+                                sep = sep_type[buildin[-1]]
+                                Global.jsbuf += "%s " % ',' if buildin[-1] == ',' else ' ' + sep + ' '
 
                             del buildin[-1]
                             del begof[-1]
                         else:
+                            # その他の場合:
+                            # 基本的に引数が回ってくるはずなので区切り文字で区切って出力する
                             eval_tokens([t])
                             if token_list[i+1].string != ")":
                                 sep = sep_type[buildin[-1]]
-                                print("%s " % ',' if buildin[-1] == ',' else ' ' + sep + ' ')
                                 Global.jsbuf += "%s " % ',' if buildin[-1] == ',' else ' ' + sep + ' '
                     except IndexError:
                         pass
@@ -543,6 +554,228 @@ def add_type(block_ind):
             token_list.clear()
     Global.vtypes.append(t)
 
+def translate(rt, sd = []):
+    # NOTE: 疑似関数内static変数の準備
+    if not hasattr(translate, 'element_stack'):
+        translate.element_stack = sd
+    run_tokens = copy.deepcopy(rt)
+
+    log_ts("rt", rt)
+    # コメント業の場合処理を飛ばす
+    # NOTE: ここでreturnしているのはJSにセミコロンを出力させないためでもある
+    if len(rt) > 0 and rt[0].ttype.Comment:
+        return True
+
+    for t in run_tokens:
+        if '$' in t.string and not t.ttype.Comment:
+            t.string = prepro(t.string)
+            dbgprint(t.string)
+
+    # インデント追加
+    for i in range(Global.indent):
+        Global.outjs += '\t'
+
+    # NOTE: この先具体的な構文処理：returnしているところはJSへのセミコロン出力を防ぐため
+    if len(rt) == 1 and rt[0].string == "{":
+        Global.indent += 1
+        return True
+    if len(rt) == 1 and rt[0].string == "}":
+        Global.indent -= 1
+        out("}")
+        return True
+    if Global.fs[-1] != -1 and \
+       ((is_plain(run_tokens[0]) and run_tokens[0].string == 'return')):
+        try:
+            outnoln("return ", True)
+            eval_tokens(run_tokens[1:])
+            solvebuf()
+        except IndexError:
+            pass
+        out(";")
+        return False
+
+    elif len(run_tokens) == 1 and \
+         is_plain(run_tokens[0]) and run_tokens[0].string == 'loop':
+        # loopブロックの中のJS出力はこの時点でやってしまう
+        out("while (true) {")
+
+    elif len(run_tokens) == 1 and \
+         is_plain(run_tokens[0]) and run_tokens[0].string == 'escape':
+        out("break;")
+        idx = -1
+        line_idx = -1
+        for l in Global.lines[Global.exel::-1]:
+            if len(l.tokens) == 1:
+                if l.tokens[0].string == 'loop':
+                    line_idx = l.num
+                    break
+        for i, b in enumerate(Global.blocks):
+            if b.root[0].line == line_idx+1:
+                idx = i
+                break
+        if idx == -1: err("It is impossible to use 'escape' outside of Global.blocks.")
+        return False
+
+    elif len(run_tokens) == 1 and \
+         is_plain(run_tokens[0]) and run_tokens[0].string == 'continue':
+        out("continue;")
+        idx = -1
+        line_idx = -1
+        for l in Global.lines[Global.exel::-1]:
+            if len(Global.tokens) == 1:
+                if Global.tokens[0].string == 'loop':
+                    line_idx = l.num
+                    break
+        for i, b in enumerate(Global.blocks):
+            if b.root[0].line == line_idx+1:
+                idx = i
+                break
+        if idx == -1: err("It is impossible to use 'continue' outside of Global.blocks.")
+        return False
+
+    elif Global.fs[-1] == -1 and len(run_tokens) == 1 and \
+         is_plain(run_tokens[0]) and run_tokens[0].string == 'end':
+        outnoln("return")
+
+    # Detect FunctionClass.Functions
+    # 関数作成 ^ @ ( name arg )
+    if len(run_tokens) >= 4 and \
+       is_plain(run_tokens[0]) and run_tokens[0].string == "@" and \
+       is_plain(run_tokens[1]) and run_tokens[1].string == "(" and \
+       is_plain(run_tokens[-1]) and run_tokens[-1].string == ")":
+        for i, b in enumerate(Global.blocks):
+            if b.root[0].line == Global.exel:
+                FunctionClass.Function(i).add()
+                break
+        out("")
+        return True
+
+    # 条件分岐文 (.. ?$) (^else ... ?$)
+    elif len(run_tokens) >= 1 and \
+         is_plain(run_tokens[-1]) and run_tokens[-1].string == '?':
+        if run_tokens[0].string == 'branch':
+            outnoln("else")
+        outnoln("if (")
+        value = eval_tokens(run_tokens[1 if run_tokens[0].string == 'cond' or run_tokens[0].string == 'branch' else 0:-1])
+        outnoln(")")
+            # for i, b in enumerate(Global.blocks):
+            #     if b.root[0].line == Global.exel:
+            #         idx = i
+            #         break
+            # for b in Global.blocks[idx-1::-1]:
+            #     cond_value = eval_tokens(b.root[1 if b.root[0].string == 'cond' or b.root[0].string == 'branch' else 0:-1])
+            #     cond_value = cast_value(cond_value, get_value_type('bool'))
+            #     cond_value = xaller_not([cond_value])
+            #     if cond_value._string == 'false':
+            #         Global.exel = Global.blocks[idx].body[-1].line
+            #         break
+            #     # cond指定があるブロックがあったらそこで終了
+            #     if b.root[0].string == 'cond':
+            #         break
+
+    # 型定義 ^-(type):type
+    if len(run_tokens) >= 4 and \
+       is_plain(run_tokens[0]) and run_tokens[0].string == '-' and \
+       is_plain(run_tokens[1]) and run_tokens[1].string == '(' and \
+       is_plain(run_tokens[2]) and \
+       is_plain(run_tokens[3]) and run_tokens[3].string == ')':
+        for i, b in enumerate(Global.blocks):
+            if b.root[0].line == Global.exel:
+                add_type(i)
+                Global.exel = b.body[-1].line
+                break
+        return True
+
+    # 変数に代入 ^known-name = value
+    # and get_var(run_tokens[0].string) is not None and
+    elif len(run_tokens) >= 3 and \
+       is_plain(run_tokens[0]) and \
+       is_plain(run_tokens[1]) and run_tokens[1].string == '=':
+        # その変数自体に代入
+        var = get_var(run_tokens[0].string)
+        if var is None:
+            err("Undefined variable '%s'" % run_tokens[0].string)
+        s = run_tokens[2].string
+        if len(run_tokens) == 3 and is_var_exists(s):
+            var.subst(get_var(s))
+        else:
+            log_ts("run_tokens[2:]", run_tokens[2:])
+            var.subst(copy.deepcopy(run_tokens[2:]))
+            
+        if len(run_tokens) == 3 and len(var._value._type._variables) > 0 and get_var(run_tokens[2].string) is not None:
+            varsrc = get_var(run_tokens[2].string)
+            if var._value._type != varsrc._value._type:
+                err("Incorrect substituting value which has different member.")
+            memdst = get_members(run_tokens[0].string)
+            memsrc = get_members(run_tokens[2].string)
+            for i in range(len(memdst)):
+                # NOTE: 宣言順が同じであるという条件のもとの代入（計算量削減）
+                memdst[i].subst(memsrc[i])
+                out(";")
+#                 memdst[i]._value = memsrc[i]._value
+    
+    # プログラム変数作成 ^( name ) race
+    elif len(run_tokens) >= 4 and \
+       is_plain(run_tokens[0]) and run_tokens[0].string == '(' and \
+       is_plain(run_tokens[1]) and \
+       is_plain(run_tokens[2]) and run_tokens[2].string == ')' and \
+       is_plain(run_tokens[3]) :
+        # ドットが変数名に入っているときにはエラー
+        name = run_tokens[1].string[:]
+        # if '$' in name: name = prepro(name)
+        if '.' in name:
+            err("ValueClass.Variable name couldn't contain '.'")
+        vt = get_value_type(run_tokens[3].string)
+        if vt is None:
+            err("Undefined type '%s'" % run_tokens[3].string)
+
+        variables = None
+        if Global.fs[-1] != -1:
+            runf = Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])]
+            variables = runf._vars[-1]
+        ValueClass.Variable.create(ValueClass.Variable(name, get_default_value(vt)), variables)
+        return True
+
+    # 外部変数作成 ^+( name ) race
+    # NOTE: 普通の変数作成と違うのは部分埋め込みがサポートされている点と、Web用変数しか作成できない点
+    elif (len(run_tokens) >= 5 or len(run_tokens) >= 7) and \
+         is_plain(run_tokens[0]) and run_tokens[0].string == '+' and \
+         is_plain(run_tokens[1]) and run_tokens[1].string == '(' and \
+         is_plain(run_tokens[2]) and \
+         is_plain(run_tokens[3]) and run_tokens[3].string == ')' and \
+         is_plain(run_tokens[4]) :
+        name = run_tokens[2].string[:]
+        pos = "at end"
+        if len(run_tokens) == 7:
+            pos = run_tokens[5].string + " " + run_tokens[6].string
+        if len(translate.element_stack) > 0:
+            # 内包される要素があった場合
+            pos = "in " + Global.blocks[translate.element_stack[-1]].root[2].string
+        if get_block_idx(Global.exel) != -1:
+            translate.element_stack.append(get_block_idx(Global.exel))
+
+        # ドットが変数名に入っているときにはエラー
+        if '.' in name:
+            err("ValueClass.Variable name couldn't contain '.'")
+        vt = get_value_type(run_tokens[4].string)
+        if vt is None:
+            err("Undefined type '%s'" % run_tokens[4].string)
+        ValueClass.Variable.create(ValueClass.Variable(name, get_default_value(vt)), None, True, pos)
+        return True
+
+    # 関数呼び出し（一行） ^( func args )
+    elif len(run_tokens) >= 3 and \
+         is_plain(run_tokens[0]) and run_tokens[0].string == '(' and \
+         is_plain(run_tokens[-1]) and run_tokens[-1].string == ')':
+        eval_tokens(run_tokens)
+
+    solvebuf()
+    out(";")
+
+
+    return True
+    
+
 def RUN(rt, sd = [], funcexam = False):
     # NOTE: 疑似関数内static変数の準備
     if not hasattr(RUN, 'element_stack'):
@@ -581,15 +814,25 @@ def RUN(rt, sd = [], funcexam = False):
 
     elif len(run_tokens) == 1 and \
          is_plain(run_tokens[0]) and run_tokens[0].string == 'loop':
+        # loopブロックの中のJS出力はこの時点でやってしまう
+        tmp_exel = Global.exel + 1
+        b = Global.blocks[get_block_idx(Global.exel)]
         out("while (true) {")
+        while True:
+            Global.exel += 1
+            RUN(Global.lines[Global.exel-1].tokens)
+            if b.body[-1].line >= Global.exel:
+                Global.exel = tmp_exel
+                break
+        out("}")
 
     elif len(run_tokens) == 1 and \
          is_plain(run_tokens[0]) and run_tokens[0].string == 'escape':
         idx = -1
         line_idx = -1
         for l in Global.lines[Global.exel::-1]:
-            if len(Global.tokens) == 1:
-                if Global.tokens[0].string == 'loop':
+            if len(l.tokens) == 1:
+                if l.tokens[0].string == 'loop':
                     line_idx = l.num
                     break
         for i, b in enumerate(Global.blocks):
@@ -598,7 +841,7 @@ def RUN(rt, sd = [], funcexam = False):
                 break
         if idx == -1: err("It is impossible to use 'escape' outside of Global.blocks.")
         Global.exel = Global.blocks[idx].body[-1].line
-        out("break")
+        return False
 
     elif len(run_tokens) == 1 and \
          is_plain(run_tokens[0]) and run_tokens[0].string == 'continue':
