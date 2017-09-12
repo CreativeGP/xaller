@@ -1,6 +1,10 @@
 $(function() {
-	var i = false;
-	i = Boolean((5 * (3 + 2) + (3 + 5)));
+	function foo(s) {
+		return (s + 33);
+;
+}
+	var i = '';
+	i = String(foo(Number(foo(Number((3)))), (5 - 2)));
 ;
 	return;
 	;

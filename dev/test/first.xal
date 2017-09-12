@@ -17,12 +17,12 @@
 
 # if for 配列 プリプロセッサ
 
-@ (foo (s)string)
+@ (foo (s)int)
 {
-    return (concat s '33')
+    return (+ s 33)
 }
 
 (i)string
-i = (foo 'hello')
+i = (foo (foo (3)int)int (- 5 2))string
 
 end

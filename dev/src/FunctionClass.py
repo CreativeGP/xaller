@@ -44,7 +44,7 @@ class Function:
         if name == '<': return -22
         if name == '>=': return -23
         if name == '<=': return -24
-        if name == 'strcat': return -25
+        if name == 'concat': return -25
         if name == 'strlen': return -26
         if name == 'substr': return -27
         if name == 'strtrimr': return -28
@@ -94,7 +94,6 @@ class Function:
             except IndexError:
                 pass
             genfunc.out(") {")
-            self.run(copy.deepcopy(self._args[-1]))
             genfunc.out("});")
         # そうでない場合は新規作成する
         else:
@@ -108,9 +107,7 @@ class Function:
                 genfunc.outnoln("%s" % self._args[-1][-1]._name)
             except IndexError:
                 pass
-            genfunc.out(") {")
-            self.run([self._args[-1][i]._value for i in range(len(self._args[-1]))])
-            genfunc.out("}")
+            genfunc.outnoln(") {")
 
     def exam(self):
         while True:
