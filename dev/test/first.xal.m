@@ -17,12 +17,41 @@
 
 # if for 配列 プリプロセッサ
 
+# coding: utf-8
+-(HTML):string {}
+
+-(Button) {
+    (_web)string
+    (text)string
+    @ (__init) {
+        .text = 'Button from xaller.'
+	._web = 'Button'
+    }
+}
+-(Textbox) {
+    (_web)string
+    (rows)int
+    (cols)int
+    @ (__init) {
+	._web = 'Textbox'
+    }
+}
+
+
 @ (foo (s)int)
 {
     return (+ s 33)
 }
 
-(i)string
-i = (foo (foo (3)int)int (- 5 2))string
+
+(i)int
+loop {
+    (eq i 10) ? {
+        escape
+    }
+    i = (+ i 1)
+}
 
 end
+
+

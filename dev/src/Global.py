@@ -5,6 +5,7 @@ fs = [-1] # Running function index (default -1).
 outjs = '' # JS File to output
 bDbg = False # Flag output for debug.
 jsbuf = ''
+lock = False
 
 indent = 0
 
