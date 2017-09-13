@@ -105,11 +105,14 @@ Global.indent += 1
 
 # RUN!!!!!
 # 静的な翻訳
-for l in Global.lines:
-    if len(l.tokens) > 0: Global.exel = l.tokens[0].real_line
-    genfunc.translate(l.tokens)
+Global.exel = 0
+while True:
+    l = Global.lines[Global.exel]
+    if not genfunc.translate(l.tokens):
+        break
     if len(genfunc.translate.element_stack) > 0 and Global.blocks[genfunc.translate.element_stack[-1]].body[-1].line <= Global.exel:
         genfunc.translate.element_stack.pop()
+    Global.exel += 1
 
 Global.indent -= 1
 genfunc.out("});")
