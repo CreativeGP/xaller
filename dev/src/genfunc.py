@@ -57,6 +57,12 @@ def crfind(srcs, finds, count):
         ans = srcs.rfind(finds, 0, ans)
     return ans
 
+def outlock():
+    Global.lock = True
+
+def outlock():
+    Global.lock = False
+
 # Export the accumulated buffer to JS file.
 def solvebuf():
     outnoln(Global.jsbuf)
@@ -322,7 +328,7 @@ def out_expression(token_list):
                 # 関数ではない場合があるのでその場合は値か変数
                 lvl += 1
                 con = i+1
-                if is_string(token_list[i+1]) or is_number(token_list[i+1]):
+                if is_string(token_list[i+1]) or is_number(token_list[i+1]) or get_var(token_list[i+1].string):
                     # 関数ではない場合:
                     con = 0
                     buildin.append(' ')
@@ -384,7 +390,6 @@ def out_expression(token_list):
         except IndexError:
             pass
     solvebuf()
-    out(";")
 
 
 # NOTE: jsがFalseだったときにはJS出力はしない
@@ -581,11 +586,13 @@ def translate(rt, sd = []):
         return True
     if len(rt) == 1 and rt[0].string == "}":
         Global.indent -= 1
+        for i in range(Global.indent):
+            outnoln('\t')
         out("}")
         return True
     # インデント追加
     for i in range(Global.indent):
-        Global.outjs += '\t'
+        outnoln('\t')
     if len(run_tokens) > 0 and is_plain(run_tokens[0]) and run_tokens[0].string == 'return':
         try:
             outnoln("return ", True)
@@ -593,13 +600,12 @@ def translate(rt, sd = []):
             solvebuf()
         except IndexError:
             pass
-        out(";")
-        return False
 
     elif len(run_tokens) == 1 and \
          is_plain(run_tokens[0]) and run_tokens[0].string == 'loop':
         # loopブロックの中のJS出力はこの時点でやってしまう
         out("while (true) {")
+        return True
 
     elif len(run_tokens) == 1 and \
          is_plain(run_tokens[0]) and run_tokens[0].string == 'escape':
@@ -638,6 +644,7 @@ def translate(rt, sd = []):
     elif Global.fs[-1] == -1 and len(run_tokens) == 1 and \
          is_plain(run_tokens[0]) and run_tokens[0].string == 'end':
         outnoln("return")
+        return True
 
     # Detect FunctionClass.Functions
     # 関数作成 ^ @ ( name arg )
@@ -656,10 +663,11 @@ def translate(rt, sd = []):
     elif len(run_tokens) >= 1 and \
          is_plain(run_tokens[-1]) and run_tokens[-1].string == '?':
         if run_tokens[0].string == 'branch':
-            outnoln("else")
+            outnoln("else ")
         outnoln("if (")
-        value = eval_tokens(run_tokens[1 if run_tokens[0].string == 'cond' or run_tokens[0].string == 'branch' else 0:-1])
-        outnoln(")")
+        value = out_expression(run_tokens[1 if run_tokens[0].string == 'cond' or run_tokens[0].string == 'branch' else 0:-1])
+        out(") {")
+        return True
             # for i, b in enumerate(Global.blocks):
             #     if b.root[0].line == Global.exel:
             #         idx = i
