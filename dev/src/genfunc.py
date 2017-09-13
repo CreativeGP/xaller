@@ -61,9 +61,11 @@ def crfind(srcs, finds, count):
 
 def outlock():
     Global.lock = True
+    print('t')
 
 def outunlock():
     Global.lock = False
+    print('f')
 
 # Export the accumulated buffer to JS file.
 def solvebuf():
@@ -406,7 +408,6 @@ def eval_tokens(token_list, js = True):
             var = get_var(token_list[0].string)
             return var.refer(js)
         if not is_number(token_list[0]) and not is_string(token_list[0]):
-            print(token_list[0].string)
             err("Undefined variable '%s'" % token_list[0].string)
         # 変数ではない場合
         v = ValueClass.Value(token_list[0].string, determine_value_type(token_list))
@@ -540,6 +541,10 @@ def add_type(block_ind):
     for token in Global.blocks[block_ind].body:
         token_list.append(token)
         if token.ttype.Return:
+            if len(token_list) == 1 and token_list[0].string == "{":
+                Global.indent += 1
+            if len(token_list) == 1 and token_list[0].string == "}":
+                Global.indent -= 1
             # 関数作成 ^ @ ( name arg )
             if len(token_list) >= 4 and \
                is_plain(token_list[0]) and token_list[0].string == "@" and \
@@ -582,20 +587,21 @@ def translate(rt, sd = []):
             t.string = prepro(t.string)
             dbgprint(t.string)
 
-
     # NOTE: この先具体的な構文処理：returnしているところはJSへのセミコロン出力を防ぐため
     if len(rt) == 1 and rt[0].string == "{":
         Global.indent += 1
         return True
-    if len(rt) == 1 and rt[0].string == "}":
+    elif len(rt) == 1 and rt[0].string == "}":
         Global.indent -= 1
         for i in range(Global.indent):
             outnoln('\t')
         out("}")
         return True
-    # インデント追加
-    for i in range(Global.indent):
-        outnoln('\t')
+    else:
+        # インデント追加
+        for i in range(Global.indent):
+            print(Global.lock)
+            outnoln('\t')
     if len(run_tokens) > 0 and is_plain(run_tokens[0]) and run_tokens[0].string == 'return':
         try:
             outnoln("return ", True)
@@ -625,7 +631,7 @@ def translate(rt, sd = []):
                 idx = i
                 break
         if idx == -1: err("It is impossible to use 'escape' outside of Global.blocks.")
-        return False
+        return True
 
     elif len(run_tokens) == 1 and \
          is_plain(run_tokens[0]) and run_tokens[0].string == 'continue':
@@ -642,12 +648,12 @@ def translate(rt, sd = []):
                 idx = i
                 break
         if idx == -1: err("It is impossible to use 'continue' outside of Global.blocks.")
-        return False
+        return True
 
     elif Global.fs[-1] == -1 and len(run_tokens) == 1 and \
          is_plain(run_tokens[0]) and run_tokens[0].string == 'end':
-        outnoln("return")
-        return True
+        out("return;")
+        return False
 
     # Detect FunctionClass.Functions
     # 関数作成 ^ @ ( name arg )
@@ -693,12 +699,14 @@ def translate(rt, sd = []):
        is_plain(run_tokens[2]) and \
        is_plain(run_tokens[3]) and run_tokens[3].string == ')':
         outlock()
+        Global.outjs = Global.outjs[:-1]
         for i, b in enumerate(Global.blocks):
-            if b.root[0].line == Global.exel:
+            if b.root[0].line == Global.exel + 1:
                 add_type(i)
-                Global.exel = b.body[-1].line
+                Global.exel = b.body[-1].line -1
                 break
         outunlock()
+        Global.indent = 1
         return True
 
     # 変数に代入 ^known-name = value

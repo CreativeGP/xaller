@@ -19,7 +19,6 @@
 
 # coding: utf-8
 -(HTML):string {}
-
 -(Button) {
     (_web)string
     (text)string
