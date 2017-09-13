@@ -62,7 +62,7 @@ def crfind(srcs, finds, count):
 def outlock():
     Global.lock = True
 
-def outlock():
+def outunlock():
     Global.lock = False
 
 # Export the accumulated buffer to JS file.
@@ -692,11 +692,13 @@ def translate(rt, sd = []):
        is_plain(run_tokens[1]) and run_tokens[1].string == '(' and \
        is_plain(run_tokens[2]) and \
        is_plain(run_tokens[3]) and run_tokens[3].string == ')':
+        outlock()
         for i, b in enumerate(Global.blocks):
             if b.root[0].line == Global.exel:
                 add_type(i)
                 Global.exel = b.body[-1].line
                 break
+        outunlock()
         return True
 
     # 変数に代入 ^known-name = value
