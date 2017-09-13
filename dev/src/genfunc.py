@@ -45,12 +45,14 @@ def err(string):
     sys.exit(1)
 
 def out(s, f = False):
-    Global.outjs += s + "\n"
-    print("JS >>> %s" % s + "\n")
+    if not Global.lock:
+        Global.outjs += s + "\n"
+        print("JS >>> %s" % s + "\n")
 
 def outnoln(s, f = False):
-    Global.outjs += s
-    print("JS >>> %s" % s)
+    if not Global.lock:
+        Global.outjs += s
+        print("JS >>> %s" % s)
 
 def crfind(srcs, finds, count):
     for i in range(count):
@@ -65,8 +67,9 @@ def outlock():
 
 # Export the accumulated buffer to JS file.
 def solvebuf():
-    outnoln(Global.jsbuf)
-    Global.jsbuf = ''
+    if not Global.lock:
+        outnoln(Global.jsbuf)
+        Global.jsbuf = ''
 
 # Add a text behind Global.jsbuf.
 def outbuf(s):
