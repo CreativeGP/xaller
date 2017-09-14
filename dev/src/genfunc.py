@@ -388,7 +388,15 @@ def out_expression(token_list):
                 # NOTE: 評価した値ではなく、そのまま、書かれたままを出力する
                 # TODO: これだけでは値が定義されていなかった場合の処理が適切ではないので改善する
                 # eval_tokens([t])
-                Global.jsbuf += "'" + t.string + "'" if t.ttype.String else t.string
+                if get_var(t.string) is not None:
+                    v = get_var(t.string)
+                    if is_var_web(v):
+                        v.refer()
+                    else:
+                        Global.jsbuf += "'" + t.string + "'" if t.ttype.String else t.string
+                else:
+                    Global.jsbuf += "'" + t.string + "'" if t.ttype.String else t.string
+    
                 if token_list[i+1].string != ")":
                     sep = sep_type[buildin[-1]]
                     Global.jsbuf += "%s " % ',' if buildin[-1] == ',' else ' ' + sep + ' '
