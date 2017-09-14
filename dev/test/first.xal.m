@@ -43,6 +43,7 @@
 }
 
 +(btn)Button
+btn.text = 'hello'
 (i)int
 loop {
     (eq i 10) ? {
