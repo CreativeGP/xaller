@@ -18,11 +18,9 @@ $(function() {
 	;
 	$('#btn2').html($('#btn').html());
 	var i = 0;
-	while (true) {
-		if ((i == 10)) {
-			break;
-		}
-		i = (i + 1);
+	if (($('#btn').html() == 'hello')) {
+		btn$text = 'txt';
+		$('#btn').html('txt');
 	}
 	return;
 });

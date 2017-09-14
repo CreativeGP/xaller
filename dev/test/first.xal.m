@@ -47,11 +47,8 @@ btn.text = 'hello'
 +(btn2)Button before btn
 btn2 = btn
 (i)int
-loop {
-    (eq i 10) ? {
-        escape
-    }
-    i = (+ i 1)
+(eq btn.text 'hello') ? {
+    btn.text = 'txt'
 }
 
 end
