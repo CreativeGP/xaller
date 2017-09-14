@@ -37,9 +37,12 @@ class Variable:
         if js: genfunc.outnoln(genfunc.expname(self._name) + " = ")
 #        Global.jsbuf += genfunc.expname(self._name) + " = "
         if str(type(v)) == "<class 'list'>":
-            value = v = genfunc.eval_tokens(v)
+            # TODO: 静的な変数だった場合は内容を更新するようにする
+            genfunc.out_expression(v)
+            value = v = genfunc.eval_tokens(v, False)
         elif str(type(v)) == "<class 'ValueClass.Variable'>":
-            value = v.refer() # NOTE: JS output!!
+            genfunc.outnoln(genfunc.expname(v._name))
+            value = v.refer(False) # NOTE: JS output!!
         # else:
         #     genfunc.outbuf(genfunc.expvalue(v)) # NOTE: JS output!!
         # if genfunc.is_var_web (self):
@@ -84,7 +87,7 @@ class Variable:
                 name = self._name[self._name.rfind(".")+1:]
                 uniquename = self._name[:self._name.rfind(".")]
                 if name == "text":
-                    Global.jsbuf += "$(" + genfunc.S(genfunc.expid(uniquename)) + ").html()"
+                    Global.jsbuf += "$(" + genfunc.S("#" + genfunc.expid(uniquename)) + ").html()"
             else:
                 Global.jsbuf +=  genfunc.expname(self._name)
                 
