@@ -99,7 +99,7 @@ def create_external(Name, vtype, pos):
     if " end" in pos:
         selector = 'body'
         func = 'append'
-    elif " beg" in pos:
+    elif " begnn" in pos:
         selector = 'body'
         func = 'prepend'
     else:
@@ -697,30 +697,30 @@ def translate(rt, sd = []):
     elif len(run_tokens) >= 3 and \
        is_plain(run_tokens[0]) and \
        is_plain(run_tokens[1]) and run_tokens[1].string == '=':
-        outnoln(run_tokens[0].string + " = ")
-        out_expression(run_tokens[2:])
-        # # その変数自体に代入
-        # var = get_var(run_tokens[0].string)
-        # if var is None:
-        #     err("Undefined variable '%s'" % run_tokens[0].string)
-        # s = run_tokens[2].string
-        # if len(run_tokens) == 3 and is_var_exists(s):
-        #     var.subst(get_var(s))
-        # else:
-        #     log_ts("run_tokens[2:]", run_tokens[2:])
-        #     var.subst(copy.deepcopy(run_tokens[2:]))
+        # outnoln(run_tokens[0].string + " = ")
+        # out_expression(run_tokens[2:])
+        # その変数自体に代入
+        var = get_var(run_tokens[0].string)
+        if var is None:
+            err("Undefined variable '%s'" % run_tokens[0].string)
+        s = run_tokens[2].string
+        if len(run_tokens) == 3 and is_var_exists(s):
+            var.subst(get_var(s))
+        else:
+            log_ts("run_tokens[2:]", run_tokens[2:])
+            var.subst(copy.deepcopy(run_tokens[2:]))
             
-        # if len(run_tokens) == 3 and len(var._value._type._variables) > 0 and get_var(run_tokens[2].string) is not None:
-        #     varsrc = get_var(run_tokens[2].string)
-        #     if var._value._type != varsrc._value._type:
-        #         err("Incorrect substituting value which has different member.")
-        #     memdst = get_members(run_tokens[0].string)
-        #     memsrc = get_members(run_tokens[2].string)
-        #     for i in range(len(memdst)):
-        #         # NOTE: 宣言順が同じであるという条件のもとの代入（計算量削減）
-        #         memdst[i].subst(memsrc[i])
-        #         out(";")
-#                 memdst[i]._value = memsrc[i]._value
+        if len(run_tokens) == 3 and len(var._value._type._variables) > 0 and get_var(run_tokens[2].string) is not None:
+            varsrc = get_var(run_tokens[2].string)
+            if var._value._type != varsrc._value._type:
+                err("Incorrect substituting value which has different member.")
+            memdst = get_members(run_tokens[0].string)
+            memsrc = get_members(run_tokens[2].string)
+            for i in range(len(memdst)):
+                # NOTE: 宣言順が同じであるという条件のもとの代入（計算量削減）
+                memdst[i].subst(memsrc[i])
+                out(";")
+                memdst[i]._value = memsrc[i]._value
     
     # プログラム変数作成 ^( name ) race
     elif len(run_tokens) >= 4 and \

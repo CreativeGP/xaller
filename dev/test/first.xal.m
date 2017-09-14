@@ -44,6 +44,8 @@
 
 +(btn)Button
 btn.text = 'hello'
++(btn2)Button before btn
+btn2 = btn
 (i)int
 loop {
     (eq i 10) ? {
