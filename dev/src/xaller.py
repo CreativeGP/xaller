@@ -101,7 +101,6 @@ Global.lines = TokenClass.Line.parse(Global.tokens, header)
 
 # 前出力
 genfunc.out("$(function() {")
-Global.indent += 1
 
 # RUN!!!!!
 # 静的な翻訳
@@ -114,8 +113,29 @@ while True:
         genfunc.translate.element_stack.pop()
     Global.exel += 1
 
-Global.indent -= 1
 genfunc.out("});")
+
+# インデントを出力、基本は閉じ括弧開き括弧でインデント数を操作しているが、
+# 単独閉じ括弧の場合に小細工を加えている(See L131)
+indent = 0
+idx = 0
+tmps = Global.outjs
+for i, c in enumerate(tmps):
+    if c == '{':
+        indent += 1
+    if i < len(tmps)-1 and c == '\n' and not tmps[i+1] == '}':
+        s = '\t'*indent
+        Global.outjs = Global.outjs[:idx+1] + s + Global.outjs[idx+1:]
+        idx += indent
+    elif i < len(tmps)-1 and tmps[i+1] == '}':
+        indent -= 1
+        s = '\t'*indent
+        Global.outjs = Global.outjs[:idx+1] + s + Global.outjs[idx+1:]
+        idx += indent
+        indent += 1
+    elif c == '}':
+        indent -= 1
+    idx += 1
 
 # while True:
 #     if not genfunc.RUN(Global.lines[Global.exel-1].tokens): break
