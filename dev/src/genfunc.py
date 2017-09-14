@@ -541,10 +541,6 @@ def add_type(block_ind):
     for token in Global.blocks[block_ind].body:
         token_list.append(token)
         if token.ttype.Return:
-            if len(token_list) == 1 and token_list[0].string == "{":
-                Global.indent += 1
-            if len(token_list) == 1 and token_list[0].string == "}":
-                Global.indent -= 1
             # 関数作成 ^ @ ( name arg )
             if len(token_list) >= 4 and \
                is_plain(token_list[0]) and token_list[0].string == "@" and \
@@ -587,21 +583,12 @@ def translate(rt, sd = []):
             t.string = prepro(t.string)
             dbgprint(t.string)
 
-    # NOTE: この先具体的な構文処理：returnしているところはJSへのセミコロン出力を防ぐため
-    if len(rt) == 1 and rt[0].string == "{":
-        Global.indent += 1
+    if len(run_tokens) == 1 and run_tokens[0].string == "{":
         return True
-    elif len(rt) == 1 and rt[0].string == "}":
-        Global.indent -= 1
-        for i in range(Global.indent):
-            outnoln('\t')
+    elif len(run_tokens) == 1 and run_tokens[0].string == "}":
         out("}")
         return True
-    else:
-        # インデント追加
-        for i in range(Global.indent):
-            print(Global.lock)
-            outnoln('\t')
+    # NOTE: この先具体的な構文処理：returnしているところはJSへのセミコロン出力を防ぐため
     if len(run_tokens) > 0 and is_plain(run_tokens[0]) and run_tokens[0].string == 'return':
         try:
             outnoln("return ", True)
@@ -698,15 +685,11 @@ def translate(rt, sd = []):
        is_plain(run_tokens[1]) and run_tokens[1].string == '(' and \
        is_plain(run_tokens[2]) and \
        is_plain(run_tokens[3]) and run_tokens[3].string == ')':
-        outlock()
-        Global.outjs = Global.outjs[:-1]
         for i, b in enumerate(Global.blocks):
             if b.root[0].line == Global.exel + 1:
                 add_type(i)
                 Global.exel = b.body[-1].line -1
                 break
-        outunlock()
-        Global.indent = 1
         return True
 
     # 変数に代入 ^known-name = value

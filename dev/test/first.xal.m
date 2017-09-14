@@ -42,7 +42,7 @@
     return (+ s 33)
 }
 
-
++(btn)Button
 (i)int
 loop {
     (eq i 10) ? {
