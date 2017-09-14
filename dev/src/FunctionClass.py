@@ -97,17 +97,18 @@ class Function:
             genfunc.out("});")
         # そうでない場合は新規作成する
         else:
-            Global.Funcs.append(self)
-            # JS Output
-            # function $name (arg1, arg2 ...)
-            try:
-                genfunc.outnoln("function %s(" % genfunc.expname(self._name))
-                for v in self._args[-1][:-1]:
-                    genfunc.outnoln("%s, " % v._name)
-                genfunc.outnoln("%s" % self._args[-1][-1]._name)
-            except IndexError:
-                pass
-            genfunc.outnoln(") {")
+            if not self._name[self._name.rfind('.'):] == ".__init":
+                 Global.Funcs.append(self)
+                 # JS Output
+                 # function $name (arg1, arg2 ...)
+                 try:
+                     genfunc.outnoln("function %s(" % genfunc.expname(self._name))
+                     for v in self._args[-1][:-1]:
+                         genfunc.outnoln("%s, " % v._name)
+                     genfunc.outnoln("%s" % self._args[-1][-1]._name)
+                 except IndexError:
+                     pass
+                 genfunc.outnoln(") {")
 
     def exam(self):
         while True:
