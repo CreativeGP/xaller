@@ -29,6 +29,26 @@ class Token:
                 return True
         return False
 
+    def line_num(tokens):
+        """ Count the number of rows. """
+
+        linum = 0
+        for tkn in tokens:
+            if tkn.ttype.NL:
+                linum += 1
+        return linum
+            
+
+    def untokenize(tokens):
+        """ Convert list of token into a long string. """
+
+        data = ""
+        for tkn in tokens:
+            data += tkn.string
+            if tkn.ttype.NL:
+                data += '\n'
+        return data
+
     def tokenize(filename, header):
         header = 0
         comment = False
