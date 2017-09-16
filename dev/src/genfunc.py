@@ -8,6 +8,9 @@ import FunctionClass
 import Global
 import buildinfunc
 
+def insert(dst, pos, src):
+    return dst[:pos] + src + dst[pos:]
+
 # TODO: エンコードの設定をしておく
 
 def is_plain(t):
@@ -26,7 +29,11 @@ def is_bool(t):
     return is_plain(t) and (t.string == 'true' or t.string == 'false')
 
 def is_var_web(v):
+    # None時の処理
+    if v is None: return False
+
     return v._external and get_var(v._name[:v._name.rfind(".")]+"._web") != -1 and get_var(v._name[:v._name.rfind(".")]+"._web") is not v
+    
 
 def dbgprint(s):
     if Global.bDbg: print(s)
@@ -61,11 +68,9 @@ def crfind(srcs, finds, count):
 
 def outlock():
     Global.lock = True
-    print('t')
 
 def outunlock():
     Global.lock = False
-    print('f')
 
 # Export the accumulated buffer to JS file.
 def solvebuf():
@@ -86,7 +91,15 @@ def expname(s):
 def expvalue(v):
     return S(v._string) if v._type._race == 'String' or v._type._race == 'Dirty' else v._string
 
-def create_external(Name, vtype, pos):
+def create_external(Name, pos):
+    # HACK: ここのコードだけ継承されても型を識別できるように特別な変数だけ動的に参照するようにしている
+    typename = ''
+    # if is_var_exists(Name + "._web"):
+    #     typename = get_var(Name + "._web")._string
+    for v in Global.Vars:
+        if v._name == Name + "._web":
+            typename = v._value._string
+
     selector = ""
     func = ""
     if "at " in pos:
@@ -107,13 +120,13 @@ def create_external(Name, vtype, pos):
 
     # selector = 'body'
     # func = 'append'
-    if vtype._name == 'HTML':
+    if typename == 'HTML':
         out('$(%s).%s("<ran id=%s></ran>");' % (S(selector), func, S(expid(Name))))
-    if vtype._name == 'Label':
+    if typename == 'Label':
         out('$(%s).%s("<p id=%s></p>");' % (S(selector), func, S(expid(Name))))
-    elif vtype._name == 'Button':
+    elif typename == 'Button':
         out('$(%s).%s("<button type=%s id=%s></button>");' % (S(selector), func, S('button'), S(expid(Name))))
-    elif vtype._name == 'Textbox':
+    elif typename == 'Textbox':
         out('$(%s).%s("<textarea id=%s name=%s></textarea>");' % (S(selector), func, S(expid(Name)), S(expid(Name))))
 
 # 代入される側がexternalな場合
@@ -149,8 +162,20 @@ def get_block_idx(line):
 
     return -1
 
-def get_var(s):
-    if Global.fs[-1] != -1:
+def get_var(s, care = True):
+    # This is CARE.
+    if care and Global.tfs[-1] is not None:
+        runf = Global.tfs[-1]
+        tmp = ''
+        if s[0] == '.': tmp = runf._name[:runf._name.rfind(".")]
+        s = tmp + s
+        for v in runf._args[-1]:
+            if s == v._name:
+                return v
+        for v in runf._vars[-1]:
+            if s == v._name:
+                return v
+    elif Global.fs[-1] != -1:
         runf = Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])]
         if s[0] == '.':
             tmp = runf._name.replace(Global.blocks[runf._block_ind].root[2].string, '', 1)
@@ -295,6 +320,7 @@ def out_expression(token_list):
     buildin = [',']
     begof = []
     count = 0
+    jstype = {'Integer':'Number', 'String':'String', 'Boolean':'Boolean'}
     sep_type =  {
         ',':',',
         '+':'+',
@@ -323,6 +349,16 @@ def out_expression(token_list):
         'strridx':'',
         'strrep':''
     }
+
+    if len(token_list) == 1:
+        outnoln("'" + token_list[0].string + "'" if token_list[0].ttype.String else token_list[0].string)
+        return
+
+    if len(token_list) == 3 or len(token_list) == 4:
+        if is_var_exists(token_list[1].string):
+            outnoln(jstype[get_var(token_list[1].string)._value._type._race] + "(" +  token_list[1].string + ")")
+            return
+        
 
     for i, t in enumerate(token_list):
         if i == con: continue
@@ -368,7 +404,6 @@ def out_expression(token_list):
                     # Output casting.
                     con = i + 1
 
-                    jstype = {'Integer':'Number', 'String':'String', 'Boolean':'Boolean'}
                     ts = jstype[get_value_type(token_list[i+1].string)._race]
                     tmp = begof[-1]
                     Global.jsbuf = Global.jsbuf[:tmp] + ts + "(" + Global.jsbuf[tmp:] + ")"
@@ -386,6 +421,7 @@ def out_expression(token_list):
                 # その他の場合:
                 # 基本的に引数が回ってくるはずなので区切り文字で区切って出力する
                 # NOTE: 評価した値ではなく、そのまま、書かれたままを出力する
+                # NOTE: Web変数は展開して出力
                 # TODO: これだけでは値が定義されていなかった場合の処理が適切ではないので改善する
                 # eval_tokens([t])
                 if get_var(t.string) is not None:
@@ -539,9 +575,9 @@ def add_type(block_ind):
                     del vs
         t._variables.extend(tmp._variables)
         for f in tmp._functions:
-            for Global.fs in t._functions:
-                if Global.fs._name == f._name:
-                    del Global.fs
+            for fs in t._functions:
+                if fs._name == f._name:
+                    del fs
         t._functions.extend(tmp._functions)
     dbgprint("")
     
@@ -592,10 +628,17 @@ def translate(rt, sd = []):
             dbgprint(t.string)
 
     if len(run_tokens) == 1 and run_tokens[0].string == "{":
+        Global.tfs.append(None)
         return True
     elif len(run_tokens) == 1 and run_tokens[0].string == "}":
-        out("}")
-        return True
+        Global.tfs.pop()
+        if Global.tfs[-1] is None:
+            out("}")
+        elif Global.tfs[-1]._event:
+            out("});")
+        else:
+            out("}")
+        return 1
     # NOTE: この先具体的な構文処理：returnしているところはJSへのセミコロン出力を防ぐため
     if len(run_tokens) > 0 and is_plain(run_tokens[0]) and run_tokens[0].string == 'return':
         try:
@@ -669,6 +712,7 @@ def translate(rt, sd = []):
         if run_tokens[0].string == 'branch':
             outnoln("else ")
         outnoln("if (")
+        
         value = out_expression(run_tokens[1 if run_tokens[0].string == 'cond' or run_tokens[0].string == 'branch' else 0:-1])
         out(") {")
         return True
@@ -708,6 +752,9 @@ def translate(rt, sd = []):
         # outnoln(run_tokens[0].string + " = ")
         # out_expression(run_tokens[2:])
         # その変数自体に代入
+        # HACK: _web変数だけ動的に代入
+        if run_tokens[0].string[run_tokens[0].string.rfind('.')+1:] == '_web':
+            get_var(run_tokens[0].string)._value._string = run_tokens[2].string
         var = get_var(run_tokens[0].string)
         if var is None:
             err("Undefined variable '%s'" % run_tokens[0].string)
@@ -783,7 +830,7 @@ def translate(rt, sd = []):
     elif len(run_tokens) >= 3 and \
          is_plain(run_tokens[0]) and run_tokens[0].string == '(' and \
          is_plain(run_tokens[-1]) and run_tokens[-1].string == ')':
-        eval_tokens(run_tokens)
+        out_expression(run_tokens)
 
     solvebuf()
     out(";")

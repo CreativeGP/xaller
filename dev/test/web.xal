@@ -3,6 +3,7 @@
 -(Button) {
     (_web)string
     (text)string
+    (name)string
     @ (__init) {
         .text = 'Button from xaller.'
 	._web = 'Button'

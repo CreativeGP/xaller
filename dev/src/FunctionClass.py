@@ -26,6 +26,7 @@ class Function:
         self._return = None
         self._buildin = buildin
         self._id = Function._static_id
+        self._event = False
 
     @staticmethod
     def n2i(name):
@@ -74,41 +75,54 @@ class Function:
                 return i
         return -1
 
-    # グローバル関数Global.Funcsに追加
+    # functionsに追加
     def add(self):
+        print("Creating function " + self._name)
         Function._static_id += 1
         # すでに同名の関数がある場合は古い方を上書き
         idx = Function.n2i(self._name)
         if idx < -1:
             err("Function '%s' is build-in function name." % self._name)
-        elif idx != -1:
-            idx = Function.n2i(self._name)
-            Global.Funcs[idx] = self
-            # JS Output
-            # $name = (function $name(arg1, arg2 ...) {});
-            try:
-                genfunc.outnoln("%s = function %s (" % (genfunc.expname(self._name), genfunc.expname(self._name)))
-                for v in self._args[-1][:-1]:
-                    genfunc.outnoln("%s, " % v._name)
-                genfunc.outnoln("%s" % self._args[-1][-1]._name)
-            except IndexError:
-                pass
-            genfunc.out(") {")
-            genfunc.out("});")
-        # そうでない場合は新規作成する
+        # elif idx != -1:
+        #     idx = Function.n2i(self._name)
+        #     Global.Funcs[idx] = self
+        #     # JS Output
+        #     # $name = (function $name(arg1, arg2 ...) {});
+        #     try:
+        #         genfunc.outnoln("%s = function %s (" % (genfunc.expname(self._name), genfunc.expname(self._name)))
+        #         for v in self._args[-1][:-1]:
+        #             genfunc.outnoln("%s, " % v._name)
+        #         genfunc.outnoln("%s" % self._args[-1][-1]._name)
+        #     except IndexError:
+        #         pass
+        #     genfunc.out(") {")
+        #     genfunc.out("});")
+        # # そうでない場合は新規作成する
         else:
-            if not self._name[self._name.rfind('.'):] == ".__init":
-                 Global.Funcs.append(self)
-                 # JS Output
-                 # function $name (arg1, arg2 ...)
-                 try:
-                     genfunc.outnoln("function %s(" % genfunc.expname(self._name))
-                     for v in self._args[-1][:-1]:
-                         genfunc.outnoln("%s, " % v._name)
-                     genfunc.outnoln("%s" % self._args[-1][-1]._name)
-                 except IndexError:
-                     pass
-                 genfunc.outnoln(") {")
+            v = genfunc.get_var(self._name[:self._name.rfind('.')])
+            Global.Funcs.append(self)
+            Global.tfs.append(self)
+            if genfunc.is_var_web(v):
+                eventlist = ['.blur', '.click', '.change', '.ctxmenu', '.dbclick', '.error', '.focus', '.focusin', '.focusout', '.hover', '.load', '.ready', '.scroll', '.resize', '.select', '.submit', '.unload']
+                if self._name[self._name.rfind('.'):] in eventlist:
+                    self._event = True
+                    idx = eventlist.index(self._name[self._name.rfind('.'):])
+                    genfunc.outnoln("$('#" + genfunc.expid(v._name) + "')" + eventlist[idx] + "(function () {")
+                    return
+        # コンストラクタは内容は出力するが、関数は出力しない
+#            elif not self._name[self._name.rfind('.'):] == ".__init" and not self._name == "__init":
+            # JS Output
+            # function $name (arg1, arg2 ...)
+            if not self._name[self._name.rfind('.'):] == ".__init" and not self._name == "__init":
+                try:
+                    genfunc.outnoln("function %s(" % genfunc.expname(self._name))
+                    for v in self._args[-1][:-1]:
+                        genfunc.outnoln("%s, " % v._name)
+                    genfunc.outnoln("%s" % self._args[-1][-1]._name)
+                except IndexError:
+                    pass
+                genfunc.outnoln(") {")
+                    
 
     def exam(self):
         while True:
