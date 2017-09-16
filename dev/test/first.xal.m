@@ -22,6 +22,7 @@
 -(Button) {
     (_web)string
     (text)string
+    (name)string
     @ (__init) {
         .text = 'Button from xaller.'
 	._web = 'Button'
@@ -42,14 +43,31 @@
     return (+ s 33)
 }
 
-+(btn)Button
-btn.text = 'hello'
-+(btn2)Button before btn
-btn2 = btn
-(i)int
-(eq btn.text 'hello') ? {
-    btn.text = 'txt'
+-(numbtn):Button {
+    (num)int
+    @ (set_num (i)int) {
+        .num = i
+        .text = (i)string
+    }
+
+    @ (click) {
+#        .num = 0
+        .text = (+ 1 .num)string
+    }
 }
+
+(i)int
++(btn)Button
+btn.text = 'きよみ'
+@ (btn.hover) {
+    btn.text = 'きよみが押しました'
+}
+
+# +(btn1)numbtn
+# +(btn2)Button
+# @ (btn2.click) {
+    
+# }
 
 end
 
