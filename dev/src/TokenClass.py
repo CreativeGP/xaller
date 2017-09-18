@@ -1,6 +1,11 @@
+# -*- coding: utf-8 -*-
 # from Global import *
+
+"""Xaller alpha 
+programmer: CreativeGP
+"""
+import genfunc
 import re
-from genfunc import *
 
 class TokenType:
     def __init__(self):
@@ -25,7 +30,7 @@ class Token:
     def find_keyword(tokens, keyword):
         ''' トークンの中にキーワードがあるかどうかを識別する '''
         for t in tokens:
-            if is_plain(t) and t.string == keyword:
+            if genfunc.is_plain(t) and t.string == keyword:
                 return True
         return False
 
@@ -37,11 +42,26 @@ class Token:
             if tkn.ttype.NL:
                 linum += 1
         return linum
+
+    def shift_line(tokens, ofs):
+        """ Shift the line number. 
+
+        Args:
+            tokens: A list of token to shift the line number.
+            ofs: How many to shift.
+        """
+
+        for tkn in tokens:
+            tkn.line += ofs
             
 
     def untokenize(tokens):
-        """ Convert list of token into a long string. """
-
+        """ Convert list of token into a long string. 
+        
+        Attention: Spaces won't be restored.
+        """
+        
+        # TODO Restore spaces.
         data = ""
         for tkn in tokens:
             data += tkn.string
@@ -49,8 +69,7 @@ class Token:
                 data += '\n'
         return data
 
-    def tokenize(filename, header):
-        header = 0
+    def tokenize(filename):
         comment = False
         string = False
         bufferstr = ''
@@ -64,7 +83,7 @@ class Token:
                 if not comment and string and line[i] == '\'':
                     t = Token(lc, bufferstr)
                     t.ttype.String = True
-                    t.real_line = lc - header
+                    t.real_line = lc
                     tokens.append(t)
                     string = False
                     bufferstr = ''
@@ -78,7 +97,7 @@ class Token:
                 if not string and comment and line[i] == '\n':
                     t = Token(lc, bufferstr)
                     t.ttype.Comment = True
-                    t.real_line = lc - header
+                    t.real_line = lc
                     tokens.append(t)
                     comment = False
                     bufferstr = ''
@@ -92,16 +111,16 @@ class Token:
                     if re.match("[!-/:-@[-`{-~]", line[i]) and line[i] != '_' and line[i] != '$' and line[i] != '.':
                         if bufferstr != '':
                             t = Token(lc, bufferstr)
-                            t.real_line = lc - header
+                            t.real_line = lc
                             tokens.append(t)
                             bufferstr = ''
                         t = Token(lc, line[i])
-                        t.real_line = lc - header
+                        t.real_line = lc
                         tokens.append(t)
                     elif re.match("\s", line[i]):
                         if bufferstr != '':
                             t = Token(lc, bufferstr)
-                            t.real_line = lc - header
+                            t.real_line = lc
                             tokens.append(t)
                             bufferstr = ''
                     else:
@@ -163,19 +182,20 @@ class Block:
         self.num = 0
 
     def report():
+        prnt = genfunc.dbgprintnoln
         for idx, b in enumerate(blocks):
-            dbgprintnoln("Block" + str(idx) +" Root:\n")
+            prnt("Block" + str(idx) +" Root:\n")
         for t in b.root:
-            dbgprintnoln(t.string + " ")
+            prnt(t.string + " ")
 
-        dbgprintnoln("\nBody:\n")
+        prnt("\nBody:\n")
         for t in b.body:
-            dbgprintnoln(t.string + " ")
+            prnt(t.string + " ")
 
-        dbgprintnoln("\nDominations:\n")
+        prnt("\nDominations:\n")
         for d in b.doms:
-            dbgprintnoln("Block" + str(blocks[d].num) + " is dominating this block.\n")
-        dbgprintnoln("\n\n")
+            prnt("Block" + str(blocks[d].num) + " is dominating this block.\n")
+        prnt("\n\n")
 
 
     def parse(tokens):
