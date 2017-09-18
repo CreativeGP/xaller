@@ -1076,20 +1076,24 @@ def RUN(rt, sd = [], funcexam = False):
     # 値 value
 
 
+
 def report():
+    """ Reports trajectory of processing. """
+
     dbgprint("\n\n\n\nPROGRAM REPORT...")
     
     # Display all detected Global.tokens
     dbgprint("Detected Global.tokens:")
     table_data = [
-        ["name", "Comment", "Str", "Return", "NL" ]
+        ["name", "Comment", "Str", "Return", "NL", "Line(R)" ]
     ]
     for t in Global.tokens:
         table_data.append([t.string,
                            "#" if t.ttype.Comment else "",
                            "\"" if t.ttype.String else "Ins" if t.ttype.StringIns else "",
                            "R" if t.ttype.Return else "",
-                           "NL" if t.ttype.NL else ""
+                           "NL" if t.ttype.NL else "", 
+                           "%s(%s)" % (t.line, t.real_line), 
         ])
     table = AsciiTable(table_data)
     dbgprint(table.table)
@@ -1117,4 +1121,3 @@ def report():
     dbgprint("\nVALUE TYPES: "+str(len(Global.vtypes)))
     for vt in Global.vtypes:
         dbgprint(vt._race + ":" + vt._name)
-

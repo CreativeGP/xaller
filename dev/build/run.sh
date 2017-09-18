@@ -1,4 +1,4 @@
 pushd ../src
-pylint --max-line-length=80 xaller 
+pylint TokenClass
 ./xaller.py -d -i ../test/$1
 popd

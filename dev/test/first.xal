@@ -36,7 +36,7 @@
     }
 }
 
-(i)int
+(i.a)int
 +(btn)Button
 btn.text = 'きよみ'
 @ (btn.hover) {

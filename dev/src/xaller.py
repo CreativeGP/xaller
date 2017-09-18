@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
-""" Xaller (v9.1) """
-import sys
-import os
+
+"""Xaller alpha 
+programmer: CreativeGP
+"""
 import atexit
-import re
+import sys
 
 
 # TODO(future)
@@ -14,9 +15,12 @@ import re
 # DBG
 
 
-import TokenClass
-import ValueClass
 import Global
+
+import TokenClass
+
+import ValueClass
+
 import genfunc
 
 Global.vtypes = [ValueClass.Type('int', 'Integer'),
@@ -25,9 +29,9 @@ Global.vtypes = [ValueClass.Type('int', 'Integer'),
 
 atexit.register(genfunc.report)
 
-def deal_with_cmdargs():
-    """ Deals with command line arguments. """
 
+def deal_with_cmdargs():
+    """Deal with command line arguments."""
     # -hを発見した時点でヘルプ文字列を出力して終了する
     args = sys.argv
     if '-h' in args:
@@ -57,8 +61,7 @@ def deal_with_cmdargs():
 
 
 def out_html():
-    """ Output the HTML file which just loads JS file. """
-
+    """Output the HTML file which just loads JS file."""
     html = open('%s.html' % Global.output, 'w')
     html.write("""
     <html>
@@ -72,34 +75,47 @@ def out_html():
     </script>
     </body>
     </html>
-    """ % Global.output)
+   """ % Global.output)
     html.close()
 
-def deal_with_import():
-    """ Deals with xaller import statement. """
 
-    # TODO: インポート時のエラー行調整
+def deal_with_import():
+    """Deal with xaller import statement."""
+    # TODO(cgp): インポート時のエラー行調整
     header = 0
 
     # このままだとコメントが反映されないので一回トークン解析してからもとのファイルに戻す
-    # インポートファイル名は入力ファイルがあるディレクトリからの
-    # 相対パスを想定しているので、インポートファイル名にディレクトリを指定する
-    raw_tokens = TokenClass.Token.tokenize(Global.input, header)
+    raw_tokens = TokenClass.Token.tokenize(Global.input)
     inputd = Global.input[:Global.input.rfind('/')] + '/'
-    print("inputd", inputd)
-    for i in range(len(raw_tokens)):
-        if (genfunc.is_plain(raw_tokens[i-1]) and
-            raw_tokens[i-1].string is '<' and
-            genfunc.is_plain(raw_tokens[i]) and
-            genfunc.is_plain(raw_tokens[i+1]) and
-            raw_tokens[i+1].string is '>'):
 
-            # 新しいファイル名を取得したらトークンを埋め込む
+    print (header)
+
+    for i in range(len(raw_tokens)):
+        if ((genfunc.is_plain(raw_tokens[i-1]) and
+             raw_tokens[i-1].string is '<' and
+             genfunc.is_plain(raw_tokens[i]) and
+             genfunc.is_plain(raw_tokens[i+1]) and
+             raw_tokens[i+1].string is '>')):
+
             filename = raw_tokens[i].string
             try:
-                new_tokens = TokenClass.Token.tokenize(inputd + filename, header)
+                # インポートファイル名は入力ファイルがあるディレクトリからの
+                # 相対パスを想定しているので、インポートファイル名にディレクトリを指定する
+                new_tokens = TokenClass.Token.tokenize(inputd + filename)
+
             except FileNotFoundError:
-                new_tokens = TokenClass.Token.tokenize(filename, header)
+                try:
+                    # 相対パスで記述していなかった場合、最後の手段として
+                    # そのまま実行してみる
+                    new_tokens = TokenClass.Token.tokenize(filename)
+                except FileNotFoundError:
+                    # ファイルが見つからないのでエラー出力
+                    genfunc.err("File not found. '%s'" % filename)
+
+            # 新しいファイルのトークンの行番号をずらす
+            # TokenClass.Token.shift_line(new_tokens, i - 1)
+
+            # 新しいファイル名もトークン化して、もとのトークンに埋め込む
             del raw_tokens[i-1]
             del raw_tokens[i]
             del raw_tokens[i+1]
@@ -110,10 +126,9 @@ def deal_with_import():
     Global.blocks = TokenClass.Block.parse(Global.tokens)
     Global.lines = TokenClass.Line.parse(Global.tokens, header)
 
-def prepare_js():
-    """ Prepares JS file, running xaller programs. """
 
-    # 前出力
+def prepare_js():
+    """Prepare JS file, running xaller programs."""
     genfunc.out("$(function() {")
 
     # RUN!!!!!
@@ -123,10 +138,11 @@ def prepare_js():
         runline = Global.lines[Global.exel]
         if not genfunc.translate(runline.tokens):
             break
-        element_block = Global.blocks[genfunc.translate.element_stack[-1]]
-        if (len(genfunc.translate.element_stack) > 0 and
-                element_block.body[-1].line <= Global.exel):
-            genfunc.translate.element_stack.pop()
+        if genfunc.translate.element_stack:
+            element_block = Global.blocks[genfunc.translate.element_stack[-1]]
+            if (len(genfunc.translate.element_stack) > 0 and
+                    element_block.body[-1].line <= Global.exel):
+                genfunc.translate.element_stack.pop()
         Global.exel += 1
 
     genfunc.out("});")
@@ -165,16 +181,16 @@ def prepare_js():
 
 # os.remove(Global.input)
 
-def out_js():
-    """ Outputs JS file. """
 
+def out_js():
+    """Output JS file."""
     js_file = open(Global.output + ".js", 'w')
     js_file.write(Global.outjs)
     js_file.close()
 
-def main():
-    """ Process entry point. """
 
+def main():
+    """Process entry point."""
     deal_with_cmdargs()
     out_html()
     deal_with_import()
