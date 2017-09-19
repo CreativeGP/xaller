@@ -22,6 +22,16 @@ import_paths = [
     "../test/",
     ]
 
+buildin_func_names = [
+'+', '-', '*', '/',
+'%', 'neg', 'and', 'or',
+'xor', 'not', 'eq', '>',
+'<', '>=', '<=', 'concat',
+'strlen', 'substr', 'strtrimr', 'strtriml',
+'strtrim', 'strmatch', 'stridx', 'strridx',
+'strrep',
+]
+
 output = ''
 input = ''
 

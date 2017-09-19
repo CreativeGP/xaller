@@ -32,7 +32,7 @@ def is_var_web(v):
     # None時の処理
     if v is None: return False
 
-    return v._external and get_var(v._name[:v._name.rfind(".")]+"._web") != -1 and get_var(v._name[:v._name.rfind(".")]+"._web") is not v
+    return v.external and get_var(v.name[:v.name.rfind(".")]+".web") != -1 and get_var(v.name[:v.name.rfind(".")]+".web") is not v
     
 
 def dbgprint(s):
@@ -89,16 +89,16 @@ def expname(s):
     return s.replace('.', '$')
 
 def expvalue(v):
-    return S(v._string) if v._type._race == 'String' or v._type._race == 'Dirty' else v._string
+    return S(v.string) if v.type.race == 'String' or v.type.race == 'Dirty' else v.string
 
 def create_external(Name, pos):
     # HACK: ここのコードだけ継承されても型を識別できるように特別な変数だけ動的に参照するようにしている
     typename = ''
-    # if is_var_exists(Name + "._web"):
-    #     typename = get_var(Name + "._web")._string
+    # if is_var_exists(Name + ".web"):
+    #     typename = get_var(Name + ".web").string
     for v in Global.Vars:
-        if v._name == Name + "._web":
-            typename = v._value._string
+        if v.name == Name + ".web":
+            typename = v.value.string
 
     selector = ""
     func = ""
@@ -131,19 +131,19 @@ def create_external(Name, pos):
 
 # 代入される側がexternalな場合
 def subst_external(Var, Val):
-    tname = Var._value._type._name
-    vname = Var._name
-    if not get_var(vname[:vname.rfind(".")]+"._web") is None:
-        if get_var(vname[:vname.rfind(".")]+"._web")._value._string == "Textbox":
+    tname = Var.value.type.name
+    vname = Var.name
+    if not get_var(vname[:vname.rfind(".")]+".web") is None:
+        if get_var(vname[:vname.rfind(".")]+".web").value.string == "Textbox":
             attr = vname[vname.rfind(".")+1:]
             out('$("#%s").attr(%s, %s);' % (
                 expid(vname[:vname.find(".")]),
                 S(attr),
-                S(Var._value._string)))
-        elif get_var(vname[:vname.rfind(".")]+"._web")._value._string == "Label" and ".text" in vname:
-            out('$("#%s").html("%s");' % (expid(vname[:vname.find(".text")]), Val._string))
-        elif get_var(vname[:vname.rfind(".")]+"._web")._value._string == "Button" and ".text" in vname:
-            out('$("#%s").html("%s");' % (expid(vname[:vname.find(".text")]), Val._string))
+                S(Var.value.string)))
+        elif get_var(vname[:vname.rfind(".")]+".web").value.string == "Label" and ".text" in vname:
+            out('$("#%s").html("%s");' % (expid(vname[:vname.find(".text")]), Val.string))
+        elif get_var(vname[:vname.rfind(".")]+".web").value.string == "Button" and ".text" in vname:
+            out('$("#%s").html("%s");' % (expid(vname[:vname.find(".text")]), Val.string))
 
 def S(s):
     return "'" + s + "'"
@@ -167,36 +167,36 @@ def get_var(s, care = True):
     if care and Global.tfs[-1] is not None:
         runf = Global.tfs[-1]
         tmp = ''
-        if s[0] == '.': tmp = runf._name[:runf._name.rfind(".")]
+        if s[0] == '.': tmp = runf.name[:runf.name.rfind(".")]
         s = tmp + s
-        for v in runf._args[-1]:
-            if s == v._name:
+        for v in runf.args[-1]:
+            if s == v.name:
                 return v
-        for v in runf._vars[-1]:
-            if s == v._name:
+        for v in runf.vars[-1]:
+            if s == v.name:
                 return v
     elif Global.fs[-1] != -1:
-        runf = Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])]
+        runf = Global.Funcs[FunctionClass.Function.fid2i(Global.fs[-1])]
         if s[0] == '.':
-            tmp = runf._name.replace(Global.blocks[runf._block_ind].root[2].string, '', 1)
+            tmp = runf.name.replace(Global.blocks[runf.block_ind].root[2].string, '', 1)
             s = s.replace('.', tmp, 1)
-        dirty_in_runf = [v for v in runf._args[-1] if v._value._type._race == 'Dirty']
+        dirty_in_runf = [v for v in runf.args[-1] if v.value.type.race == 'Dirty']
         for v in dirty_in_runf:
             try:
-                if s.index(v._name+".") == 0:
-                    s = s.replace(v._name, v._value._string, 1)
+                if s.index(v.name+".") == 0:
+                    s = s.replace(v.name, v.value.string, 1)
                     dbgprint(s)
             except ValueClass.ValueError:
                 pass
-        for v in runf._args[-1]:
-            if s == v._name:
+        for v in runf.args[-1]:
+            if s == v.name:
                 return v
-        for v in runf._vars[-1]:
-            if s == v._name:
+        for v in runf.vars[-1]:
+            if s == v.name:
                 return v
 
     for v in Global.Vars:
-        if s == v._name:
+        if s == v.name:
             return v
     return None
 
@@ -208,20 +208,20 @@ def is_var_exists(s):
 def get_members(parent_name):
     res = []
     if Global.fs[-1] != -1:
-        for v in Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])]._args[-1]:
-            if (parent_name+'.') in v._name:
+        for v in Global.Funcs[FunctionClass.Function.fid2i(Global.fs[-1])].args[-1]:
+            if (parent_name+'.') in v.name:
                 res.append(v)
-        for v in Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])]._vars[-1]:
-            if (parent_name+'.') in v._name:
+        for v in Global.Funcs[FunctionClass.Function.fid2i(Global.fs[-1])].vars[-1]:
+            if (parent_name+'.') in v.name:
                 res.append(v)
         
     for v in Global.Vars:
-        if (parent_name+'.') in v._name:
+        if (parent_name+'.') in v.name:
             res.append(v)
     return res
 
 def get_default_value(vt):
-    vr = vt._race
+    vr = vt.race
     if vr == 'Integer': return ValueClass.Value('0', vt)
     if vr == 'String': return ValueClass.Value('', vt)
     if vr == 'Boolean': return ValueClass.Value('false', vt)
@@ -233,7 +233,7 @@ def get_value_race(s):
 def get_value_type(s):
     """ グローバル変数Global.vtypesから変数型を探してくる。なかった場合はNoneを返す。 """
     for vt in Global.vtypes:
-        if vt._name == s:
+        if vt.name == s:
             return vt
     return None
 
@@ -263,42 +263,42 @@ def determine_value_type(token_list):
     return None
 
 def buildin_casting(value, nextvt):
-    oldvr = value._type._race
-    nextvr = nextvt._race
+    oldvr = value.type.race
+    nextvr = nextvt.race
     res = value
     
     if oldvr == 'Integer' and nextvr == 'String':
-        res = ValueClass.Value(value._string, nextvt)
+        res = ValueClass.Value(value.string, nextvt)
     if oldvr == 'Integer' and nextvr == 'Boolean':
-        res = ValueClass.Value('false', nextvt) if value._string == '0' else ValueClass.Value('true', nextvt)
+        res = ValueClass.Value('false', nextvt) if value.string == '0' else ValueClass.Value('true', nextvt)
 
     if oldvr == 'String' and nextvr == 'Integer':
-        res = ValueClass.Value(value._string, nextvt)
+        res = ValueClass.Value(value.string, nextvt)
     if oldvr == 'String' and nextvr == 'Boolean':
-        tmp = value._string.upper()
+        tmp = value.string.upper()
         if 'TRUE' in tmp:
             res = ValueClass.Value('true', nextvt)
         else:
             res = ValueClass.Value('false', nextvt)
 
     if oldvr == 'Boolean' and nextvr == 'Integer':
-        res = res = ValueClass.Value('1', nextvt) if value._string == 'true' else ValueClass.Value('0', nextvt)
+        res = res = ValueClass.Value('1', nextvt) if value.string == 'true' else ValueClass.Value('0', nextvt)
     if oldvr == 'Boolean' and nextvr == 'String':
-        res = ValueClass.Value(value._string, nextvt)
+        res = ValueClass.Value(value.string, nextvt)
     return res
 
 def cast_value(value, nextvt):
-    oldvr = value._type._race
-    nextvr = nextvt._race
+    oldvr = value.type.race
+    nextvr = nextvt.race
     res = value
-    if Global.fs[-1] == FunctionClass.Function.n2i('__'+value._type._name+'_'+nextvt._name) and \
-       FunctionClass.Function.n2i('__'+value._type._name+'_'+nextvt._name) != -1:
+    if Global.fs[-1] == FunctionClass.Function.n2i('__'+value.type.name+'_'+nextvt.name) and \
+       FunctionClass.Function.n2i('__'+value.type.name+'_'+nextvt.name) != -1:
         # キャスト関数が定義されていてかつキャスト関数実行中の場合（ビルドイン変換）
         res = buildin_casting(value, nextvt)
-    elif FunctionClass.Function.n2i('__'+value._type._name+'_'+nextvt._name) != -1:
+    elif FunctionClass.Function.n2i('__'+value.type.name+'_'+nextvt.name) != -1:
         # キャスト関数が定義されていて実行はされていない場合（キャスト関数実行）
-        res = Global.Funcs[FunctionClass.Function.n2i('__'+value._type._name+'_'+nextvt._name)].run([value])
-        if res._type != nextvt:
+        res = Global.Funcs[FunctionClass.Function.n2i('__'+value.type.name+'_'+nextvt.name)].run([value])
+        if res.type != nextvt:
             # TODO: Error キャスト関数を実行してみたのに結果が求められた型変換の型と違う
             pass
     else:
@@ -310,8 +310,8 @@ def cast_value(value, nextvt):
 def get_func_idx(string):
     ans = -1
     for f in Global.Funcs:
-        if f._name == string:
-            ans = f._func_ind
+        if f.name == string:
+            ans = f.func_ind
     return ans
 
 def out_expression(token_list):
@@ -356,7 +356,7 @@ def out_expression(token_list):
 
     if len(token_list) == 3 or len(token_list) == 4:
         if is_var_exists(token_list[1].string):
-            outnoln(jstype[get_var(token_list[1].string)._value._type._race] + "(" +  token_list[1].string + ")")
+            outnoln(jstype[get_var(token_list[1].string).value.type.race] + "(" +  token_list[1].string + ")")
             return
         
 
@@ -404,7 +404,7 @@ def out_expression(token_list):
                     # Output casting.
                     con = i + 1
 
-                    ts = jstype[get_value_type(token_list[i+1].string)._race]
+                    ts = jstype[get_value_type(token_list[i+1].string).race]
                     tmp = begof[-1]
                     Global.jsbuf = Global.jsbuf[:tmp] + ts + "(" + Global.jsbuf[tmp:] + ")"
                     is_arg = token_list[i+2].string != ")"
@@ -543,7 +543,7 @@ def prepro(s):
                 tmpi = i
             else:
                 # 計測停止
-                ans = eval_tokens([TokenClass.Token(0, tmps[1:])])._string
+                ans = eval_tokens([TokenClass.Token(0, tmps[1:])]).string
                 s = s.replace(s[tmpi:i+1], '', 1)
                 s = s[:tmpi] + ans + s[tmpi:]
                 return prepro(s)
@@ -560,25 +560,25 @@ def add_type(block_ind):
     for i in range(inh_count):
         tmp = get_value_type(Global.blocks[block_ind].root[5+i*2].string)
         if tmp is None:
-            err("Undefined type '%s'" % tmp._name)
-        if tmp._race != 'Dirty':
+            err("Undefined type '%s'" % tmp.name)
+        if tmp.race != 'Dirty':
             # ピュアな型をコピーできる条件は、メンバがないことと、コピーする型が一つであること
             if inh_count != 1: err("There are plural inheritance despite trying to inherite pure type.")
-            t._race = tmp._race
+            t.race = tmp.race
             break
         dbgprintnoln(Global.blocks[block_ind].root[5].string+"', ")
         # コピー指定されている型の変数と関数をすべて雑にコピー
         # 同じ名前があれば古い方を削除
-        for v in tmp._variables:
-            for vs in t._variables:
-                if vs._name == v._name:
+        for v in tmp.variables:
+            for vs in t.variables:
+                if vs.name == v.name:
                     del vs
-        t._variables.extend(tmp._variables)
-        for f in tmp._functions:
-            for fs in t._functions:
-                if fs._name == f._name:
+        t.variables.extend(tmp.variables)
+        for f in tmp.functions:
+            for fs in t.functions:
+                if fs.name == f.name:
                     del fs
-        t._functions.extend(tmp._functions)
+        t.functions.extend(tmp.functions)
     dbgprint("")
     
     token_list = []
@@ -590,10 +590,10 @@ def add_type(block_ind):
                is_plain(token_list[0]) and token_list[0].string == "@" and \
                is_plain(token_list[1]) and token_list[1].string == "(" and \
                is_plain(token_list[-1]) and token_list[-1].string == ")":
-                if t._race != 'Dirty': err("Pure type couldn't have members.")
+                if t.race != 'Dirty': err("Pure type couldn't have members.")
                 for i, b in enumerate(Global.blocks):
                     if b.root[0].line == token.line:
-                        t._functions.append(FunctionClass.Function(i))
+                        t.functions.append(FunctionClass.Function(i))
                         Global.exel = b.body[-1].line
                         break
 
@@ -602,11 +602,11 @@ def add_type(block_ind):
                  is_plain(token_list[1]) and \
                  is_plain(token_list[2]) and token_list[2].string == ')' and \
                  is_plain(token_list[3]) :
-                if t._race != 'Dirty': err("Pure type couldn't have members.")
+                if t.race != 'Dirty': err("Pure type couldn't have members.")
                 vt = get_value_type(token_list[3].string)
                 if vt is None:
                     err("Undefined type '"+token_list[3].string+"'.")
-                t._variables.append(ValueClass.Variable(token_list[1].string, get_default_value(vt)))
+                t.variables.append(ValueClass.Variable(token_list[1].string, get_default_value(vt)))
             token_list.clear()
     Global.vtypes.append(t)
 
@@ -634,7 +634,7 @@ def translate(rt, sd = []):
         Global.tfs.pop()
         if Global.tfs[-1] is None:
             out("}")
-        elif Global.tfs[-1]._event:
+        elif Global.tfs[-1].event:
             out("});")
         else:
             out("}")
@@ -724,7 +724,7 @@ def translate(rt, sd = []):
             #     cond_value = eval_tokens(b.root[1 if b.root[0].string == 'cond' or b.root[0].string == 'branch' else 0:-1])
             #     cond_value = cast_value(cond_value, get_value_type('bool'))
             #     cond_value = xaller_not([cond_value])
-            #     if cond_value._string == 'false':
+            #     if cond_value.string == 'false':
             #         Global.exel = Global.blocks[idx].body[-1].line
             #         break
             #     # cond指定があるブロックがあったらそこで終了
@@ -754,7 +754,7 @@ def translate(rt, sd = []):
         # その変数自体に代入
         # HACK: _web変数だけ動的に代入
         if run_tokens[0].string[run_tokens[0].string.rfind('.')+1:] == '_web':
-            get_var(run_tokens[0].string)._value._string = run_tokens[2].string
+            get_var(run_tokens[0].string).value.string = run_tokens[2].string
         var = get_var(run_tokens[0].string)
         if var is None:
             err("Undefined variable '%s'" % run_tokens[0].string)
@@ -765,9 +765,9 @@ def translate(rt, sd = []):
             log_ts("run_tokens[2:]", run_tokens[2:])
             var.subst(copy.deepcopy(run_tokens[2:]))
             
-        if len(run_tokens) == 3 and len(var._value._type._variables) > 0 and get_var(run_tokens[2].string) is not None:
+        if len(run_tokens) == 3 and len(var.value.type.variables) > 0 and get_var(run_tokens[2].string) is not None:
             varsrc = get_var(run_tokens[2].string)
-            if var._value._type != varsrc._value._type:
+            if var.value.type != varsrc.value.type:
                 err("Incorrect substituting value which has different member.")
             memdst = get_members(run_tokens[0].string)
             memsrc = get_members(run_tokens[2].string)
@@ -775,7 +775,7 @@ def translate(rt, sd = []):
                 # NOTE: 宣言順が同じであるという条件のもとの代入（計算量削減）
                 memdst[i].subst(memsrc[i])
                 out(";")
-                memdst[i]._value = memsrc[i]._value
+                memdst[i].value = memsrc[i].value
     
     # プログラム変数作成 ^( name ) race
     elif len(run_tokens) >= 4 and \
@@ -794,8 +794,8 @@ def translate(rt, sd = []):
 
         variables = None
         if Global.fs[-1] != -1:
-            runf = Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])]
-            variables = runf._vars[-1]
+            runf = Global.Funcs[FunctionClass.Function.fid2i(Global.fs[-1])]
+            variables = runf.vars[-1]
         ValueClass.Variable.create(ValueClass.Variable(name, get_default_value(vt)), variables)
         return True
 
@@ -862,13 +862,13 @@ def RUN(rt, sd = [], funcexam = False):
         return True
     if Global.fs[-1] != -1 and \
        ((is_plain(run_tokens[0]) and run_tokens[0].string == 'return') or \
-       Global.exel == Global.blocks[Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])]._block_ind].body[-1].line):
+       Global.exel == Global.blocks[Global.Funcs[FunctionClass.Function.fid2i(Global.fs[-1])].block_ind].body[-1].line):
         dbgprint("Return from func.")
         try:
-            f = Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])]
-            FunctionClass.Function.rtrn()
+            f = Global.Funcs[FunctionClass.Function.fid2i(Global.fs[-1])]
+            f.rtrn()
             if funcexam: outnoln("return ", True)
-            f._return = eval_tokens(run_tokens[1:], funcexam)
+            f.bhas_returned = eval_tokens(run_tokens[1:], funcexam)
             if funcexam: solvebuf()
         except IndexError:
             pass
@@ -947,7 +947,7 @@ def RUN(rt, sd = [], funcexam = False):
          is_plain(run_tokens[-1]) and run_tokens[-1].string == '?':
         value = eval_tokens(run_tokens[1 if run_tokens[0].string == 'cond' or run_tokens[0].string == 'branch' else 0:-1])
         value = cast_value(value, get_value_type('bool'))
-        if value._string == 'true':
+        if value.string == 'true':
             # branch指定があった場合、cond指定があるブロックまで遡って、notしてandしていく
             if run_tokens[0].string == 'branch':
                 for i, b in enumerate(Global.blocks):
@@ -958,7 +958,7 @@ def RUN(rt, sd = [], funcexam = False):
                     cond_value = eval_tokens(b.root[1 if b.root[0].string == 'cond' or b.root[0].string == 'branch' else 0:-1])
                     cond_value = cast_value(cond_value, get_value_type('bool'))
                     cond_value = xaller_not([cond_value])
-                    if cond_value._string == 'false':
+                    if cond_value.string == 'false':
                         Global.exel = Global.blocks[idx].body[-1].line
                         break
                     # cond指定があるブロックがあったらそこで終了
@@ -1001,9 +1001,9 @@ def RUN(rt, sd = [], funcexam = False):
             log_ts("run_tokens[2:]", run_tokens[2:])
             var.subst(copy.deepcopy(run_tokens[2:]))
             
-        if len(run_tokens) == 3 and len(var._value._type._variables) > 0 and get_var(run_tokens[2].string) is not None:
+        if len(run_tokens) == 3 and len(var.value.type.variables) > 0 and get_var(run_tokens[2].string) is not None:
             varsrc = get_var(run_tokens[2].string)
-            if var._value._type != varsrc._value._type:
+            if var.value.type != varsrc.value.type:
                 err("Incorrect substituting value which has different member.")
             memdst = get_members(run_tokens[0].string)
             memsrc = get_members(run_tokens[2].string)
@@ -1011,7 +1011,7 @@ def RUN(rt, sd = [], funcexam = False):
                 # NOTE: 宣言順が同じであるという条件のもとの代入（計算量削減）
                 memdst[i].subst(memsrc[i])
                 out(";")
-#                 memdst[i]._value = memsrc[i]._value
+#                 memdst[i].value = memsrc[i].value
     
     # プログラム変数作成 ^( name ) race
     elif len(run_tokens) >= 4 and \
@@ -1030,8 +1030,8 @@ def RUN(rt, sd = [], funcexam = False):
 
         variables = None
         if Global.fs[-1] != -1:
-            runf = Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])]
-            variables = runf._vars[-1]
+            runf = Global.Funcs[FunctionClass.Function.fid2i(Global.fs[-1])]
+            variables = runf.vars[-1]
         ValueClass.Variable.create(ValueClass.Variable(name, get_default_value(vt)), variables)
         return True
 
@@ -1107,17 +1107,17 @@ def report():
     # Display all variables
     dbgprint("VARIABLES "+str(len(Global.Vars)))
     for v in Global.Vars:
-        dbgprint(str(v._value._type._race)+":"+str(v._value._type._name)+" "
-              +v._name
+        dbgprint(str(v.value.type.race)+":"+str(v.value.type.name)+" "
+              +v.name
               +" = "
-              +str(v._value._string))
+              +str(v.value.string))
 
     # Display all variables
     dbgprint("\nFUNCTIONS "+str(len(Global.Funcs)))
     for f in Global.Funcs:
-        dbgprint("%s BLKIDX:%d ID:%d" % (f._name, f._block_ind, f._id))
+        dbgprint("%s BLKIDX:%d ID:%d" % (f.name, f.block_ind, f.id))
         
     # Display all types
     dbgprint("\nVALUE TYPES: "+str(len(Global.vtypes)))
     for vt in Global.vtypes:
-        dbgprint(vt._race + ":" + vt._name)
+        dbgprint(vt.race + ":" + vt.name)
