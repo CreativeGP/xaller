@@ -118,7 +118,7 @@ class Function(object):
                                     + "(function () {")
                     return
         # コンストラクタは内容は出力するが、関数は出力しない
-#            elif ((not self.name[self.name.rfind('.'):] == "._init"
+#            elif ((not self.name[self.name.rfind('.'):] == ".__init"
 #                  and not self.name == "__init")):
             # JS Output
             # function $name (arg1, arg2 ...)
@@ -133,7 +133,7 @@ class Function(object):
                     pass
                 genfunc.outnoln(") {")
             else:
-                genfunc.outnoln("{")    
+                genfunc.outnoln("{")
 
 
     @staticmethod
