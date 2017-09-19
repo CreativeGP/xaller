@@ -117,7 +117,7 @@ def create_external(Name, pos):
     # if is_var_exists(Name + ".web"):
     #     typename = get_var(Name + ".web").string
     for v in Global.Vars:
-        if v.name == Name + ".web":
+        if v.name == Name + "._web":
             typename = v.value.string
 
     selector = ""
@@ -695,7 +695,6 @@ def translate(rt, sd=None):
         Global.tfs.append(None)
         return True
     elif len(run_tokens) == 1 and run_tokens[0].string == "}":
-        print('a')
         Global.tfs.pop()
         if Global.tfs[-1] is None:
             out("}")
