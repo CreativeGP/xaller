@@ -174,15 +174,15 @@ def xaller_greatereq(arg):
             genfunc.err("It is impossible to pass function '>=' the different race arguments.")
     return Value(str(ans).lower(), genfunc.get_value_type('bool'))
 
-def xaller_strcat(arg):
+def xaller_concat(arg):
     ans = ''
     if len(arg) < 2:
-        genfunc.err("It is necessary to pass at least two arguments to run function 'strcat'.")
+        genfunc.err("It is necessary to pass at least two arguments to run function 'concat'.")
     for i in range(len(arg)):
         if arg[i]._type._race == 'String':
             ans += arg[i]._string
         else:
-            genfunc.err("It is impossible to pass function 'strcon' the different race arguments.")
+            genfunc.err("It is impossible to pass function 'concat' the different race arguments.")
     return Value(ans, genfunc.get_value_type('string'))
     
 def xaller_strlen(arg):
