@@ -1202,10 +1202,16 @@ def report():
         dbgprintnoln("\n")
 
     dbgprint("\nBLOCKS "+str(len(Global.blocks)))
-    for l in Global.lines:
-        for t in l.tokens:
-            dbgprintnoln(t.string + " ")
-        dbgprintnoln("\n")
+    for block in Global.blocks:
+        dbgprintnoln(("BLOCK%d This block is dominated by block "
+                      % block.num))
+        for dom in block.doms:
+            dbgprintnoln(str(dom))
+        dbgprint("")
+        log_ts("root", block.root)
+        log_ts("body", block.body)
+        dbgprint("")
+        dbgprint("")
 
     # Display all variables
     dbgprint("VARIABLES "+str(len(Global.Vars)))
