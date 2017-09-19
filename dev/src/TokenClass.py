@@ -171,19 +171,19 @@ class Token(object):
                         bufferstr += line[i]
 
                     if new_line:
-                        tokens[-1].ttype.NEW_LINE = True
+                        tokens[-1].ttype.NL = True
                         new_line = False
 
                     if line[i] == "\n":
                         tokens[-1].ttype.Return = True
                         new_line = True
 
-        tokens[0].ttype.NEW_LINE = True
+        tokens[0].ttype.NL = True
         for idx, token in enumerate(tokens):
             # Avoid exception because there are potentialities to cause an Index Error.
             try:
                 if token.ttype.Return and idx+1 <= len(tokens)-1:
-                    tokens[idx+1].ttype.NEW_LINE = True
+                    tokens[idx+1].ttype.NL = True
                 # Unitify unequal symbols and equal symbol to enable <= and >= of buildin functions.
                 if (token.string == '<' or token.string == '>') and tokens[idx+1].string == '=':
                     del tokens[idx+1]
