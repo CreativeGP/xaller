@@ -197,8 +197,10 @@ class Variable(object):
             # 関数内容を出力
             while True:
                 genfunc.translate(Global.lines[exel].tokens)
-                if exel == Global.blocks[func.block_ind].body[-1].line - 2:
-                    if func.name[func.name.rfind('.'):] != '._init':
+
+                # NOTE(cgp) 最後の閉じ括弧まで読み込む
+                if exel == Global.blocks[func.block_ind].body[-1].line - 1:
+                    if func.name[func.name.rfind('.'):] != '.__init':
                         if Global.tfs[-1].event:
                             genfunc.out("});")
                         else:
@@ -213,9 +215,9 @@ class Variable(object):
 
         # TODO: コンストラクタを呼び出す
         # NOTE: コンストラクタの静的な呼び出しは上のコードで終わっている
-        # if FunctionClass.Function.n2i(var.name+"._init") == -1:
+        # if FunctionClass.Function.n2i(var.name+".__init") == -1:
         #     return
 
-        # constructor = Global.Funcs[FunctionClass.Function.n2i(var.name+"._init")]
+        # constructor = Global.Funcs[FunctionClass.Function.n2i(var.name+".__init")]
         # constructor.run([])
         return
