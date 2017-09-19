@@ -191,9 +191,8 @@ def get_block_idx(line):
 
 def get_var(s, care=True):
     # This is CARE.
-    
     if care and Global.tfs[-1] is not None:
-        runf = Global.tfs[-1]
+        runf =Global.tfs[-1] 
         tmp = ''
         if s[0] == '.': tmp = runf.name[:runf.name.rfind(".")]
         s = tmp + s
@@ -709,7 +708,7 @@ def translate(rt, sd=None):
          and is_plain(run_tokens[0])
          and run_tokens[0].string == 'return')):
         try:
-            outnoln("return ", True)
+            outnoln("return ")
             out_expression(run_tokens[1:])
             solvebuf()
         except IndexError:

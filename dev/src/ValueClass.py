@@ -181,10 +181,10 @@ class Variable(object):
                 Global.Vars[-1].external = True
 
         # 型にメンバがある場合はそれも実際に作成
-        for var in var.value.type.variables:
+        for member in var.value.type.variables:
             ValueClass.Variable.create(
-                ValueClass.Variable(var.name+"." + var.name,
-                                    genfunc.get_default_value(var.value.type)), variables, external)
+                ValueClass.Variable(var.name + "." + member.name,
+                                    genfunc.get_default_value(member.value.type)), variables, external)
 
         # 作成予定関数を実際に作成
         for func in var.value.type.functions:
