@@ -87,7 +87,7 @@ def deal_with_import():
     # このままだとコメントが反映されないので一回トークン解析してからもとのファイルに戻す
     raw_tokens = TokenClass.Token.tokenize(Global.input)
     inputd = Global.input[:Global.input.rfind('/')] + '/'
-
+    s = '>'
     for i in range(len(raw_tokens)):
         if ((genfunc.is_plain(raw_tokens[i-1]) and
              raw_tokens[i-1].string is '<' and
@@ -114,9 +114,8 @@ def deal_with_import():
             # TokenClass.Token.shift_line(new_tokens, i - 1)
 
             # 新しいファイル名もトークン化して、もとのトークンに埋め込む
-            # i-1 ~ i+2 <...>の部分を削除
+            # i-1 ~ i+2 <...>
             del raw_tokens[i-1:i+2]
-            genfunc.log_ts("before", raw_tokens)
             raw_tokens = genfunc.insert(raw_tokens, i - 1, new_tokens)
 
     Global.tokens = raw_tokens
