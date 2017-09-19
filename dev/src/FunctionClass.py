@@ -52,7 +52,7 @@ class Function(object):
             if name == bfname:
                 ret_value = -10 - i
                 break
-        if ret_value is not 0:
+        if ret_value != 0:
             return ret_value
         if '.' in name and Global.fs[-1] != -1:
             runf = Global.Funcs[Function.id2i(Global.fs[-1])]
@@ -122,7 +122,8 @@ class Function(object):
 #                  and not self.name == "__init")):
             # JS Output
             # function $name (arg1, arg2 ...)
-            if not self.name[self.name.rfind('.'):] == "._init" and not self.name == "__init":
+            if ((self.name[self.name.rfind('.'):] != ".__init"
+                 and self.name != "__init")):
                 try:
                     genfunc.outnoln("function %s(" % genfunc.expname(self.name))
                     for arg_var in self.args[-1][:-1]:
@@ -131,6 +132,9 @@ class Function(object):
                 except IndexError:
                     pass
                 genfunc.outnoln(") {")
+            else:
+                genfunc.outnoln("{")    
+
 
     @staticmethod
     def exam():

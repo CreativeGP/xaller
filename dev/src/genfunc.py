@@ -445,9 +445,9 @@ def out_expression(token_list):
                 # NOTE: Web変数は展開して出力
                 # TODO: これだけでは値が定義されていなかった場合の処理が適切ではないので改善する
                 # eval_tokens([t])
-                js_formatted_string = "'" + t.string + ("'"
-                                                        if t.ttype.String
-                                                        else t.string)
+                js_formatted_string = ("'" + t.string + "'"
+                                       if t.ttype.String
+                                       else t.string)
                 if get_var(t.string) is not None:
                     v = get_var(t.string)
                     if is_var_web(v):
@@ -768,7 +768,6 @@ def translate(rt, sd=None):
        is_plain(run_tokens[1]) and run_tokens[1].string == "(" and \
        is_plain(run_tokens[-1]) and run_tokens[-1].string == ")":
         for i, b in enumerate(Global.blocks):
-            print(b.root[0].line)
             if b.root[0].line == run_tokens[0].line:
                 FunctionClass.Function(i).add()
                 break
@@ -1224,7 +1223,7 @@ def report():
     # Display all variables
     dbgprint("\nFUNCTIONS "+str(len(Global.Funcs)))
     for f in Global.Funcs:
-        dbgprint("%s BLKIDX:%d ID:%d" % (f.name, f.block_ind, f.id))
+        dbgprint("%s BLKIDX:%d ID:%d" % (f.name, f.block_ind, f.fid))
 
     # Display all types
     dbgprint("\nVALUE TYPES: "+str(len(Global.vtypes)))
