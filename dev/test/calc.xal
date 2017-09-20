@@ -1,22 +1,18 @@
-# coding: utf-8
--(HTML):string {}
+<web.xal>
 
--(Button) {
-    (_web)string
-    (text)string
-    @ (__init) {
-        .text = 'Button from xaller.'
-	._web = 'Button'
-    }
-}
--(Textbox) {
-    (_web)string
-    (rows)int
-    (cols)int
-    @ (__init) {
-	._web = 'Textbox'
-    }
-}
+# @ (foo) {
+# }
+
+# (i)int
+# loop
+# {
+#     (foo)
+#     (eq i 9) ? {
+#         escape
+#     }
+# }
+
++(view)Textbox
 
 -(numbtn):Button {
     (num)int
@@ -26,30 +22,42 @@
     }
     @ (click) {
         # 文字を後ろにくっつける
-        view.text = (strcat view.text (.num)string)
+        view.text = (concat view.text (.num)string)
     }
 }
 
-+(view)Textbox
++(button1)numbtn
+(button1.set_num 1)
++(button2)numbtn
+(button2.set_num 2)
++(button3)numbtn
+(button3.set_num 3)
++(button4)numbtn
+(button4.set_num 4)
++(button5)numbtn
+(button5.set_num 5)
++(button6)numbtn
+(button6.set_num 6)
++(button7)numbtn
+(button7.set_num 7)
++(button8)numbtn
+(button8.set_num 8)
++(button9)numbtn
+(button9.set_num 9)
++(button0)numbtn
+(button0.set_num 0)
 
-(i)int
-loop {
-    i = (+ i 1)
-    +(button$i$)numbtn
-    (button$i$.set_num i)
-    (eq i 9) ? {
-        escape
-    }
-    continue
-}
 +(eq_btn)Button
 eq_btn.text = '='
 @ (eq_btn.click) {
-    
+    (a)string
+    a = (substr view.text 3 5)
 }
 
 +(plus_btn)Button
 plus_btn.text = '+'
-@ (plus_btn.clock) {
-    view.text = (strcat view.text '+')
+@ (plus_btn.click) {
+    view.text = (concat view.text '+')
 }
+
+end
