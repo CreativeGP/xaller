@@ -11,6 +11,7 @@
     (_web)string
     (rows)int
     (cols)int
+    (text)string
     @ (__init) {
 	._web = 'Textbox'
     }
