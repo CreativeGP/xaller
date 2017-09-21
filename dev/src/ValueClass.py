@@ -194,7 +194,6 @@ class Variable(object):
             func.add()
             exel = Global.blocks[func.block_ind].body[0].line
             genfunc.out("")
-            print(Global.tfs[-1] is None)
             # 関数内容を出力
             while True:
                 genfunc.translate(Global.lines[exel].tokens)

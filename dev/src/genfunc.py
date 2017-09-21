@@ -93,14 +93,14 @@ def out(string):
     """Print newline to the JS file."""
     if not Global.lock:
         Global.outjs += string + "\n"
-        print("JS >>> %s" % string + "\n")
+        dbgprint("JS >>> %s" % string + "\n")
 
 
 def outnoln(string):
     """Print to the JS file."""
     if not Global.lock:
         Global.outjs += string
-        print("JS >>> %s" % string)
+        dbgprint("JS >>> %s" % string)
 
 
 def crfind(srcs, finds, count):
@@ -749,7 +749,6 @@ def add_type(block_ind):
 def translate(token_list, static_default=None):
     """Examine a statement staticly."""
     # NOTE: 疑似関数内static変数の準備
-    print(len(Global.tfs))
     if static_default is None:
         static_default = []
     if not hasattr(translate, 'element_stack'):
@@ -769,18 +768,14 @@ def translate(token_list, static_default=None):
 
     if len(run_tokens) == 1 and run_tokens[0].string == "{":
         Global.tfs.append(None)
-        print('INC')
-        print('none')
         return True
     elif len(run_tokens) == 1 and run_tokens[0].string == "}":
-        print(Global.tfs[-1])
         if Global.tfs[-1] is None:
             out("}")
         elif Global.tfs[-1].event:
             out("});")
         else:
             out("}")
-        print('DEL')
         Global.tfs.pop()
         return 1
     # NOTE: この先具体的な構文処理：returnしているところはJSへのセミコロン出力を防ぐため
@@ -851,7 +846,6 @@ def translate(token_list, static_default=None):
             if block.root[0].line == run_tokens[0].line:
                 FunctionClass.Function(i).add()
                 Global.exel += 1
-#                print('DEL')
                 break
         out("")
         return True
