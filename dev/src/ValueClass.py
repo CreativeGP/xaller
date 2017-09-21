@@ -194,6 +194,7 @@ class Variable(object):
             func.add()
             exel = Global.blocks[func.block_ind].body[0].line
             genfunc.out("")
+            print(Global.tfs[-1] is None)
             # 関数内容を出力
             while True:
                 genfunc.translate(Global.lines[exel].tokens)
@@ -201,11 +202,7 @@ class Variable(object):
                 # NOTE(cgp) 最後の閉じ括弧まで読み込む
                 if exel == Global.blocks[func.block_ind].body[-1].line - 1:
                     if func.name[func.name.rfind('.'):] != '.__init':
-                        if Global.tfs[-1].event:
-                            genfunc.out("});")
-                        else:
-                            genfunc.out("}")
-                        Global.tfs.pop()
+                        pass
                     else:
                         if external:
                             Global.Vars[-1].external = True

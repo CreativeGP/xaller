@@ -5,9 +5,9 @@
 programmer: CreativeGP
 """
 from __future__ import print_function
-from terminaltables import AsciiTable
 import copy
 import sys
+from terminaltables import AsciiTable
 
 import TokenClass
 import ValueClass
@@ -16,109 +16,145 @@ import Global
 import buildinfunc
 
 def insert(dst, pos, src):
+    """Insert an element to the list."""
     return dst[:pos] + src + dst[pos:]
 
 # TODO: エンコードの設定をしておく
 
 
-def is_plain(t):
-    return not t.ttype.Comment and not t.ttype.String
+def is_plain(tkn):
+    """Returns true if the token is not in comment or string."""
+    return not tkn.ttype.Comment and not tkn.ttype.String
 
 
-def is_number(t):
-    return t.string.isdigit() and not t.ttype.String
+def is_number(tkn):
+    """Returns true if the token is number."""
+    return tkn.string.isdigit() and not tkn.ttype.String
 
 
-def is_value(t):
-    return is_number(t) or t.ttype.String or t.str == "\'"
+def is_value(tkn):
+    """Returns true if the token could be a value."""
+    return is_number(tkn) or tkn.ttype.String or tkn.str == "\'"
 
 
-def is_string(t):
-    return t.ttype.String
+def is_string(tkn):
+    """Returns true if the token is in string."""
+    return tkn.ttype.String
 
 
-def is_bool(t):
-    return is_plain(t) and (t.string == 'true' or t.string == 'false')
+def is_bool(tkn):
+    """Returns true if the token bould be a boolean value. """
+    return is_plain(tkn) and (tkn.string == 'true' or tkn.string == 'false')
 
 
-def is_var_web(v):
+def is_var_web(var):
+    """Check if the variable is for web.
+
+    Get the value of '.web' variable to deal with inherited variables.
+    The dynamic substitution to '.web' variable is required to work well.
+    """
     # None時の処理
-    if v is None: return False
+    if var is None: return False
 
-    return (v.external
-            and get_var(v.name[:v.name.rfind(".")]+".web") != -1
-            and get_var(v.name[:v.name.rfind(".")]+".web") is not v)
-
-
-def dbgprint(s):
-    if Global.bDbg: print(s)
+    return (var.external
+            and get_var(var.name[:var.name.rfind(".")]+".web") != -1
+            and get_var(var.name[:var.name.rfind(".")]+".web") is not var)
 
 
-def dbgprintnoln(s):
-    if Global.bDbg: sys.stdout.write(s)
+def dbgprint(string):
+    """Print newline to console for debug."""
+    if Global.bDbg: print(string)
+
+
+def dbgprintnoln(string):
+    """Print to console for debug."""
+    if Global.bDbg: sys.stdout.write(string)
 
 
 def err(string):
+    """Throw an error.
+
+    Print an error message and a file name and a column number the error
+    occured automatically. This mothod uses Global.exel to print the
+    column number.
+    """
     # 便利なように自動的に実行行を見つけるようにする
-    for t in Global.tokens:
-        if Global.exel == t.line:
-                dbgprint(Global.input+":"+str(t.real_line)+": "+string)
-                sys.exit(1)
+    for tkn in Global.tokens:
+        if Global.exel == tkn.line:
+            dbgprint("%s:%d: %s"
+                     % (Global.input, tkn.real_line, string))
+            sys.exit(1)
     # もし実行業がみつからなかったときには、適当に出力しておく
     dbgprint(Global.input+":"+"0: "+string)
     sys.exit(1)
 
-def out(s):
-    if not Global.lock:
-        Global.outjs += s + "\n"
-        print("JS >>> %s" % s + "\n")
 
-def outnoln(s):
+def out(string):
+    """Print newline to the JS file."""
     if not Global.lock:
-        Global.outjs += s
-        print("JS >>> %s" % s)
+        Global.outjs += string + "\n"
+        print("JS >>> %s" % string + "\n")
+
+
+def outnoln(string):
+    """Print to the JS file."""
+    if not Global.lock:
+        Global.outjs += string
+        print("JS >>> %s" % string)
+
 
 def crfind(srcs, finds, count):
+    """Get index that found the string for nth."""
     ans = -1
     for _ in range(count):
         ans = srcs.rfind(finds, 0, ans)
     return ans
 
+
 def outlock():
+    """Pause printing to the JS file."""
     Global.lock = True
 
+
 def outunlock():
+    """Unpause printing to the JS file."""
     Global.lock = False
 
-# Export the accumulated buffer to JS file.
+
 def solvebuf():
+    """Export the accumulated buffer to JS file."""
     if not Global.lock:
         outnoln(Global.jsbuf)
         Global.jsbuf = ''
 
-# Add a text behind Global.jsbuf.
-def outbuf(s):
-    Global.jsbuf += s
 
-def expid(s):
-    return s.replace('.', '-')
+def outbuf(string):
+    """Add a text behind Global.jsbuf."""
+    Global.jsbuf += string
 
-def expname(s):
-    return s.replace('.', '$')
+def expid(string):
+    """Convert a xaller string into an valid string for HTML."""
+    return string.replace('.', '-')
 
-def expvalue(v):
-    return (S(v.string)
-            if v.type.race == 'String' or v.type.race == 'Dirty' else
-            v.string)
+def expname(string):
+    """Convert a xaller variable name into an valid string for JS."""
+    return string.replace('.', '$')
 
-def create_external(Name, pos):
+def expvalue(val):
+    """Convert a xaller value into an valid string for JS."""
+    return (S(val.string)
+            if val.type.race == 'String' or val.type.race == 'Dirty' else
+            val.string)
+
+def create_external(name, pos):
+    """Output a JS code creating a DOM variable."""
     # HACK: ここのコードだけ継承されても型を識別できるように特別な変数だけ動的に参照するようにしている
     typename = ''
-    # if is_var_exists(Name + ".web"):
-    #     typename = get_var(Name + ".web").string
-    for v in Global.Vars:
-        if v.name == Name + "._web":
-            typename = v.value.string
+    # if is_var_exists(name + ".web"):
+    #     typename = get_var(name + ".web").string
+    for var in Global.Vars:
+        if var.name == name + "._web":
+            typename = var.value.string
 
     selector = ""
     func = ""
@@ -142,129 +178,152 @@ def create_external(Name, pos):
     # func = 'append'
     if typename == 'HTML':
         out('$(%s).%s("<ran id=%s></ran>");'
-            % (S(selector), func, S(expid(Name))))
+            % (S(selector), func, S(expid(name))))
     if typename == 'Label':
         out('$(%s).%s("<p id=%s></p>");'
-            % (S(selector), func, S(expid(Name))))
+            % (S(selector), func, S(expid(name))))
     elif typename == 'Button':
         out('$(%s).%s("<button type=%s id=%s></button>");'
-            % (S(selector), func, S('button'), S(expid(Name))))
+            % (S(selector), func, S('button'), S(expid(name))))
     elif typename == 'Textbox':
         out('$(%s).%s("<textarea id=%s name=%s></textarea>");'
-            % (S(selector), func, S(expid(Name)), S(expid(Name))))
+            % (S(selector), func, S(expid(name)), S(expid(name))))
 
-# 代入される側がexternalな場合
-def subst_external(Var, Val):
-    vname = Var.name
+
+def subst_external(var, val):
+    """Output a JS code substitution for DOM variable.
+
+    Silly things may happen if the variable to be substituted is not external.
+    """
+    vname = var.name
     if not get_var(vname[:vname.rfind(".")]+".web") is None:
         if get_var(vname[:vname.rfind(".")]+".web").value.string == "Textbox":
             attr = vname[vname.rfind(".")+1:]
             out('$("#%s").attr(%s, %s);' % (
                 expid(vname[:vname.find(".")]),
                 S(attr),
-                S(Var.value.string)))
+                S(var.value.string)))
         elif ((get_var(vname[:vname.rfind(".")]+".web").value.string == "Label"
                and ".text" in vname)):
             out('$("#%s").html("%s");'
-                % (expid(vname[:vname.find(".text")]), Val.string))
+                % (expid(vname[:vname.find(".text")]), val.string))
         elif ((get_var(vname[:vname.rfind(".")]+".web").value.string == "Button"
                and ".text" in vname)):
             out('$("#%s").html("%s");'
-                % (expid(vname[:vname.find(".text")]), Val.string))
+                % (expid(vname[:vname.find(".text")]), val.string))
 
-def S(s):
-    return "'" + s + "'"
 
-def log_ts(s, ts):
+def S(string):
+    """Bundle the string with single quote."""
+    return "'" + string + "'"
+
+
+def log_ts(string, tknlst):
+    """Print a list of tokens to the debug screen."""
     dbgprintnoln("\n")
-    dbgprintnoln(s+":")
-    for t in ts:
-        dbgprintnoln(t.string + " ")
+    dbgprintnoln(string + ":")
+    for tkn in tknlst:
+        dbgprintnoln(tkn.string + " ")
     dbgprintnoln("\n")
+
 
 def get_block_idx(line):
-    for i, b in enumerate(Global.blocks):
-        if b.root[0].line == line:
+    """Retrieve an index of block that matches the line."""
+    for i, block in enumerate(Global.blocks):
+        if block.root[0].line == line:
             return i
 
     return -1
 
-def get_var(s, care=True):
-    # This is CARE.
+
+def get_var(string, care=True):
+    """Retrieve a variable that matches the string."""
     if care and Global.tfs[-1] is not None:
-        runf =Global.tfs[-1] 
+        runf = Global.tfs[-1]
         tmp = ''
-        if s[0] == '.': tmp = runf.name[:runf.name.rfind(".")]
-        s = tmp + s
-        for v in runf.args[-1]:
-            if s == v.name:
-                return v
-        for v in runf.vars[-1]:
-            if s == v.name:
-                return v
+        if string[0] == '.': tmp = runf.name[:runf.name.rfind(".")]
+        string = tmp + string
+        for var in runf.args[-1]:
+            if string == var.name:
+                return var
+        for var in runf.vars[-1]:
+            if string == var.name:
+                return var
     elif Global.fs[-1] != -1:
         runf = Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])]
-        if s[0] == '.':
+        if string[0] == '.':
             tmp = runf.name.replace(
                 Global.blocks[runf.block_ind].root[2].string, '', 1)
-            s = s.replace('.', tmp, 1)
+            string = string.replace('.', tmp, 1)
         dirty_in_runf = [(v for v in runf.args[-1]
                           if v.value.type.race == 'Dirty')]
-        for v in dirty_in_runf:
+        for var in dirty_in_runf:
             try:
-                if s.index(v.name+".") == 0:
-                    s = s.replace(v.name, v.value.string, 1)
-                    dbgprint(s)
+                if string.index(var.name+".") == 0:
+                    string = string.replace(var.name, var.value.string, 1)
+                    dbgprint(string)
             except ValueError:
                 pass
-        for v in runf.args[-1]:
-            if s == v.name:
-                return v
-        for v in runf.vars[-1]:
-            if s == v.name:
-                return v
+        for var in runf.args[-1]:
+            if string == var.name:
+                return var
+        for var in runf.vars[-1]:
+            if string == var.name:
+                return var
 
-    for v in Global.Vars:
-        if s == v.name:
-            return v
+    for var in Global.Vars:
+        if string == var.name:
+            return var
     return None
 
-def is_var_exists(s):
-    return get_var(s) is not None
+
+def is_var_exists(string):
+    """Returns true if the variable that matches a string exists."""
+    return get_var(string) is not None
 
 
 # 親の名前からそのスコープから見える変数すべてのそのメンバを返す(ValueClass.Variable[])
 def get_members(parent_name):
+    """Retrieve the list of members of the parent."""
     res = []
     if Global.fs[-1] != -1:
         running_func = Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])]
-        for v in running_func.args[-1]:
-            if parent_name + '.' in v.name:
-                res.append(v)
-        for v in running_func.vars[-1]:
-            if parent_name + '.' in v.name:
-                res.append(v)
+        for var in running_func.args[-1]:
+            if parent_name + '.' in var.name:
+                res.append(var)
+        for var in running_func.vars[-1]:
+            if parent_name + '.' in var.name:
+                res.append(var)
 
-    for v in Global.Vars:
-        if parent_name + '.' in v.name:
-            res.append(v)
+    for var in Global.Vars:
+        if parent_name + '.' in var.name:
+            res.append(var)
     return res
 
-def get_default_value(vt):
-    vr = vt.race
-    if vr == 'Integer': return ValueClass.Value('0', vt)
-    if vr == 'String': return ValueClass.Value('', vt)
-    if vr == 'Boolean': return ValueClass.Value('false', vt)
-    return ValueClass.Value('', vt)
 
-def get_value_type(s):
-    """ グローバル変数Global.vtypesから変数型を探してくる。なかった場合はNoneを返す。 """
-    for vt in Global.vtypes:
-        if vt.name == s:
-            return vt
+def get_default_value(value_type):
+    """Retrieve the default value of the type."""
+    value_race = value_type.race
+    if value_race == 'Integer': return ValueClass.Value('0', value_type)
+    if value_race == 'String': return ValueClass.Value('', value_type)
+    if value_race == 'Boolean': return ValueClass.Value('false', value_type)
+    return ValueClass.Value('', value_type)
+
+
+def get_value_type(string):
+    """Retrieve the value matches the string.
+
+    Search the value type matches the string through Global.vtyhpe.
+    If not found, returns None.
+    """
+    for vtype in Global.vtypes:
+        if vtype.name == string:
+            return vtype
     return None
 
+
 def determine_value_race(token_list):
+    """Determine a value race from a list of tokens."""
     if len(token_list) == 1:
         # 単項の場合
         if is_number(token_list[0]):
@@ -279,17 +338,21 @@ def determine_value_race(token_list):
         # 複数項ある場合
         pass
 
+
 def determine_value_type(token_list):
-    vr = determine_value_race(token_list)
-    if vr == 'Integer':
+    """Determine a value type from a list of tokens."""
+    vrace = determine_value_race(token_list)
+    if vrace == 'Integer':
         return get_value_type('int')
-    elif vr == 'String':
+    elif vrace == 'String':
         return get_value_type('string')
-    elif vr == 'Boolean':
+    elif vrace == 'Boolean':
         return get_value_type('bool')
     return None
 
+
 def buildin_casting(value, nextvt):
+    """Convert a value type using buildin casting."""
     oldvr = value.type.race
     nextvr = nextvt.race
     res = value
@@ -318,7 +381,9 @@ def buildin_casting(value, nextvt):
         res = ValueClass.Value(value.string, nextvt)
     return res
 
+
 def cast_value(value, nextvt):
+    """Conver a value type."""
     res = value
     user_cast_func_idx = FunctionClass.Function.n2i(
         '__%s_%s' % (value.type.name, nextvt.name))
@@ -338,19 +403,22 @@ def cast_value(value, nextvt):
 
     return res
 
+
 def get_func_idx(string):
+    """Get a function ihdex."""
     ans = -1
-    for f in Global.Funcs:
-        if f.name == string:
-            ans = f.func_ind
+    for func in Global.Funcs:
+        if func.name == string:
+            ans = func.func_ind
     return ans
 
 def out_expression(token_list):
+    """Output to JS file an expression."""
     lvl = 0
     con = -1
     buildin = [',']
     begof = []
-    jstype = {'Integer':'Number', 'String':'String', 'Boolean':'Boolean'}
+    jstypes = {'Integer':'Number', 'String':'String', 'Boolean':'Boolean'}
     sep_type = {
         ',':',', '+':'+', '-':'-', '*':'*',
         '/':'/', '%':'%', 'neg':'-', 'or':'||',
@@ -370,14 +438,14 @@ def out_expression(token_list):
     if len(token_list) == 3 or len(token_list) == 4:
         if is_var_exists(token_list[1].string):
             outnoln("%s(%s)"
-                    % (jstype[get_var(token_list[1].string).value.type.race],
-                       token_list[1].string + ")"))
+                    % (jstypes[get_var(token_list[1].string).value.type.race],
+                       token_list[1].string))
             return
 
-    for i, t in enumerate(token_list):
+    for i, tkn in enumerate(token_list):
         if i == con: continue
         try:
-            if t.string == '(':
+            if tkn.string == '(':
                 # 関数の始まりの場合:
                 # 関数の始まりの場合は次の関数名を飛ばす
                 # 関数ではない場合があるのでその場合は値か変数
@@ -402,8 +470,8 @@ def out_expression(token_list):
                     # コンマと関数の開始位置を更新して関数名と開始用カッコをつける
                     buildin.append(',')
                     begof.append(len(Global.jsbuf))
-                    Global.jsbuf += token_list[i+1].string + "("
-            elif t.string == ')':
+                    Global.jsbuf += expname(token_list[i+1].string) + "("
+            elif tkn.string == ')':
                 # 関数終了の場合:
                 # 原則として終了用途じカッコをつける処理が主
                 # 確かめることは
@@ -420,10 +488,11 @@ def out_expression(token_list):
                     # Output casting.
                     con = i + 1
 
-                    ts = jstype[get_value_type(token_list[i+1].string).race]
+                    jstype = jstypes[
+                        get_value_type(token_list[i+1].string).race]
                     tmp = begof[-1]
                     Global.jsbuf = ("%s(%s)"
-                                    % (Global.jsbuf[:tmp] + ts,
+                                    % (Global.jsbuf[:tmp] + jstype,
                                        Global.jsbuf[tmp:]))
                     is_arg = token_list[i+2].string != ")"
 
@@ -445,13 +514,13 @@ def out_expression(token_list):
                 # NOTE: Web変数は展開して出力
                 # TODO: これだけでは値が定義されていなかった場合の処理が適切ではないので改善する
                 # eval_tokens([t])
-                js_formatted_string = ("'" + t.string + "'"
-                                       if t.ttype.String
-                                       else t.string)
-                if get_var(t.string) is not None:
-                    v = get_var(t.string)
-                    if is_var_web(v):
-                        v.refer()
+                js_formatted_string = ("'" + tkn.string + "'"
+                                       if tkn.ttype.String
+                                       else tkn.string)
+                if get_var(tkn.string) is not None:
+                    var = get_var(tkn.string)
+                    if is_var_web(var):
+                        var.refer()
                     else:
                         Global.jsbuf += js_formatted_string
                 else:
@@ -459,7 +528,7 @@ def out_expression(token_list):
 
                 if token_list[i+1].string != ")":
                     sep = sep_type[buildin[-1]]
-                    Global.jsbuf += ("%s "
+                    Global.jsbuf += ("%s"
                                      % (','
                                         if buildin[-1] == ',' else
                                         ' ' + sep + ' '))
@@ -469,7 +538,8 @@ def out_expression(token_list):
 
 
 # NOTE: jsがFalseだったときにはJS出力はしない
-def eval_tokens(token_list, js=True):
+def eval_tokens(token_list, js_out=True):
+    """Eval a list of tokens dynamicly."""
     if len(token_list) == 1:
         # 単項の場合
         # 変数の参照処理
@@ -480,15 +550,15 @@ def eval_tokens(token_list, js=True):
         if token_list[0].string == ',': return None
         if get_var(token_list[0].string) is not None:
             var = get_var(token_list[0].string)
-            return var.refer(js)
+            return var.refer(js_out)
         if not is_number(token_list[0]) and not is_string(token_list[0]):
             err("Undefined variable '%s'" % token_list[0].string)
         # 変数ではない場合
-        v = ValueClass.Value(token_list[0].string,
-                             determine_value_type(token_list))
-        if js:
-            Global.jsbuf += expvalue(v)
-        return v
+        var = ValueClass.Value(token_list[0].string,
+                               determine_value_type(token_list))
+        if js_out:
+            Global.jsbuf += expvalue(var)
+        return var
     else:
         # 複数項ある場合（関数呼び出し）
         # 関数呼び出しなので、token_listに括弧がなくなったときにreturnする
@@ -581,39 +651,42 @@ def eval_tokens(token_list, js=True):
 
         # 値のキャスト
         if last_index <= len(token_list)-1 and token_list[-1].string != ')':
-            vt = get_value_type(token_list[-1].string)
-            result_value = cast_value(result_value, vt)
+            vtype = get_value_type(token_list[-1].string)
+            result_value = cast_value(result_value, vtype)
             return result_value
         return result_value
     return None
 
+
 #入れ子には対応しないプリプロセッサ
-def prepro(s):
+def prepro(string):
+    """Deal with preprocessor."""
     tmps = ''
     tmpi = 0
     flag = False
-    if not '$' in s:
-        return s
-    for i, c in enumerate(s):
-        if c == '$':
+    if not '$' in string:
+        return string
+    for i, char in enumerate(string):
+        if char == '$':
             flag = not flag
-            if flag == True:
+            if flag:
                 # 計測開始
                 tmpi = i
             else:
                 # 計測停止
                 ans = eval_tokens([TokenClass.Token(0, tmps[1:])]).string
-                s = s.replace(s[tmpi:i+1], '', 1)
-                s = s[:tmpi] + ans + s[tmpi:]
-                return prepro(s)
+                string = string.replace(string[tmpi:i+1], '', 1)
+                string = string[:tmpi] + ans + string[tmpi:]
+                return prepro(string)
         if flag:
             # 計測中
-            tmps += c
+            tmps += char
 
 
 def add_type(block_ind):
+    """Create new type."""
     inh_count = int((len(Global.blocks[block_ind].root) - 4) / 2)
-    t = ValueClass.Type(Global.blocks[block_ind].root[2].string, 'Dirty')
+    new_type = ValueClass.Type(Global.blocks[block_ind].root[2].string, 'Dirty')
     dbgprintnoln(("New type '%s' inheritanced by type"
                   % Global.blocks[block_ind].root[2].string))
     for i in range(inh_count):
@@ -625,21 +698,21 @@ def add_type(block_ind):
             if inh_count != 1:
                 err("There are plural inheritance despite trying"
                     "to inherite pure type.")
-            t.race = tmp.race
+            new_type.race = tmp.race
             break
         dbgprintnoln(Global.blocks[block_ind].root[5].string+"', ")
         # コピー指定されている型の変数と関数をすべて雑にコピー
         # 同じ名前があれば古い方を削除
-        for v in tmp.variables:
-            for vs in t.variables:
-                if vs.name == v.name:
-                    del vs
-        t.variables.extend(tmp.variables)
-        for f in tmp.functions:
-            for fs in t.functions:
-                if fs.name == f.name:
-                    del fs
-        t.functions.extend(tmp.functions)
+        for var in tmp.variables:
+            for new_type_member in new_type.variables:
+                if new_type_member.name == var.name:
+                    del new_type_member
+        new_type.variables.extend(tmp.variables)
+        for func in tmp.functions:
+            for new_type_member_func in new_type.functions:
+                if new_type_member_func.name == func.name:
+                    del new_type_member_func
+        new_type.functions.extend(tmp.functions)
     dbgprint("")
 
     token_list = []
@@ -651,11 +724,11 @@ def add_type(block_ind):
                is_plain(token_list[0]) and token_list[0].string == "@" and \
                is_plain(token_list[1]) and token_list[1].string == "(" and \
                is_plain(token_list[-1]) and token_list[-1].string == ")":
-                if t.race != 'Dirty': err("Pure type couldn't have members.")
-                for i, b in enumerate(Global.blocks):
-                    if b.root[0].line == token.line:
-                        t.functions.append(FunctionClass.Function(i))
-                        Global.exel = b.body[-1].line
+                if new_type.race != 'Dirty': err("Pure type couldn't have members.")
+                for i, block in enumerate(Global.blocks):
+                    if block.root[0].line == token.line:
+                        new_type.functions.append(FunctionClass.Function(i))
+                        Global.exel = block.body[-1].line
                         break
 
             elif len(token_list) >= 4 and \
@@ -663,45 +736,52 @@ def add_type(block_ind):
                  is_plain(token_list[1]) and \
                  is_plain(token_list[2]) and token_list[2].string == ')' and \
                  is_plain(token_list[3]):
-                if t.race != 'Dirty': err("Pure type couldn't have members.")
-                vt = get_value_type(token_list[3].string)
-                if vt is None:
-                    err("Undefined type '"+token_list[3].string+"'.")
-                t.variables.append(ValueClass.Variable(
-                    token_list[1].string, get_default_value(vt)))
+                if new_type.race != 'Dirty':
+                    err("Pure type couldn't have members.")
+                value_type = get_value_type(token_list[3].string)
+                if value_type is None:
+                    err("Undefined type '%s'." % token_list[3].string)
+                new_type.variables.append(ValueClass.Variable(
+                    token_list[1].string, get_default_value(value_type)))
             del token_list[:]
-    Global.vtypes.append(t)
+    Global.vtypes.append(new_type)
 
-def translate(rt, sd=None):
+def translate(token_list, static_default=None):
+    """Examine a statement staticly."""
     # NOTE: 疑似関数内static変数の準備
-    if sd is None:
-        sd = []
+    print(len(Global.tfs))
+    if static_default is None:
+        static_default = []
     if not hasattr(translate, 'element_stack'):
-        translate.element_stack = sd
-    run_tokens = copy.deepcopy(rt)
+        translate.element_stack = static_default
+    run_tokens = copy.deepcopy(token_list)
 
-    log_ts("rt", rt)
+    log_ts("token_list", token_list)
     # コメント業の場合処理を飛ばす
     # NOTE: ここでreturnしているのはJSにセミコロンを出力させないためでもある
-    if len(rt) > 0 and rt[0].ttype.Comment:
+    if len(token_list) > 0 and token_list[0].ttype.Comment:
         return True
 
-    for t in run_tokens:
-        if '$' in t.string and not t.ttype.Comment:
-            t.string = prepro(t.string)
-            dbgprint(t.string)
+    for tkn in run_tokens:
+        if '$' in tkn.string and not tkn.ttype.Comment:
+            tkn.string = prepro(tkn.string)
+            dbgprint(tkn.string)
 
     if len(run_tokens) == 1 and run_tokens[0].string == "{":
         Global.tfs.append(None)
+        print('INC')
+        print('none')
         return True
     elif len(run_tokens) == 1 and run_tokens[0].string == "}":
-        Global.tfs.pop()
+        print(Global.tfs[-1])
         if Global.tfs[-1] is None:
             out("}")
         elif Global.tfs[-1].event:
             out("});")
         else:
             out("}")
+        print('DEL')
+        Global.tfs.pop()
         return 1
     # NOTE: この先具体的な構文処理：returnしているところはJSへのセミコロン出力を防ぐため
     if ((len(run_tokens) > 0
@@ -725,13 +805,13 @@ def translate(rt, sd=None):
         out("break;")
         idx = -1
         line_idx = -1
-        for l in Global.lines[Global.exel::-1]:
-            if len(l.tokens) == 1:
-                if l.tokens[0].string == 'loop':
-                    line_idx = l.num
+        for line in Global.lines[Global.exel::-1]:
+            if len(line.tokens) == 1:
+                if line.tokens[0].string == 'loop':
+                    line_idx = line.num
                     break
-        for i, b in enumerate(Global.blocks):
-            if b.root[0].line == line_idx+1:
+        for i, block in enumerate(Global.blocks):
+            if block.root[0].line == line_idx+1:
                 idx = i
                 break
         if idx == -1:
@@ -743,13 +823,13 @@ def translate(rt, sd=None):
         out("continue;")
         idx = -1
         line_idx = -1
-        for l in Global.lines[Global.exel::-1]:
+        for line in Global.lines[Global.exel::-1]:
             if len(Global.tokens) == 1:
                 if Global.tokens[0].string == 'loop':
-                    line_idx = l.num
+                    line_idx = line.num
                     break
-        for i, b in enumerate(Global.blocks):
-            if b.root[0].line == line_idx+1:
+        for i, block in enumerate(Global.blocks):
+            if block.root[0].line == line_idx+1:
                 idx = i
                 break
         if idx == -1:
@@ -767,9 +847,11 @@ def translate(rt, sd=None):
        is_plain(run_tokens[0]) and run_tokens[0].string == "@" and \
        is_plain(run_tokens[1]) and run_tokens[1].string == "(" and \
        is_plain(run_tokens[-1]) and run_tokens[-1].string == ")":
-        for i, b in enumerate(Global.blocks):
-            if b.root[0].line == run_tokens[0].line:
+        for i, block in enumerate(Global.blocks):
+            if block.root[0].line == run_tokens[0].line:
                 FunctionClass.Function(i).add()
+                Global.exel += 1
+#                print('DEL')
                 break
         out("")
         return True
@@ -786,6 +868,7 @@ def translate(rt, sd=None):
         else:
             out_expression(run_tokens[:-1])
         out(") {")
+        log_ts("run_tokens", run_tokens)
         return True
             # for i, b in enumerate(Global.blocks):
             #     if b.root[0].line == Global.exel:
@@ -812,10 +895,10 @@ def translate(rt, sd=None):
        is_plain(run_tokens[1]) and run_tokens[1].string == '(' and \
        is_plain(run_tokens[2]) and \
        is_plain(run_tokens[3]) and run_tokens[3].string == ')':
-        for i, b in enumerate(Global.blocks):
-            if b.root[0].line == Global.exel + 1:
+        for i, block in enumerate(Global.blocks):
+            if block.root[0].line == Global.exel + 1:
                 add_type(i)
-                Global.exel = b.body[-1].line -1
+                Global.exel = block.body[-1].line - 1
                 break
         return True
 
@@ -833,9 +916,9 @@ def translate(rt, sd=None):
         var = get_var(run_tokens[0].string)
         if var is None:
             err("Undefined variable '%s'" % run_tokens[0].string)
-        s = run_tokens[2].string
-        if len(run_tokens) == 3 and is_var_exists(s):
-            var.subst(get_var(s))
+        string = run_tokens[2].string
+        if len(run_tokens) == 3 and is_var_exists(string):
+            var.subst(get_var(string))
         else:
             log_ts("run_tokens[2:]", run_tokens[2:])
             var.subst(copy.deepcopy(run_tokens[2:]))
@@ -865,8 +948,8 @@ def translate(rt, sd=None):
         # if '$' in name: name = prepro(name)
         if '.' in name:
             err("ValueClass.Variable name couldn't contain '.'")
-        vt = get_value_type(run_tokens[3].string)
-        if vt is None:
+        value_type = get_value_type(run_tokens[3].string)
+        if value_type is None:
             err("Undefined type '%s'" % run_tokens[3].string)
 
         variables = None
@@ -874,7 +957,7 @@ def translate(rt, sd=None):
             runf = Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])]
             variables = runf.vars[-1]
         ValueClass.Variable.create(ValueClass.Variable(
-            name, get_default_value(vt)), variables)
+            name, get_default_value(value_type)), variables)
         return True
 
     # 外部変数作成 ^+( name ) race
@@ -899,11 +982,11 @@ def translate(rt, sd=None):
         # ドットが変数名に入っているときにはエラー
         if '.' in name:
             err("ValueClass.Variable name couldn't contain '.'")
-        vt = get_value_type(run_tokens[4].string)
-        if vt is None:
+        value_type = get_value_type(run_tokens[4].string)
+        if value_type is None:
             err("Undefined type '%s'" % run_tokens[4].string)
         ValueClass.Variable.create(ValueClass.Variable(
-            name, get_default_value(vt)), None, True, pos)
+            name, get_default_value(value_type)), None, True, pos)
         return True
 
     # 関数呼び出し（一行） ^( func args )
@@ -919,30 +1002,30 @@ def translate(rt, sd=None):
     return True
 
 
-def RUN(rt, sd=None, funcexam=False):
+def RUN(token_list, static_default=None, funcexam=False):
+    """Examine a statement dinamically."""
     # NOTE: 疑似関数内static変数の準備
-    if sd is None:
-        sd = []
+    if static_default is None:
+        static_default = []
     if not hasattr(RUN, 'element_stack'):
-        RUN.element_stack = sd
-    run_tokens = copy.deepcopy(rt)
+        RUN.element_stack = static_default
+    run_tokens = copy.deepcopy(token_list)
 
-    log_ts("rt", rt)
+    log_ts("token_list", token_list)
     # コメント業の場合処理を飛ばす
     # NOTE: ここでreturnしているのはJSにセミコロンを出力させないためでもある
-    if len(rt) > 0 and rt[0].ttype.Comment:
+    if len(token_list) > 0 and token_list[0].ttype.Comment:
         return True
 
-    for t in run_tokens:
-        if '$' in t.string and not t.ttype.Comment:
-            t.string = prepro(t.string)
-            dbgprint(t.string)
+    for tkn in run_tokens:
+        if '$' in tkn.string and not tkn.ttype.Comment:
+            tkn.string = prepro(tkn.string)
+            dbgprint(tkn.string)
 
     # NOTE: この先具体的な構文処理：returnしているところはJSへのセミコロン出力を防ぐため
-    if len(rt) == 1 and rt[0].string == "{":
+    if len(token_list) == 1 and token_list[0].string == "{":
         return True
 
-    running_func_idx = FunctionClass.Function.id2i(Global.fs[-1])
     running_func = Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])]
 
     running_func_block = Global.blocks[running_func.block_ind]
@@ -964,12 +1047,12 @@ def RUN(rt, sd=None, funcexam=False):
          is_plain(run_tokens[0]) and run_tokens[0].string == 'loop':
         # loopブロックの中のJS出力はこの時点でやってしまう
         tmp_exel = Global.exel + 1
-        b = Global.blocks[get_block_idx(Global.exel)]
+        block = Global.blocks[get_block_idx(Global.exel)]
         out("while (true) {")
         while True:
             Global.exel += 1
             RUN(Global.lines[Global.exel-1].tokens)
-            if b.body[-1].line >= Global.exel:
+            if block.body[-1].line >= Global.exel:
                 Global.exel = tmp_exel
                 break
         out("}")
@@ -978,13 +1061,13 @@ def RUN(rt, sd=None, funcexam=False):
          is_plain(run_tokens[0]) and run_tokens[0].string == 'escape':
         idx = -1
         line_idx = -1
-        for l in Global.lines[Global.exel::-1]:
-            if len(l.tokens) == 1:
-                if l.tokens[0].string == 'loop':
-                    line_idx = l.num
+        for line in Global.lines[Global.exel::-1]:
+            if len(line.tokens) == 1:
+                if line.tokens[0].string == 'loop':
+                    line_idx = line.num
                     break
-        for i, b in enumerate(Global.blocks):
-            if b.root[0].line == line_idx+1:
+        for i, block in enumerate(Global.blocks):
+            if block.root[0].line == line_idx+1:
                 idx = i
                 break
         if idx == -1:
@@ -996,13 +1079,13 @@ def RUN(rt, sd=None, funcexam=False):
          is_plain(run_tokens[0]) and run_tokens[0].string == 'continue':
         idx = -1
         line_idx = -1
-        for l in Global.lines[Global.exel::-1]:
+        for line in Global.lines[Global.exel::-1]:
             if len(Global.tokens) == 1:
                 if Global.tokens[0].string == 'loop':
-                    line_idx = l.num
+                    line_idx = line.num
                     break
-        for i, b in enumerate(Global.blocks):
-            if b.root[0].line == line_idx+1:
+        for i, block in enumerate(Global.blocks):
+            if block.root[0].line == line_idx+1:
                 idx = i
                 break
         if idx == -1:
@@ -1019,10 +1102,10 @@ def RUN(rt, sd=None, funcexam=False):
        is_plain(run_tokens[0]) and run_tokens[0].string == "@" and \
        is_plain(run_tokens[1]) and run_tokens[1].string == "(" and \
        is_plain(run_tokens[-1]) and run_tokens[-1].string == ")":
-        for i, b in enumerate(Global.blocks):
-            if b.root[0].line == Global.exel:
+        for i, block in enumerate(Global.blocks):
+            if block.root[0].line == Global.exel:
                 FunctionClass.Function(i).add()
-                Global.exel = b.body[-1].line
+                Global.exel = block.body[-1].line
                 break
         out("")
         return True
@@ -1038,11 +1121,11 @@ def RUN(rt, sd=None, funcexam=False):
         if value.string == 'true':
             # branch指定があった場合、cond指定があるブロックまで遡って、notしてandしていく
             if run_tokens[0].string == 'branch':
-                for i, b in enumerate(Global.blocks):
-                    if b.root[0].line == Global.exel:
+                for i, block in enumerate(Global.blocks):
+                    if block.root[0].line == Global.exel:
                         idx = i
                         break
-                for b in Global.blocks[idx-1::-1]:
+                for candidate_block in Global.blocks[idx-1::-1]:
                     if ((run_tokens[0].string == 'cond'
                          or run_tokens[0].string == 'branch')):
                         cond_value = eval_tokens(run_tokens[1:-1])
@@ -1054,13 +1137,13 @@ def RUN(rt, sd=None, funcexam=False):
                         Global.exel = Global.blocks[idx].body[-1].line
                         break
                     # cond指定があるブロックがあったらそこで終了
-                    if b.root[0].string == 'cond':
+                    if candidate_block.root[0].string == 'cond':
                         break
         else:
             # 値がfalseだったときはブロックを飛ばす
-            for b in Global.blocks:
-                if b.root[0].line == Global.exel:
-                    Global.exel = b.body[-1].line
+            for block in Global.blocks:
+                if block.root[0].line == Global.exel:
+                    Global.exel = block.body[-1].line
                     break
 
     # 型定義 ^-(type):type
@@ -1069,10 +1152,10 @@ def RUN(rt, sd=None, funcexam=False):
        is_plain(run_tokens[1]) and run_tokens[1].string == '(' and \
        is_plain(run_tokens[2]) and \
        is_plain(run_tokens[3]) and run_tokens[3].string == ')':
-        for i, b in enumerate(Global.blocks):
-            if b.root[0].line == Global.exel:
+        for i, block in enumerate(Global.blocks):
+            if block.root[0].line == Global.exel:
                 add_type(i)
-                Global.exel = b.body[-1].line
+                Global.exel = block.body[-1].line
                 break
         return True
 
@@ -1085,9 +1168,9 @@ def RUN(rt, sd=None, funcexam=False):
         var = get_var(run_tokens[0].string)
         if var is None:
             err("Undefined variable '%s'" % run_tokens[0].string)
-        s = run_tokens[2].string
-        if len(run_tokens) == 3 and is_var_exists(s):
-            var.subst(get_var(s))
+        string = run_tokens[2].string
+        if len(run_tokens) == 3 and is_var_exists(string):
+            var.subst(get_var(string))
         else:
             log_ts("run_tokens[2:]", run_tokens[2:])
             var.subst(copy.deepcopy(run_tokens[2:]))
@@ -1117,15 +1200,15 @@ def RUN(rt, sd=None, funcexam=False):
         # if '$' in name: name = prepro(name)
         if '.' in name:
             err("ValueClass.Variable name couldn't contain '.'")
-        vt = get_value_type(run_tokens[3].string)
-        if vt is None:
+        vtype = get_value_type(run_tokens[3].string)
+        if vtype is None:
             err("Undefined type '%s'" % run_tokens[3].string)
 
         variables = None
         if Global.fs[-1] != -1:
             variables = running_func.vars[-1]
         ValueClass.Variable.create(
-            ValueClass.Variable(name, get_default_value(vt)), variables)
+            ValueClass.Variable(name, get_default_value(vtype)), variables)
         return True
 
     # 外部変数作成 ^+( name ) race
@@ -1149,11 +1232,11 @@ def RUN(rt, sd=None, funcexam=False):
         # ドットが変数名に入っているときにはエラー
         if '.' in name:
             err("ValueClass.Variable name couldn't contain '.'")
-        vt = get_value_type(run_tokens[4].string)
-        if vt is None:
+        vtype = get_value_type(run_tokens[4].string)
+        if vtype is None:
             err("Undefined type '%s'" % run_tokens[4].string)
         ValueClass.Variable.create(ValueClass.Variable(
-            name, get_default_value(vt)), None, True, pos)
+            name, get_default_value(vtype)), None, True, pos)
         return True
 
     # 関数呼び出し（一行） ^( func args )
@@ -1172,8 +1255,7 @@ def RUN(rt, sd=None, funcexam=False):
 
 
 def report():
-    """ Reports trajectory of processing. """
-
+    """Reports trajectory of processing."""
     dbgprint("\n\n\n\nPROGRAM REPORT...")
 
     # Display all detected Global.tokens
@@ -1181,22 +1263,22 @@ def report():
     table_data = [
         ["name", "Comment", "Str", "Return", "NL", "Line(R)",]
     ]
-    for t in Global.tokens:
+    for tkn in Global.tokens:
         table_data.append(
-            [t.string,
-             "#" if t.ttype.Comment else "",
-             "\"" if t.ttype.String else "Ins" if t.ttype.StringIns else "",
-             "R" if t.ttype.Return else "",
-             "NL" if t.ttype.NL else "",
-             "%s(%s)" % (t.line, t.real_line),
+            [tkn.string,
+             "#" if tkn.ttype.Comment else "",
+             "\"" if tkn.ttype.String else "Ins" if tkn.ttype.StringIns else "",
+             "R" if tkn.ttype.Return else "",
+             "NL" if tkn.ttype.NL else "",
+             "%s(%s)" % (tkn.line, tkn.real_line),
             ])
     table = AsciiTable(table_data)
     dbgprint(table.table)
 
     dbgprint("\nLINES "+str(len(Global.lines)))
-    for l in Global.lines:
-        for t in l.tokens:
-            dbgprintnoln(t.string + " ")
+    for line in Global.lines:
+        for tkn in line.tokens:
+            dbgprintnoln(tkn.string + " ")
         dbgprintnoln("\n")
 
     dbgprint("\nBLOCKS "+str(len(Global.blocks)))
@@ -1213,19 +1295,19 @@ def report():
 
     # Display all variables
     dbgprint("VARIABLES "+str(len(Global.Vars)))
-    for v in Global.Vars:
+    for var in Global.Vars:
         dbgprint("%s:%s %s=%s"
-                 % (str(v.value.type.race),
-                    str(v.value.type.name),
-                    v.name,
-                    str(v.value.string)))
+                 % (str(var.value.type.race),
+                    str(var.value.type.name),
+                    var.name,
+                    str(var.value.string)))
 
     # Display all variables
     dbgprint("\nFUNCTIONS "+str(len(Global.Funcs)))
-    for f in Global.Funcs:
-        dbgprint("%s BLKIDX:%d ID:%d" % (f.name, f.block_ind, f.fid))
+    for func in Global.Funcs:
+        dbgprint("%s BLKIDX:%d ID:%d" % (func.name, func.block_ind, func.fid))
 
     # Display all types
     dbgprint("\nVALUE TYPES: "+str(len(Global.vtypes)))
-    for vt in Global.vtypes:
-        dbgprint(vt.race + ":" + vt.name)
+    for vtype in Global.vtypes:
+        dbgprint(vtype.race + ":" + vtype.name)

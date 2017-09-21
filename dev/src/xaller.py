@@ -87,7 +87,6 @@ def deal_with_import():
     # このままだとコメントが反映されないので一回トークン解析してからもとのファイルに戻す
     raw_tokens = TokenClass.Token.tokenize(Global.input)
     inputd = Global.input[:Global.input.rfind('/')] + '/'
-    s = '>'
     for i in range(len(raw_tokens)):
         if ((genfunc.is_plain(raw_tokens[i-1]) and
              raw_tokens[i-1].string is '<' and
