@@ -105,6 +105,8 @@ class Function(object):
             var = genfunc.get_var(self.name[:self.name.rfind('.')])
             Global.Funcs.append(self)
             Global.tfs.append(self)
+            print('INC')
+            print('a')
             if genfunc.is_var_web(var):
                 eventlist = ['.blur', '.click', '.change', '.ctxmenu',
                              '.dbclick', '.error', '.focus', '.focusin',
