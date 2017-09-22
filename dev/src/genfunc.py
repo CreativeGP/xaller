@@ -188,29 +188,43 @@ def create_external(name, pos):
     elif typename == 'Textbox':
         out('$(%s).%s("<textarea id=%s name=%s></textarea>");'
             % (S(selector), func, S(expid(name)), S(expid(name))))
+    elif typename == 'Head':
+        out('$(%s).%s("<h1 id=%s></h1>");'
+            % (S(selector), func, S(expid(name)), S(expid(name))))
 
 
-def subst_external(var, val):
+def subst_external(var, token_list):
     """Output a JS code substitution for DOM variable.
 
     Silly things may happen if the variable to be substituted is not external.
+    NOTE(cgp) Do not use this method! Use Value.subst() insteadly.
     """
     vname = var.name
-    if not get_var(vname[:vname.rfind(".")]+".web") is None:
-        if get_var(vname[:vname.rfind(".")]+".web").value.string == "Textbox":
+
+    if get_var(vname[:vname.rfind(".")]+"._web") is not None:
+        web_type_name = get_var(vname[:vname.rfind(".")]+"._web").value.string
+        member_name = expid(vname[:vname.find(".")])
+
+        textbox_attrs = [
+            'autocapitalize', 'autocomplete', 'autofocus', 'cols',
+            'disabled', 'form', 'maxlength', 'minlength',
+            'placeholder','readonly', 'required', 'rows',
+            'selectionDirection', 'selectionEnd', 'selectionStart',
+            'spellcheck', 'wrap']
+        if web_type_name == "Textbox" and member_name != "_web":
             attr = vname[vname.rfind(".")+1:]
-            out('$("#%s").attr(%s, %s);' % (
-                expid(vname[:vname.find(".")]),
-                S(attr),
-                S(var.value.string)))
-        elif ((get_var(vname[:vname.rfind(".")]+".web").value.string == "Label"
-               and ".text" in vname)):
-            out('$("#%s").html("%s");'
-                % (expid(vname[:vname.find(".text")]), val.string))
-        elif ((get_var(vname[:vname.rfind(".")]+".web").value.string == "Button"
-               and ".text" in vname)):
-            out('$("#%s").html("%s");'
-                % (expid(vname[:vname.find(".text")]), val.string))
+            out('$("#%s").attr(%s, %s);'
+                % (member_name,
+                   S(attr),
+                   expname(vname)))
+        elif (web_type_name == "Label" and ".text" in vname):
+            out('$("#%s").html(%s");'
+                % (expid(vname[:vname.find(".text")]),
+                   expname(vname)))
+        elif (web_type_name == "Button" and ".text" in vname):
+            out('$("#%s").html(%s);'
+                % (expid(vname[:vname.find(".text")]),
+                   expname(vname)))
 
 
 def S(string):
@@ -412,8 +426,10 @@ def get_func_idx(string):
             ans = func.func_ind
     return ans
 
-def out_expression(token_list):
+def out_expression(token_list, get_string=False):
     """Output to JS file an expression."""
+    if get_string: backup = Global.jsbuf
+
     lvl = 0
     con = -1
     buildin = [',']
@@ -430,9 +446,9 @@ def out_expression(token_list):
     }
 
     if len(token_list) == 1:
-        outnoln("'" + (token_list[0].string + "'"
-                       if token_list[0].ttype.String else
-                       token_list[0].string))
+        outnoln((S(token_list[0].string)
+                 if token_list[0].ttype.String else
+                 token_list[0].string))
         return
 
     if len(token_list) == 3 or len(token_list) == 4:
@@ -534,7 +550,12 @@ def out_expression(token_list):
                                         ' ' + sep + ' '))
         except IndexError:
             pass
-    solvebuf()
+    if get_string:
+        diff = Global.jsbuf - tmp
+        Global.jsbuf = tmp
+        return diff
+    else:
+        solvebuf()
 
 
 # NOTE: jsがFalseだったときにはJS出力はしない
@@ -729,6 +750,7 @@ def add_type(block_ind):
                     if block.root[0].line == token.line:
                         new_type.functions.append(FunctionClass.Function(i))
                         Global.exel = block.body[-1].line
+                        print('a')
                         break
 
             elif len(token_list) >= 4 and \
@@ -911,11 +933,11 @@ def translate(token_list, static_default=None):
         if var is None:
             err("Undefined variable '%s'" % run_tokens[0].string)
         string = run_tokens[2].string
-        if len(run_tokens) == 3 and is_var_exists(string):
-            var.subst(get_var(string))
-        else:
-            log_ts("run_tokens[2:]", run_tokens[2:])
-            var.subst(copy.deepcopy(run_tokens[2:]))
+        # if len(run_tokens) == 3 and is_var_exists(string):
+        #     var.subst(get_var(string))
+        # else:
+        #     log_ts("run_tokens[2:]", run_tokens[2:])
+        var.subst(copy.deepcopy(run_tokens[2:]))
 
         if ((len(run_tokens) == 3
              and len(var.value.type.variables) > 0
@@ -930,6 +952,7 @@ def translate(token_list, static_default=None):
                 memdst[i].subst(memsrc[i])
                 out(";")
                 memdst[i].value = memsrc[i].value
+        return True
 
     # プログラム変数作成 ^( name ) race
     elif len(run_tokens) >= 4 and \

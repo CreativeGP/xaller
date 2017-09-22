@@ -1,4 +1,40 @@
+-(Web_Object) {
+    (_web)string
+
+    (accesskey)string
+    (class)string
+    (contextmenu)string
+#    (dataset)
+    (dir)string
+    (dropzone)string
+    (id)string
+    (itemid)string
+    (itemprop)string
+    (itemref)string
+    (itemscope)string
+    (itemtype)string
+    (lang)string
+    (style)string
+    (title)string
+    (translate)string
+
+    (contenteditable)bool
+    (draggable)bool
+    (hidden)bool
+    (spellcheck)bool
+
+    (tabindex)int
+}
+
 -(HTML):string {}
+
+-(Color) {
+    (r)int
+    (g)int
+    (b)int
+    (a)int
+}
+
 -(Button) {
     (_web)string
     (text)string
@@ -7,11 +43,33 @@
 	._web = 'Button'
     }
 }
--(Textbox) {
-    (_web)string
+
+-(Div):Web_Object {    
+}
+
+-(Textbox):Web_Object {
     (rows)int
     (cols)int
+    (maxlength)int
+    (minlength)int
+
     (text)string
+    (autocapitalize)bool
+    (autocomplete)bool
+    (autofocus)bool
+    (disabled)bool
+    (spellcheck)bool
+    (readonly)bool
+
+    (selectionDirection)string
+    (selectionEnd)int
+    (selectionStart)int
+
+#    (required)string
+    (form)string
+    (placeholder)string
+    (wrap)string
+
     @ (__init) {
 	._web = 'Textbox'
     }
