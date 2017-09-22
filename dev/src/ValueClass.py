@@ -67,69 +67,47 @@ class Variable(object):
 
     def subst(self, new, js_out=True):
         """Substitute the value for this variable."""
-#        value = v
         # NOTE: JS出力用バッファを使うときは関数の処理のときに限る
         if js_out: genfunc.outnoln(genfunc.expname(self.name) + " = ")
-#        Global.jsbuf += genfunc.expname(self.name) + " = "
         if str(type(new)) == "<class 'list'>":
             # TODO: 静的な変数だった場合は内容を更新するようにする
             genfunc.out_expression(new)
-#            value = v = genfunc.eval_tokens(v, False)
         elif str(type(new)) == "<class 'ValueClass.Variable'>":
             genfunc.outnoln(genfunc.expname(new.name))
-#            value = new.refer(False) # NOTE: JS output!!
-        # else:
-        #     genfunc.outbuf(genfunc.expvalue(v)) # NOTE: JS output!!
-        # if genfunc.is_var_web (self):
 
         if genfunc.is_var_web(self):
-            web_type_name = get_var(self.name[:self.name.rfind(".")]+"._web").value.string
-            member_name = expid(self.name[:self.name.find(".")])
-#            uniquename = self.name[:self.name.find('.')]
+            web_type_name = genfunc.get_var(self.name[:self.name.rfind(".")]+"._web").value.string
+            member_name = genfunc.expid(self.name[self.name.find(".")+1:])
+            parent_name = genfunc.expid(self.name[:self.name.find(".")])
+            global_attrs = [
+                "accesskey", "class", "contextmenu",
+                "dir", "dropzone", "id",
+                "itemid", "itemprop", "itemref",
+                "itemscope", "itemtype", "lang",
+                "style", "title", "translate",
+                "contenteditable", "draggable", "hidden",
+                "spellcheck", "tabindex",
+            ]
 
+            ret = False
             if js_out:
                 genfunc.solvebuf()
                 genfunc.out(";")
                 if member_name == 'text':
-                    genfunc.outnoln("$(%s).html(" % genfunc.S("#" + genfunc.expid(member_name)))
-                elif member_name == 'name':
-                    genfunc.outnoln("$(%s).attr('id', " % genfunc.S("#" + genfunc.expid(member_name)))
+                    genfunc.outnoln("$(%s).html(" % genfunc.S("#" + genfunc.expid(parent_name)))
+                elif member_name in global_attrs:
+                    print(member_name)
+                    genfunc.outnoln("$(%s).attr('%s', " %
+                                    (genfunc.S("#" + genfunc.expid(member_name)),
+                                     global_attrs[global_attrs.index(member_name)]))
                 else:
                     ret = True
             else:
                 ret = True
-            genfunc.outnoln(genfunc.expname(self.name))
-            # if str(type(v)) == "<class 'ValueClass.Variable'>":
-            #     value = v.refer()    # NOTE: JS出力のため再度呼び出し
-            # # TODO: できればなくしたい
-            # elif str(type(v)) == "<class 'list'>":
-            #     genfunc.out_expression(v)
-            # else :
-            #     if js: Global.jsbuf += genfunc.expvalue(v) # NOTE: JS output!!
-            if js_out: genfunc.outnoln(")")
-        
-        # Finish this statement.
-        genfunc.out(";")
-
-        # if self.external:
-        #     genfunc.subst_external(self, new)
-        # if value is None:
-        #     genfunc.err("Invalid value.")
-        # if self.value.type.race == value.type.race:
-        #     genfunc.dbgprint("ValueClass.Variable changed("+self.name+" -> "+value.string+")")
-        #     self.value = value
-        #     # if self.external:
-        #     #     genfunc.subst_external(self, value)
-        # else:
-        #     genfunc.err("Incorrect substituting value which has different race. \n(%s(%s) << %s)"
-        #                 % (self.name, self.value.type.race, value.type.race))
-
-#         if self.value.type.name == value.type.name:
-#             self.value = value
-# #            if self.value.type.race == "Dirty":
-# #                pass
-#         else:
-#             genfunc.err("Invalid substituting value which has different TYPE.")
+            if not ret:
+                genfunc.outnoln(genfunc.expname(self.name))
+                if js_out: genfunc.outnoln(")")
+                genfunc.out(";")
 
     # NOTE: JS出力はバッファに行います
     def refer(self, js_out=True):
@@ -137,6 +115,7 @@ class Variable(object):
 
         Note that this bunction use buffer to output to the JS file.
         The outputting wouldn't be settled without calling genfunc.solvebuf().
+        NOTE: Do not use this method.
 
         Args:
             js (=True): You can turn off this argument to cancel outputting.

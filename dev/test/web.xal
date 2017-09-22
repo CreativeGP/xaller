@@ -35,10 +35,8 @@
     (a)int
 }
 
--(Button) {
-    (_web)string
+-(Button):Web_Object {
     (text)string
-    (name)string
     @ (__init) {
 	._web = 'Button'
     }

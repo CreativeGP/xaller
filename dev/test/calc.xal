@@ -47,6 +47,7 @@ view.cols = 3
 (button9.set_num 9)
 +(button0)numbtn
 (button0.set_num 0)
+button1.id = 'slsd'
 
 +(eq_btn)Button
 eq_btn.text = '='
