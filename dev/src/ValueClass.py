@@ -77,24 +77,28 @@ class Variable(object):
 #            value = v = genfunc.eval_tokens(v, False)
         elif str(type(new)) == "<class 'ValueClass.Variable'>":
             genfunc.outnoln(genfunc.expname(new.name))
-            value = new.refer(False) # NOTE: JS output!!
+#            value = new.refer(False) # NOTE: JS output!!
         # else:
         #     genfunc.outbuf(genfunc.expvalue(v)) # NOTE: JS output!!
         # if genfunc.is_var_web (self):
 
-        name = self.name[self.name.find('.')+1:]
-        webnamelist = ['text', 'name']
-        if genfunc.is_var_web(self) and name in webnamelist:
-            uniquename = self.name[:self.name.find('.')]
-            if js_out: genfunc.solvebuf()
-            if js_out: genfunc.out(";")
-            if name == 'text' and js_out:
-                Global.jsbuf += "$(%s).html(" % genfunc.S("#" + genfunc.expid(uniquename))
-            elif name == 'name' and js_out:
-                Global.jsbuf += "$(%s).attr('id', " % genfunc.S("#" + genfunc.expid(uniquename))
+        if genfunc.is_var_web(self):
+            web_type_name = get_var(self.name[:self.name.rfind(".")]+"._web").value.string
+            member_name = expid(self.name[:self.name.find(".")])
+#            uniquename = self.name[:self.name.find('.')]
+
+            if js_out:
+                genfunc.solvebuf()
+                genfunc.out(";")
+                if member_name == 'text':
+                    genfunc.outnoln("$(%s).html(" % genfunc.S("#" + genfunc.expid(member_name)))
+                elif member_name == 'name':
+                    genfunc.outnoln("$(%s).attr('id', " % genfunc.S("#" + genfunc.expid(member_name)))
+                else:
+                    ret = True
             else:
                 ret = True
-            Global.jsbuf += genfunc.expname(self.name)
+            genfunc.outnoln(genfunc.expname(self.name))
             # if str(type(v)) == "<class 'ValueClass.Variable'>":
             #     value = v.refer()    # NOTE: JS出力のため再度呼び出し
             # # TODO: できればなくしたい
@@ -102,8 +106,13 @@ class Variable(object):
             #     genfunc.out_expression(v)
             # else :
             #     if js: Global.jsbuf += genfunc.expvalue(v) # NOTE: JS output!!
-            if js_out: Global.jsbuf += ")"
+            if js_out: genfunc.outnoln(")")
+        
+        # Finish this statement.
+        genfunc.out(";")
 
+        # if self.external:
+        #     genfunc.subst_external(self, new)
         # if value is None:
         #     genfunc.err("Invalid value.")
         # if self.value.type.race == value.type.race:
@@ -134,17 +143,17 @@ class Variable(object):
         """
 
         if js_out:
-            if genfunc.is_var_web(self):
-                name = self.name[self.name.rfind(".")+1:]
-                uniquename = self.name[:self.name.rfind(".")]
-                if name == "text":
-                    Global.jsbuf += "$(%s).html()" % genfunc.S("#" + genfunc.expid(uniquename))
-                elif name == "name":
-                    Global.jsbuf += "$(%s).attr('id')" % genfunc.S("#" + genfunc.expid(uniquename))
-                else:
-                    Global.jsbuf += genfunc.expname(self.name)
-            else:
-                Global.jsbuf += genfunc.expname(self.name)
+            # if genfunc.is_var_web(self):
+            #     name = self.name[self.name.rfind(".")+1:]
+            #     uniquename = self.name[:self.name.rfind(".")]
+            #     if name == "text":
+            #         Global.jsbuf += "$(%s).html()" % genfunc.S("#" + genfunc.expid(uniquename))
+            #     elif name == "name":
+            #         Global.jsbuf += "$(%s).attr('id')" % genfunc.S("#" + genfunc.expid(uniquename))
+            #     else:
+            #         Global.jsbuf += genfunc.expname(self.name)
+            # else:
+            Global.jsbuf += genfunc.expname(self.name)
         return self.value
 
 

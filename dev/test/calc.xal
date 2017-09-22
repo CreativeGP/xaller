@@ -13,6 +13,7 @@
 # }
 
 +(view)Textbox
+view.cols = 3
 
 -(numbtn):Button {
     (num)int
@@ -51,7 +52,6 @@
 eq_btn.text = '='
 @ (eq_btn.click) {
     (a)string
-    a = (substr view.text 3 5)
 }
 
 +(plus_btn)Button

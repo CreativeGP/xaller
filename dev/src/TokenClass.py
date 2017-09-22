@@ -40,6 +40,7 @@ class TokenType(object):
         self.Atom = False
         self.EqualToSubst = False
 
+
 class Token(object):
     """This class represents a token.
 

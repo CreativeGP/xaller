@@ -1,13 +1,48 @@
 $(function() {
 	var view = '';
 	var view$_web = '';
+	var view$accesskey = '';
+	var view$class = '';
+	var view$contextmenu = '';
+	var view$dir = '';
+	var view$dropzone = '';
+	var view$id = '';
+	var view$itemid = '';
+	var view$itemprop = '';
+	var view$itemref = '';
+	var view$itemscope = '';
+	var view$itemtype = '';
+	var view$lang = '';
+	var view$style = '';
+	var view$title = '';
+	var view$translate = '';
+	var view$contenteditable = false;
+	var view$draggable = false;
+	var view$hidden = false;
+	var view$spellcheck = false;
+	var view$tabindex = 0;
 	var view$rows = 0;
 	var view$cols = 0;
+	var view$maxlength = 0;
+	var view$minlength = 0;
 	var view$text = '';
+	var view$autocapitalize = false;
+	var view$autocomplete = false;
+	var view$autofocus = false;
+	var view$disabled = false;
+	var view$spellcheck = false;
+	var view$readonly = false;
+	var view$selectionDirection = '';
+	var view$selectionEnd = 0;
+	var view$selectionStart = 0;
+	var view$form = '';
+	var view$placeholder = '';
+	var view$wrap = '';
 	{
 		view$_web = 'Textbox';
 	}
 	$('body').append("<textarea id='view' name='view'></textarea>");
+	view$cols = 3;
 	var button1 = '';
 	var button1$_web = '';
 	var button1$text = '';
@@ -23,7 +58,7 @@ $(function() {
 		$('#button1').html(button1$text);
 	}
 	$('#button1').click(function () {
-		view$text = ($('#view').html() + String((button1$num)));
+		view$text = (view$text + String((button1$num)));
 		$('#view').html(view$text);
 	});
 	button1$set_num(1);
@@ -42,7 +77,7 @@ $(function() {
 		$('#button2').html(button2$text);
 	}
 	$('#button2').click(function () {
-		view$text = ($('#view').html() + String((button2$num)));
+		view$text = (view$text + String((button2$num)));
 		$('#view').html(view$text);
 	});
 	button2$set_num(2);
@@ -61,7 +96,7 @@ $(function() {
 		$('#button3').html(button3$text);
 	}
 	$('#button3').click(function () {
-		view$text = ($('#view').html() + String((button3$num)));
+		view$text = (view$text + String((button3$num)));
 		$('#view').html(view$text);
 	});
 	button3$set_num(3);
@@ -80,7 +115,7 @@ $(function() {
 		$('#button4').html(button4$text);
 	}
 	$('#button4').click(function () {
-		view$text = ($('#view').html() + String((button4$num)));
+		view$text = (view$text + String((button4$num)));
 		$('#view').html(view$text);
 	});
 	button4$set_num(4);
@@ -99,7 +134,7 @@ $(function() {
 		$('#button5').html(button5$text);
 	}
 	$('#button5').click(function () {
-		view$text = ($('#view').html() + String((button5$num)));
+		view$text = (view$text + String((button5$num)));
 		$('#view').html(view$text);
 	});
 	button5$set_num(5);
@@ -118,7 +153,7 @@ $(function() {
 		$('#button6').html(button6$text);
 	}
 	$('#button6').click(function () {
-		view$text = ($('#view').html() + String((button6$num)));
+		view$text = (view$text + String((button6$num)));
 		$('#view').html(view$text);
 	});
 	button6$set_num(6);
@@ -137,7 +172,7 @@ $(function() {
 		$('#button7').html(button7$text);
 	}
 	$('#button7').click(function () {
-		view$text = ($('#view').html() + String((button7$num)));
+		view$text = (view$text + String((button7$num)));
 		$('#view').html(view$text);
 	});
 	button7$set_num(7);
@@ -156,7 +191,7 @@ $(function() {
 		$('#button8').html(button8$text);
 	}
 	$('#button8').click(function () {
-		view$text = ($('#view').html() + String((button8$num)));
+		view$text = (view$text + String((button8$num)));
 		$('#view').html(view$text);
 	});
 	button8$set_num(8);
@@ -175,7 +210,7 @@ $(function() {
 		$('#button9').html(button9$text);
 	}
 	$('#button9').click(function () {
-		view$text = ($('#view').html() + String((button9$num)));
+		view$text = (view$text + String((button9$num)));
 		$('#view').html(view$text);
 	});
 	button9$set_num(9);
@@ -194,7 +229,7 @@ $(function() {
 		$('#button0').html(button0$text);
 	}
 	$('#button0').click(function () {
-		view$text = ($('#view').html() + String((button0$num)));
+		view$text = (view$text + String((button0$num)));
 		$('#view').html(view$text);
 	});
 	button0$set_num(0);
@@ -210,7 +245,6 @@ $(function() {
 	$('#eq_btn').html(eq_btn$text);
 	$('#eq_btn').click(function () {
 		var a = '';
-		a = ($('#view').html()  3  5);
 	});
 	var plus_btn = '';
 	var plus_btn$_web = '';
@@ -223,7 +257,7 @@ $(function() {
 	plus_btn$text = '+';
 	$('#plus_btn').html(plus_btn$text);
 	$('#plus_btn').click(function () {
-		view$text = ($('#view').html() + '+');
+		view$text = (view$text + '+');
 		$('#view').html(view$text);
 	});
 	return;
