@@ -188,9 +188,9 @@ def create_external(name, pos):
     elif typename == 'Textbox':
         out('$(%s).%s("<textarea id=%s name=%s></textarea>");'
             % (S(selector), func, S(expid(name)), S(expid(name))))
-    elif typename == 'Head':
-        out('$(%s).%s("<h1 id=%s></h1>");'
-            % (S(selector), func, S(expid(name)), S(expid(name))))
+    elif typename == 'Div':
+        out('$(%s).%s("<div id=%s></div>");'
+            % (S(selector), func, S(expid(name))))
 
 
 def subst_external(var, token_list):

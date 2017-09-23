@@ -97,8 +97,8 @@ class Variable(object):
                     genfunc.outnoln("$(%s).html(" % genfunc.S("#" + genfunc.expid(parent_name)))
                 elif member_name in global_attrs:
                     print(member_name)
-                    genfunc.outnoln("$(%s).attr('%s', " %
-                                    (genfunc.S("#" + genfunc.expid(member_name)),
+                    genfunc.outnoln("$('%s').attr('%s', " %
+                                    ("#" + genfunc.expid(parent_name),
                                      global_attrs[global_attrs.index(member_name)]))
                 else:
                     ret = True
