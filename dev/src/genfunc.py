@@ -191,6 +191,9 @@ def create_external(name, pos):
     elif typename == 'Div':
         out('$(%s).%s("<div id=%s></div>");'
             % (S(selector), func, S(expid(name))))
+    elif typename == 'Image':
+        out('$(%s).%s("<img id=%s>");'
+            % (S(selector), func, S(expid(name))))
 
 
 def subst_external(var, token_list):

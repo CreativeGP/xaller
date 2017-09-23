@@ -5,6 +5,8 @@
 programmer: CreativeGP
 """
 import atexit
+import json
+import os
 import sys
 
 
@@ -125,6 +127,10 @@ def deal_with_import():
 
 def prepare_js():
     """Prepare JS file, running xaller programs."""
+    json_file = open(os.path.dirname(
+        os.path.abspath(__file__)) + "/html_rule.json", 'r')
+    Global.html_rules = json.load(json_file)
+
     genfunc.out("$(function() {")
 
     # RUN!!!!!

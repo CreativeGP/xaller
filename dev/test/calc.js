@@ -483,7 +483,42 @@ $(function() {
 	$('#eq_btn').click(function () {
 		var a = '';
 	});
-	var plus_btn = '';
+	var xaller_icon = '';
+	var xaller_icon$_web = '';
+	var xaller_icon$accesskey = '';
+	var xaller_icon$class = '';
+	var xaller_icon$contextmenu = '';
+	var xaller_icon$dir = '';
+	var xaller_icon$dropzone = '';
+	var xaller_icon$id = '';
+	var xaller_icon$itemid = '';
+	var xaller_icon$itemprop = '';
+	var xaller_icon$itemref = '';
+	var xaller_icon$itemscope = '';
+	var xaller_icon$itemtype = '';
+	var xaller_icon$lang = '';
+	var xaller_icon$style = '';
+	var xaller_icon$title = '';
+	var xaller_icon$translate = '';
+	var xaller_icon$contenteditable = false;
+	var xaller_icon$draggable = false;
+	var xaller_icon$hidden = false;
+	var xaller_icon$spellcheck = false;
+	var xaller_icon$tabindex = 0;
+	var xaller_icon$alt = '';
+	var xaller_icon$crossorigin = '';
+	var xaller_icon$longdesc = '';
+	var xaller_icon$referrerpolicy = '';
+	var xaller_icon$sizes = '';
+	var xaller_icon$src = '';
+	var xaller_icon$srcset = '';
+	var xaller_icon$usemap = '';
+	var xaller_icon$width = 0;
+	var xaller_icon$height = 0;
+	var xaller_icon$ismap = false;
+	{
+		xaller_icon$_web = 'Image'	}
+	xaller_icon$src = 'xaller.png'var plus_btn = '';
 	var plus_btn$_web = '';
 	var plus_btn$accesskey = '';
 	var plus_btn$class = '';

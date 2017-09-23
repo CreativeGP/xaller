@@ -17,6 +17,8 @@ vtypes = []
 tokens = []
 lines = []
 
+html_rules = None
+
 import_paths = [
     "./",
     "../test/",
