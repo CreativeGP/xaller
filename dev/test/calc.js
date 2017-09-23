@@ -450,7 +450,6 @@ $(function() {
 	});
 	button0$set_num(0);
 	button1$id = 'slsd';
-	$('#button1').attr('id', button1$id);
 	var eq_btn = '';
 	var eq_btn$_web = '';
 	var eq_btn$accesskey = '';
