@@ -1,0 +1,35 @@
+{
+  "global": {
+    "attr": [
+      "+", "-", "*", "/",
+      "%", "neg", "and", "or",
+      "xor", "not", "eq", ">",
+      "<", ">=", "<=", "concat",
+      "strlen", "substr", "strtrimr", "strtriml",
+      "strtrim", "strmatch", "stridx", "strridx",
+      "strrep"
+    ]
+  },
+
+  "img": {
+    "allowed_content": "none",
+    "abbrev": "denied",
+    "parent": "all",
+    "ARIA": "all",
+    "dom_interface": "HTMLImageElement",
+    "attr": {
+      "alt": { "type": "string" },
+      "crossorigin": { "type": "enum", "enums": ["anonymous", "use-credentials"] },
+      "height": { "type": "int" },
+      "ismap": { "type": "boolean" },
+      "longdesc": { "type": "string" },
+      "referrerpolicy": { "type": "enum", "enums": ["no-referrer", "no-referrer-when-downgrade", "origin", "origin-when-cross-origin", "unsafe-url"] },
+      "sizes": { "type": "boolean" },
+      "ismap": { "type": "boolean" },
+      "src": { "type": "string" },
+      "srcset": { "type": "string" },
+      "width": { "type": "int" },
+      "usemap": { "type": "string" }
+    }
+  }
+}
