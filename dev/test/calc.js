@@ -43,6 +43,32 @@ $(function() {
 	}
 	$('body').append("<textarea id='view' name='view'></textarea>");
 	view$cols = 3;
+	var div1 = '';
+	var div1$_web = '';
+	var div1$accesskey = '';
+	var div1$class = '';
+	var div1$contextmenu = '';
+	var div1$dir = '';
+	var div1$dropzone = '';
+	var div1$id = '';
+	var div1$itemid = '';
+	var div1$itemprop = '';
+	var div1$itemref = '';
+	var div1$itemscope = '';
+	var div1$itemtype = '';
+	var div1$lang = '';
+	var div1$style = '';
+	var div1$title = '';
+	var div1$translate = '';
+	var div1$contenteditable = false;
+	var div1$draggable = false;
+	var div1$hidden = false;
+	var div1$spellcheck = false;
+	var div1$tabindex = 0;
+	{
+		div1$_web = 'Div';
+	}
+	$('body').append("<div id='div1'></div>");
 	var button1 = '';
 	var button1$_web = '';
 	var button1$accesskey = '';
@@ -424,7 +450,7 @@ $(function() {
 	});
 	button0$set_num(0);
 	button1$id = 'slsd';
-	$('#id').attr('id', button1$id);
+	$('#button1').attr('id', button1$id);
 	var eq_btn = '';
 	var eq_btn$_web = '';
 	var eq_btn$accesskey = '';

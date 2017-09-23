@@ -26,8 +26,8 @@ view.cols = 3
         view.text = (concat view.text (.num)string)
     }
 }
-
-+(button1)numbtn
++(div1)Div
++(button1)numbtn 
 (button1.set_num 1)
 +(button2)numbtn
 (button2.set_num 2)
@@ -48,7 +48,6 @@ view.cols = 3
 +(button0)numbtn
 (button0.set_num 0)
 button1.id = 'slsd'
-
 +(eq_btn)Button
 eq_btn.text = '='
 @ (eq_btn.click) {

@@ -43,6 +43,30 @@
 }
 
 -(Div):Web_Object {    
+    @ (__init) {
+	._web = 'Div'
+    }
+}
+
+-(Image):Web_Object {
+    (alt)string
+    (crossorigin)string
+    (longdesc)string
+    (referrerpolicy)string
+    (sizes)string
+    (src)string
+    (srcset)string
+    (usemap)string
+
+    (width)int
+    (height)int
+    
+    (ismap)bool
+
+    @ (__init) {
+	._web = 'Image'
+    }
+    
 }
 
 -(Textbox):Web_Object {
