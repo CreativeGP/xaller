@@ -79,15 +79,6 @@ class Variable(object):
             web_type_name = genfunc.get_var(self.name[:self.name.rfind(".")]+"._web").value.string
             member_name = genfunc.expid(self.name[self.name.find(".")+1:])
             parent_name = genfunc.expid(self.name[:self.name.find(".")])
-            global_attrs = [
-                "accesskey", "class", "contextmenu",
-                "dir", "dropzone", "id",
-                "itemid", "itemprop", "itemref",
-                "itemscope", "itemtype", "lang",
-                "style", "title", "translate",
-                "contenteditable", "draggable", "hidden",
-                "spellcheck", "tabindex",
-            ]
 
             ret = False
             if js_out:
@@ -95,7 +86,7 @@ class Variable(object):
                 genfunc.out(";")
                 if member_name == 'text':
                     genfunc.outnoln("$(%s).html(" % genfunc.S("#" + genfunc.expid(parent_name)))
-                elif member_name in global_attrs:
+                elif member_name in Global.html_rules['global']['attr']:
                     print(member_name)
                     genfunc.outnoln("$('%s').attr('%s', " %
                                     ("#" + genfunc.expid(parent_name),
