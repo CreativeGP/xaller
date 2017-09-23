@@ -12,10 +12,11 @@
   },
 
   "img": {
-    "allowed_content": "none",
-    "abbrev": "denied",
-    "parent": "all",
-    "ARIA": "all",
+    "content_categories": ["flow", "phrasing", "embedded", "palpable"],
+    "allowed_contents": [],
+    "ommision": ["req_beg", "den_end"],
+    "permitted_parents": "any",
+    "permitted_ARIA_roles": "any",
     "dom_interface": "HTMLImageElement",
     "attr": {
       "alt": { "type": "string" },
@@ -30,6 +31,29 @@
       "srcset": { "type": "string" },
       "width": { "type": "int" },
       "usemap": { "type": "string" }
+    }
+  },
+
+  "button": {
+    "content_categories": ["flow", "phrasing", "interactive", "listed", "labelable", "submittable_form_associated", "palpable"],
+    "allowed_contents": ["phrasing"],
+    "ommision": ["req_beg", "req_end"],
+    "permitted_parents": ["phrasing"],
+    "permitted_ARIA_roles": ["checkbox", "link", "menuitem", "menuitemcheckbox", "menuitemradio", "radio", "switch", "tab"],
+    "dom_interface": "HTMLButtonElement",
+    "attr": {
+      "autofocus": { "type": "boolean" },
+      "autocomlete": { "type": "enum", "enums": ["on", "off"] },
+      "disabled": { "type": "boolean" },
+      "form": { "type": "id" },
+      "formaction": { "type": "uri" },
+      "formenctype": { "type": "enum", "enums": ["application/x-www-form-urlencoded", "multipart/form-data", "text/plain"] },
+      "formmethod": { "type": "enum", "enums": ["post", "get"] },
+      "formnovalidate": { "type": "boolean" },
+      "formtarget": { "type": "string" },
+      "name": { "type": "string" },
+      "type": { "type": "enum", "enums": ["submit", "button", "menu", "reset"] },
+      "value": { "type": "string" },
     }
   }
 }
