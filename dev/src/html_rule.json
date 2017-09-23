@@ -58,12 +58,12 @@
   },
 
   "textarea": {
-    "content_categories": ["flow", "phrasing", "interactive", "listed", "labelable", "submittable_form_associated", "palpable"],
-    "allowed_contents": ["phrasing"],
+    "content_categories": ["flow", "phrasing", "interactive", "listed", "labelable", "resettable", "submittable_form_associated", "palpable"],
+    "allowed_contents": ["text"],
     "ommision": ["req_beg", "req_end"],
     "permitted_parents": ["phrasing"],
-    "permitted_ARIA_roles": ["checkbox", "link", "menuitem", "menuitemcheckbox", "menuitemradio", "radio", "switch", "tab"],
-    "dom_interface": "HTMLButtonElement",
+    "permitted_ARIA_roles": "none",
+    "dom_interface": "HTMLTextAreaElement",
     "attr": {
       "autocapitalize": { "type": "enum", "enums": ["none", "centences", "words", "characters"] },
       "autocomlete": { "type": "enum", "enums": ["on", "off"] },
