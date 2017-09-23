@@ -55,5 +55,35 @@
       "type": { "type": "enum", "enums": ["submit", "button", "menu", "reset"] },
       "value": { "type": "string" }
     }
+  },
+
+  "textarea": {
+    "content_categories": ["flow", "phrasing", "interactive", "listed", "labelable", "submittable_form_associated", "palpable"],
+    "allowed_contents": ["phrasing"],
+    "ommision": ["req_beg", "req_end"],
+    "permitted_parents": ["phrasing"],
+    "permitted_ARIA_roles": ["checkbox", "link", "menuitem", "menuitemcheckbox", "menuitemradio", "radio", "switch", "tab"],
+    "dom_interface": "HTMLButtonElement",
+    "attr": {
+      "autocapitalize": { "type": "enum", "enums": ["none", "centences", "words", "characters"] },
+      "autocomlete": { "type": "enum", "enums": ["on", "off"] },
+      "autofocus": { "type": "boolean" },
+      "cols": { "type": "int" },
+      "disabled": { "type": "boolean" },
+      "form": { "type": "id" },
+      "maxlength": { "type": "int" },
+      "minlength": { "type": "int" },
+      "name": { "type": "string" },
+      "placeholder": { "type": "string" },
+      "readonly": { "type": "boolean" },
+      "required": { "type": "boolean" },
+      "rows": { "type": "int" },
+      "selectionDirection": { "type": "enum", "enums": ["none", "forward", "backword""] },
+      "selectionEnd": { "type": "int" },
+      "selectionEnd": { "type": "int" },
+      "spellcheck": { "type": "enum", "enums": ["default", "true", "false"] },
+      "wrap": { "type": "enum", "enums": ["hard", "soft"] },
+    }
   }
+
 }
