@@ -80,17 +80,24 @@ class Variable(object):
             member_name = genfunc.expid(self.name[self.name.find(".")+1:])
             parent_name = genfunc.expid(self.name[:self.name.find(".")])
 
+            type_to_tag = {"Image":"img", "Button":"button"}
+            tag_name = 'none'
+            if member_name in Global.html_rules['global']['attr']:
+                tag_name = 'global'
+            if ((web_type_name in type_to_tag
+                 and member_name in Global.html_rules[type_to_tag[web_type_name]]['attr'].keys())):
+                tag_name = type_to_tag[web_type_name]
+
             ret = False
             if js_out:
                 genfunc.solvebuf()
                 genfunc.out(";")
                 if member_name == 'text':
                     genfunc.outnoln("$(%s).html(" % genfunc.S("#" + genfunc.expid(parent_name)))
-                elif member_name in Global.html_rules['global']['attr']:
-                    print(member_name)
+                elif tag_name != 'none':
                     genfunc.outnoln("$('%s').attr('%s', " %
                                     ("#" + genfunc.expid(parent_name),
-                                     global_attrs[global_attrs.index(member_name)]))
+                                     member_name))
                 else:
                     ret = True
             else:

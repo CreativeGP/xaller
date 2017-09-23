@@ -53,7 +53,7 @@
       "formtarget": { "type": "string" },
       "name": { "type": "string" },
       "type": { "type": "enum", "enums": ["submit", "button", "menu", "reset"] },
-      "value": { "type": "string" },
+      "value": { "type": "string" }
     }
   }
 }
