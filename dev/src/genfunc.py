@@ -57,8 +57,8 @@ def is_var_web(var):
     if var is None: return False
 
     return (var.external
-            and get_var(var.name[:var.name.rfind(".")]+".web") != -1
-            and get_var(var.name[:var.name.rfind(".")]+".web") is not var)
+            and get_var(var.name[:var.name.rfind(".")]+"._web") != -1
+            and get_var(var.name[:var.name.rfind(".")]+"._web") is not var)
 
 
 def dbgprint(string):
@@ -955,7 +955,7 @@ def translate(token_list, static_default=None):
                 memdst[i].subst(memsrc[i])
                 out(";")
                 memdst[i].value = memsrc[i].value
-        return True
+#        return True
 
     # プログラム変数作成 ^( name ) race
     elif len(run_tokens) >= 4 and \

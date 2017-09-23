@@ -53,7 +53,7 @@ eq_btn.text = '='
 @ (eq_btn.click) {
     (a)string
 }
-(xaller_icon)Image
++(xaller_icon)Image
 xaller_icon.src = 'xaller.png'
 
 
