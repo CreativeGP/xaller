@@ -996,8 +996,10 @@ def translate(token_list, static_default=None):
             # 内包される要素があった場合
             included_block = Global.blocks[translate.element_stack[-1]]
             pos = "in " + included_block.root[2].string
-        if get_block_idx(Global.exel) != -1:
-            translate.element_stack.append(get_block_idx(Global.exel))
+        print(get_block_idx(Global.exel + 1))
+        if get_block_idx(Global.exel + 1) != -1:
+            out("{")
+            translate.element_stack.append(get_block_idx(Global.exel + 1))
 
         # ドットが変数名に入っているときにはエラー
         if '.' in name:
