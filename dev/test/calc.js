@@ -44,155 +44,157 @@ $(function() {
 	$('body').append("<textarea id='view' name='view'></textarea>");
 	view$cols = 3;
 	;
-	var div1 = '';
-	var div1$_web = '';
-	var div1$accesskey = '';
-	var div1$class = '';
-	var div1$contextmenu = '';
-	var div1$dir = '';
-	var div1$dropzone = '';
-	var div1$id = '';
-	var div1$itemid = '';
-	var div1$itemprop = '';
-	var div1$itemref = '';
-	var div1$itemscope = '';
-	var div1$itemtype = '';
-	var div1$lang = '';
-	var div1$style = '';
-	var div1$title = '';
-	var div1$translate = '';
-	var div1$contenteditable = false;
-	var div1$draggable = false;
-	var div1$hidden = false;
-	var div1$spellcheck = false;
-	var div1$tabindex = 0;
 	{
-		div1$_web = 'Div';
+		var div1 = '';
+		var div1$_web = '';
+		var div1$accesskey = '';
+		var div1$class = '';
+		var div1$contextmenu = '';
+		var div1$dir = '';
+		var div1$dropzone = '';
+		var div1$id = '';
+		var div1$itemid = '';
+		var div1$itemprop = '';
+		var div1$itemref = '';
+		var div1$itemscope = '';
+		var div1$itemtype = '';
+		var div1$lang = '';
+		var div1$style = '';
+		var div1$title = '';
+		var div1$translate = '';
+		var div1$contenteditable = false;
+		var div1$draggable = false;
+		var div1$hidden = false;
+		var div1$spellcheck = false;
+		var div1$tabindex = 0;
+		{
+			div1$_web = 'Div';
+		}
+		$('body').append("<div id='div1'></div>");
+		var button1 = '';
+		var button1$_web = '';
+		var button1$accesskey = '';
+		var button1$class = '';
+		var button1$contextmenu = '';
+		var button1$dir = '';
+		var button1$dropzone = '';
+		var button1$id = '';
+		var button1$itemid = '';
+		var button1$itemprop = '';
+		var button1$itemref = '';
+		var button1$itemscope = '';
+		var button1$itemtype = '';
+		var button1$lang = '';
+		var button1$style = '';
+		var button1$title = '';
+		var button1$translate = '';
+		var button1$contenteditable = false;
+		var button1$draggable = false;
+		var button1$hidden = false;
+		var button1$spellcheck = false;
+		var button1$tabindex = 0;
+		var button1$text = '';
+		var button1$num = 0;
+		{
+			button1$_web = 'Button';
+		}
+		$('#div1').append("<button type='button' id='button1'></button>");
+		function button1$set_num(num) {
+			button1$num = num;
+			;
+			button1$text = Number(num);
+			$('#button1').html(button1$text);
+			;
+		}
+		$('#button1').click(function () {
+			view$text = (view$text + String((button1$num)));
+			$('#view').html(view$text);
+			;
+		});
+		button1$set_num(1);
+		var button2 = '';
+		var button2$_web = '';
+		var button2$accesskey = '';
+		var button2$class = '';
+		var button2$contextmenu = '';
+		var button2$dir = '';
+		var button2$dropzone = '';
+		var button2$id = '';
+		var button2$itemid = '';
+		var button2$itemprop = '';
+		var button2$itemref = '';
+		var button2$itemscope = '';
+		var button2$itemtype = '';
+		var button2$lang = '';
+		var button2$style = '';
+		var button2$title = '';
+		var button2$translate = '';
+		var button2$contenteditable = false;
+		var button2$draggable = false;
+		var button2$hidden = false;
+		var button2$spellcheck = false;
+		var button2$tabindex = 0;
+		var button2$text = '';
+		var button2$num = 0;
+		{
+			button2$_web = 'Button';
+		}
+		$('#div1').append("<button type='button' id='button2'></button>");
+		function button2$set_num(num) {
+			button2$num = num;
+			;
+			button2$text = Number(num);
+			$('#button2').html(button2$text);
+			;
+		}
+		$('#button2').click(function () {
+			view$text = (view$text + String((button2$num)));
+			$('#view').html(view$text);
+			;
+		});
+		button2$set_num(2);
+		var button3 = '';
+		var button3$_web = '';
+		var button3$accesskey = '';
+		var button3$class = '';
+		var button3$contextmenu = '';
+		var button3$dir = '';
+		var button3$dropzone = '';
+		var button3$id = '';
+		var button3$itemid = '';
+		var button3$itemprop = '';
+		var button3$itemref = '';
+		var button3$itemscope = '';
+		var button3$itemtype = '';
+		var button3$lang = '';
+		var button3$style = '';
+		var button3$title = '';
+		var button3$translate = '';
+		var button3$contenteditable = false;
+		var button3$draggable = false;
+		var button3$hidden = false;
+		var button3$spellcheck = false;
+		var button3$tabindex = 0;
+		var button3$text = '';
+		var button3$num = 0;
+		{
+			button3$_web = 'Button';
+		}
+		$('#div1').append("<button type='button' id='button3'></button>");
+		function button3$set_num(num) {
+			button3$num = num;
+			;
+			button3$text = Number(num);
+			$('#button3').html(button3$text);
+			;
+		}
+		$('#button3').click(function () {
+			view$text = (view$text + String((button3$num)));
+			$('#view').html(view$text);
+			;
+		});
+		button3$set_num(3);
 	}
-	$('body').append("<div id='div1'></div>");
-	var button1 = '';
-	var button1$_web = '';
-	var button1$accesskey = '';
-	var button1$class = '';
-	var button1$contextmenu = '';
-	var button1$dir = '';
-	var button1$dropzone = '';
-	var button1$id = '';
-	var button1$itemid = '';
-	var button1$itemprop = '';
-	var button1$itemref = '';
-	var button1$itemscope = '';
-	var button1$itemtype = '';
-	var button1$lang = '';
-	var button1$style = '';
-	var button1$title = '';
-	var button1$translate = '';
-	var button1$contenteditable = false;
-	var button1$draggable = false;
-	var button1$hidden = false;
-	var button1$spellcheck = false;
-	var button1$tabindex = 0;
-	var button1$text = '';
-	var button1$num = 0;
-	{
-		button1$_web = 'Button';
-	}
-	$('body').append("<button type='button' id='button1'></button>");
-	function button1$set_num(num) {
-		button1$num = num;
-		;
-		button1$text = Number(num);
-		$('#button1').html(button1$text);
-		;
-	}
-	$('#button1').click(function () {
-		view$text = (view$text + String((button1$num)));
-		$('#view').html(view$text);
-		;
-	});
-	button1$set_num(1);
-	var button2 = '';
-	var button2$_web = '';
-	var button2$accesskey = '';
-	var button2$class = '';
-	var button2$contextmenu = '';
-	var button2$dir = '';
-	var button2$dropzone = '';
-	var button2$id = '';
-	var button2$itemid = '';
-	var button2$itemprop = '';
-	var button2$itemref = '';
-	var button2$itemscope = '';
-	var button2$itemtype = '';
-	var button2$lang = '';
-	var button2$style = '';
-	var button2$title = '';
-	var button2$translate = '';
-	var button2$contenteditable = false;
-	var button2$draggable = false;
-	var button2$hidden = false;
-	var button2$spellcheck = false;
-	var button2$tabindex = 0;
-	var button2$text = '';
-	var button2$num = 0;
-	{
-		button2$_web = 'Button';
-	}
-	$('body').append("<button type='button' id='button2'></button>");
-	function button2$set_num(num) {
-		button2$num = num;
-		;
-		button2$text = Number(num);
-		$('#button2').html(button2$text);
-		;
-	}
-	$('#button2').click(function () {
-		view$text = (view$text + String((button2$num)));
-		$('#view').html(view$text);
-		;
-	});
-	button2$set_num(2);
-	var button3 = '';
-	var button3$_web = '';
-	var button3$accesskey = '';
-	var button3$class = '';
-	var button3$contextmenu = '';
-	var button3$dir = '';
-	var button3$dropzone = '';
-	var button3$id = '';
-	var button3$itemid = '';
-	var button3$itemprop = '';
-	var button3$itemref = '';
-	var button3$itemscope = '';
-	var button3$itemtype = '';
-	var button3$lang = '';
-	var button3$style = '';
-	var button3$title = '';
-	var button3$translate = '';
-	var button3$contenteditable = false;
-	var button3$draggable = false;
-	var button3$hidden = false;
-	var button3$spellcheck = false;
-	var button3$tabindex = 0;
-	var button3$text = '';
-	var button3$num = 0;
-	{
-		button3$_web = 'Button';
-	}
-	$('body').append("<button type='button' id='button3'></button>");
-	function button3$set_num(num) {
-		button3$num = num;
-		;
-		button3$text = Number(num);
-		$('#button3').html(button3$text);
-		;
-	}
-	$('#button3').click(function () {
-		view$text = (view$text + String((button3$num)));
-		$('#view').html(view$text);
-		;
-	});
-	button3$set_num(3);
 	var button4 = '';
 	var button4$_web = '';
 	var button4$accesskey = '';
@@ -220,7 +222,7 @@ $(function() {
 	{
 		button4$_web = 'Button';
 	}
-	$('body').append("<button type='button' id='button4'></button>");
+	$('#div1').append("<button type='button' id='button4'></button>");
 	function button4$set_num(num) {
 		button4$num = num;
 		;
