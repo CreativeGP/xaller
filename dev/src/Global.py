@@ -35,6 +35,17 @@ buildin_func_names = [
 'strrep',
 ]
 
+jstypes = {'Integer':'Number', 'String':'String', 'Boolean':'Boolean'}
+sep_type = {
+    ',':',', '+':'+', '-':'-', '*':'*',
+    '/':'/', '%':'%', 'neg':'-', 'or':'||',
+    'and':'&&', 'not':'!', 'xor':'^', 'eq':'==',
+    '<':'<', '>':'>', '<=':'<=', '>=':'>=',
+    'concat':'+', 'strlen':',', 'substr':',', 'strtrimr':',',
+    'strtriml':',', 'strtrim':',', 'strmatch':',', 'stridx':',',
+    'strridx':',', 'strrep':',',
+}
+
 output = ''
 input = ''
 

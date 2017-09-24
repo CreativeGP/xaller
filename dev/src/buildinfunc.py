@@ -230,7 +230,7 @@ def xaller_strtrim(arg):
 def xaller_strmatch(arg):
     pass # Coming soon.
 
-# (stridx cmpstr string)
+# (stridx cmpstr string) => stridx$(cmpstr, string) { return cmpstr.indexOf(string); }
 def xaller_stridx(arg):
     ans = -1
     if len(arg) == 2:
@@ -268,6 +268,7 @@ def xaller_strridx(arg):
                 break
     else: genfunc.err("Functino 'strridx' > Wrong arguments. (strridx cmpstr string)")
     return Value(str(ans), genfunc.get_value_type('int'))
-    
+
+# (strrep srcstr pattern replacement)   
 def xaller_strrep(arg):
     pass # Coming soon.
