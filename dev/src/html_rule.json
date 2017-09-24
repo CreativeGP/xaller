@@ -1,13 +1,13 @@
 {
   "global": {
     "attr": [
-      "+", "-", "*", "/",
-      "%", "neg", "and", "or",
-      "xor", "not", "eq", ">",
-      "<", ">=", "<=", "concat",
-      "strlen", "substr", "strtrimr", "strtriml",
-      "strtrim", "strmatch", "stridx", "strridx",
-      "strrep"
+      "accesskey", "class", "contextmenu",
+      "dir", "dropzone", "id",
+      "itemid", "itemprop", "itemref",
+      "itemscope", "itemtype", "lang",
+      "style", "title", "translate",
+      "contenteditable", "draggable", "hidden",
+      "spellcheck", "tabindex"
     ]
   },
 

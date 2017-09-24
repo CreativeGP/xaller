@@ -429,6 +429,26 @@ def get_func_idx(string):
             ans = func.func_ind
     return ans
 
+
+def out_arg_value(tkn, next_tkn, sep):
+    js_formatted_string = ("'" + tkn.string + "'"
+                           if tkn.ttype.String
+                           else tkn.string)
+
+    if get_var(tkn.string) is not None:
+        var = get_var(tkn.string)
+        var.refer()
+    else:
+        Global.jsbuf += js_formatted_string
+
+    if next_tkn.string != ")":
+        sep = Global.sep_type[sep]
+        Global.jsbuf += ("%s"
+                         % (','
+                            if sep == ',' else
+                            ' ' + sep + ' '))
+
+
 def out_expression(token_list, get_string=False):
     """Output to JS file an expression."""
     if get_string: backup = Global.jsbuf
@@ -437,16 +457,6 @@ def out_expression(token_list, get_string=False):
     con = -1
     buildin = [',']
     begof = []
-    jstypes = {'Integer':'Number', 'String':'String', 'Boolean':'Boolean'}
-    sep_type = {
-        ',':',', '+':'+', '-':'-', '*':'*',
-        '/':'/', '%':'%', 'neg':'-', 'or':'||',
-        'and':'&&', 'not':'!', 'xor':'^', 'eq':'==',
-        '<':'<', '>':'>', '<=':'<=', '>=':'>=',
-        'concat':'+', 'strlen':'', 'substr':'', 'strtrimr':'',
-        'strtriml':'', 'strtrim':'', 'strmatch':'', 'stridx':'',
-        'strridx':'', 'strrep':'',
-    }
 
     if len(token_list) == 1:
         if is_var_exists(token_list[0].string):
@@ -466,9 +476,9 @@ def out_expression(token_list, get_string=False):
             if len(token_list) == 4:
                 cast = get_value_type(token_list[3].string).race
 
-            outnoln((jstypes[get_var(token_list[1].string).value.type.race]
+            outnoln((GLobal.jstypes[get_var(token_list[1].string).value.type.race]
                      if cast == '' else
-                     jstypes[cast]) + "(")
+                     Global.jstypes[cast]) + "(")
 
             if is_var_exists(token_list[1].string):
                 get_var(token_list[1].string).refer()
@@ -489,26 +499,33 @@ def out_expression(token_list, get_string=False):
                 # 関数ではない場合があるのでその場合は値か変数
                 lvl += 1
                 con = i+1
+                func_name = token_list[i+1].string
                 if ((is_string(token_list[i+1])
                      or is_number(token_list[i+1])
-                     or get_var(token_list[i+1].string))):
+                     or get_var(func_name))):
                     # 関数ではない場合:
                     con = 0
                     buildin.append(' ')
                     begof.append(len(Global.jsbuf))
                     Global.jsbuf += "("
-                elif FunctionClass.Function.n2i(token_list[i+1].string) < -1:
+                elif FunctionClass.Function.n2i(func_name) < -1:
                     # ビルドイン関数の場合:
                     # ビルドイン記号と関数の開始位置を更新して開始用カッコをつける
-                    buildin.append(token_list[i+1].string)
+                    buildin.append(func_name)
                     begof.append(len(Global.jsbuf))
+
+                    # NOTE(cgp) 関数がビルドインだけど単純な演算子で表現で
+                    # きない場合に専用の処理をする
+                    if Global.sep_type[func_name] == ",":
+                        Global.jsbuf += func_name + "$"
+
                     Global.jsbuf += "("
                 else:
                     # 普通関数の場合:
                     # コンマと関数の開始位置を更新して関数名と開始用カッコをつける
                     buildin.append(',')
                     begof.append(len(Global.jsbuf))
-                    Global.jsbuf += expname(token_list[i+1].string) + "("
+                    Global.jsbuf += expname(func_name) + "("
             elif tkn.string == ')':
                 # 関数終了の場合:
                 # 原則として終了用途じカッコをつける処理が主
@@ -527,7 +544,7 @@ def out_expression(token_list, get_string=False):
                     # Output casting.
                     con = i + 1
 
-                    jstype = jstypes[cast_vt.race]
+                    jstype = Global.jstypes[cast_vt.race]
                     tmp = begof[-1]
                     Global.jsbuf = ("%s(%s)"
                                     % (Global.jsbuf[:tmp] + jstype,
@@ -537,7 +554,7 @@ def out_expression(token_list, get_string=False):
                 if is_arg:
                     # 引数だった場合
                     # 区切り文字を加える (cp L414 415)
-                    sep = sep_type[buildin[-1]]
+                    sep = Global.sep_type[buildin[-1]]
                     Global.jsbuf += ("%s "
                                      % (','
                                         if buildin[-1] == ',' else
@@ -552,24 +569,10 @@ def out_expression(token_list, get_string=False):
                 # NOTE: Web変数は展開して出力
                 # TODO: これだけでは値が定義されていなかった場合の処理が適切ではないので改善する
                 # eval_tokens([t])
-                js_formatted_string = ("'" + tkn.string + "'"
-                                       if tkn.ttype.String
-                                       else tkn.string)
-                print(tkn.string)
-                if get_var(tkn.string) is not None:
-                    var = get_var(tkn.string)
-                    var.refer()
-                else:
-                    Global.jsbuf += js_formatted_string
-
-                if token_list[i+1].string != ")":
-                    sep = sep_type[buildin[-1]]
-                    Global.jsbuf += ("%s"
-                                     % (','
-                                        if buildin[-1] == ',' else
-                                        ' ' + sep + ' '))
+                out_arg_value(tkn, token_list[i+1], buildin[-1])
         except IndexError:
             pass
+
     if get_string:
         diff = Global.jsbuf - tmp
         Global.jsbuf = tmp

@@ -12,57 +12,59 @@
 #     }
 # }
 
-+(view)Textbox
-view.cols = 3
+# +(view)Textbox
+# view.cols = 3
 
--(numbtn):Button {
-    (num)int
-    @ (set_num (num)int) {
-        .num = num
-        .text = (num)string
-    }
-    @ (click) {
-        # 文字を後ろにくっつける
-        view.text = (concat view.text (.num)string)
-    }
-}
-+(div1)Div {
-+(button1)numbtn 
-(button1.set_num 1)
-+(button2)numbtn
-(button2.set_num 2)
-+(button3)numbtn
-(button3.set_num 3)
-}
-+(button4)numbtn
-(button4.set_num 4)
-+(button5)numbtn
-(button5.set_num 5)
-+(button6)numbtn
-(button6.set_num 6)
-+(button7)numbtn
-(button7.set_num 7)
-+(button8)numbtn
-(button8.set_num 8)
-+(button9)numbtn
-(button9.set_num 9)
-+(button0)numbtn
-(button0.set_num 0)
-button1.id = 'slsd'
-+(eq_btn)Button
-eq_btn.text = '='
-@ (eq_btn.click) {
-    (a)string
-}
-+(xaller_icon)Image
-xaller_icon.src = 'xaller.png'
-button1.text = xaller_icon.src
+# -(numbtn):Button {
+#     (num)int
+#     @ (set_num (num)int) {
+#         .num = num
+#         .text = (num)string
+#     }
+#     @ (click) {
+#         # 文字を後ろにくっつける
+#         view.text = (concat view.text (.num)string)
+#     }
+# }
+
+# +(div1)Div {
+# +(button1)numbtn 
+# (button1.set_num 1)
+# +(button2)numbtn
+# (button2.set_num 2)
+# +(button3)numbtn
+# (button3.set_num 3)
+# }
+
+# +(button4)numbtn
+# (button4.set_num 4)
+# +(button5)numbtn
+# (button5.set_num 5)
+# +(button6)numbtn
+# (button6.set_num 6)
+# +(button7)numbtn
+# (button7.set_num 7)
+# +(button8)numbtn
+# (button8.set_num 8)
+# +(button9)numbtn
+# (button9.set_num 9)
+# +(button0)numbtn
+# (button0.set_num 0)
+# button1.id = 'slsd'
+# +(eq_btn)Button
+# eq_btn.text = '='
+# @ (eq_btn.click) {
+#     (a)string
+# }
+
+# +(xaller_icon)Image
+# xaller_icon.src = 'xaller.png'
+# xaller_icon.id = 'xicon'
+# button1.text = xaller_icon.src
 
 
 +(plus_btn)Button
-plus_btn.text = '+'
-@ (plus_btn.click) {
-    view.text = (concat view.text '+')
-}
+(s)string
+plus_btn.text = (strrep ' calc c  d  ' 'c' 'C')
 
 end

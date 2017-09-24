@@ -131,6 +131,45 @@ def prepare_js():
         os.path.abspath(__file__)) + "/html_rule.json", 'r')
     Global.html_rules = json.load(json_file)
 
+    # 'strtrimr':'',
+    # 'strtriml'
+    # 'strridx':',', 'strrep':'',
+    genfunc.out("""function strlen$(str) { return str.length; }""")
+    genfunc.out("""function substr$(str, start, length=-1) { if (length == -1) { length = str.length - start;} return str.substr(start, length); }""")
+    genfunc.out("""
+function strtrim$(str, char) {
+    res = ''
+    for (var i = 0; i < str.length; i++) {
+        if (str[i] != char) { res += str[i]; }
+    }
+    return res;
+}
+""")
+    genfunc.out("""
+function strtriml$(str, char) {
+    res = ''
+    if (str[0] != char) { return str; }
+    for (var i = 0; i < str.length; i++) {
+        if (str[i] != char) { res = str.substr(i); break; }
+    }
+    return res;
+}
+""")
+    genfunc.out("""
+function strtrimr$(str, char) {
+    res = ''
+    if (str[str.length-1] != char) { return str; }
+    for (var i = str.length-1; i >= 0; i--) {
+        if (str[i] != char) { res = str.substr(0, i+1); break; }
+    }
+    return res;
+}
+""")
+    genfunc.out("""function stridx$(cmpstr, string) { return cmpstr.indexOf(string); }""")
+    genfunc.out("""function strridx$(cmpstr, string) { return cmpstr.lastIndexOf(string); }""")
+    genfunc.out("""function strrep$(src, pattern, replacement) {
+var regExp = new RegExp(pattern, "g");
+return src.replace(regExp, replacement); }""")
     genfunc.out("$(function() {")
 
     # RUN!!!!!
