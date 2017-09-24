@@ -449,16 +449,35 @@ def out_expression(token_list, get_string=False):
     }
 
     if len(token_list) == 1:
-        outnoln((S(token_list[0].string)
-                 if token_list[0].ttype.String else
-                 token_list[0].string))
+        if is_var_exists(token_list[0].string):
+            get_var(token_list[0].string).refer()
+        else:
+            outnoln((S(token_list[0].string)
+                     if token_list[0].ttype.String else
+                     token_list[0].string))
         return
 
-    if len(token_list) == 3 or len(token_list) == 4:
-        if is_var_exists(token_list[1].string):
-            outnoln("%s(%s)"
-                    % (jstypes[get_var(token_list[1].string).value.type.race],
-                       token_list[1].string))
+    # NOTE(cgp) 関数ではない呼び出し
+    if ((len(token_list) == 3 or len(token_list) == 4
+         and token_list[0].string == '('
+         and token_list[2].string == ')')):
+        if FunctionClass.Function.n2i(token_list[1].string) == -1:
+            cast = ''
+            if len(token_list) == 4:
+                cast = get_value_type(token_list[3].string).race
+
+            outnoln((jstypes[get_var(token_list[1].string).value.type.race]
+                     if cast == '' else
+                     jstypes[cast]) + "(")
+
+            if is_var_exists(token_list[1].string):
+                get_var(token_list[1].string).refer()
+                solvebuf()
+            else:
+                outnoln((S(token_list[1].string)
+                         if token_list[1].ttype.String else
+                         token_list[1].string))
+            outnoln(")")    
             return
 
     for i, tkn in enumerate(token_list):
@@ -501,14 +520,14 @@ def out_expression(token_list, get_string=False):
 
                 lvl -= 1
                 is_arg = token_list[i+1].string != ")"
-                if get_value_type(token_list[i+1].string) is not None:
+                cast_vt = get_value_type(token_list[i+1].string)
+                if cast_vt is not None:
                     # キャストがあった場合:
                     # ある場合は関数の開始位置に型変換関数名追加して式全体を括弧で括る
                     # Output casting.
                     con = i + 1
 
-                    jstype = jstypes[
-                        get_value_type(token_list[i+1].string).race]
+                    jstype = jstypes[cast_vt.race]
                     tmp = begof[-1]
                     Global.jsbuf = ("%s(%s)"
                                     % (Global.jsbuf[:tmp] + jstype,
@@ -536,12 +555,10 @@ def out_expression(token_list, get_string=False):
                 js_formatted_string = ("'" + tkn.string + "'"
                                        if tkn.ttype.String
                                        else tkn.string)
+                print(tkn.string)
                 if get_var(tkn.string) is not None:
                     var = get_var(tkn.string)
-                    if is_var_web(var):
-                        var.refer()
-                    else:
-                        Global.jsbuf += js_formatted_string
+                    var.refer()
                 else:
                     Global.jsbuf += js_formatted_string
 

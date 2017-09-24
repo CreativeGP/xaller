@@ -56,6 +56,7 @@ eq_btn.text = '='
 }
 +(xaller_icon)Image
 xaller_icon.src = 'xaller.png'
+button1.text = xaller_icon.src
 
 
 +(plus_btn)Button
