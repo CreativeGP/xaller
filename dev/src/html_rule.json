@@ -78,12 +78,11 @@
       "readonly": { "type": "boolean" },
       "required": { "type": "boolean" },
       "rows": { "type": "int" },
-      "selectionDirection": { "type": "enum", "enums": ["none", "forward", "backword""] },
+      "selectionDirection": { "type": "enum", "enums": ["none", "forward", "backword"] },
       "selectionEnd": { "type": "int" },
       "selectionEnd": { "type": "int" },
       "spellcheck": { "type": "enum", "enums": ["default", "true", "false"] },
-      "wrap": { "type": "enum", "enums": ["hard", "soft"] },
+      "wrap": { "type": "enum", "enums": ["hard", "soft"] }
     }
   }
-
 }

@@ -40,9 +40,11 @@ $(function() {
 	var view$wrap = '';
 	{
 		view$_web = 'Textbox';
+		;
 	}
 	$('body').append("<textarea id='view' name='view'></textarea>");
 	view$cols = 3;
+	$('#view').attr('cols', view$cols);
 	;
 	{
 		var div1 = '';
@@ -69,6 +71,7 @@ $(function() {
 		var div1$tabindex = 0;
 		{
 			div1$_web = 'Div';
+			;
 		}
 		$('body').append("<div id='div1'></div>");
 		var button1 = '';
@@ -97,19 +100,18 @@ $(function() {
 		var button1$num = 0;
 		{
 			button1$_web = 'Button';
+			;
 		}
 		$('#div1').append("<button type='button' id='button1'></button>");
 		function button1$set_num(num) {
 			button1$num = num;
 			;
-			button1$text = Number(num);
-			$('#button1').html(button1$text);
-			;
+			button1$text = String(num);
+			$('#button1').html(button1$text);;
 		}
 		$('#button1').click(function () {
-			view$text = (view$text + String((button1$num)));
-			$('#view').html(view$text);
-			;
+			view$text = ($('#view').html() + String((button1$num)));
+			$('#view').html(view$text);;
 		});
 		button1$set_num(1);
 		var button2 = '';
@@ -138,19 +140,18 @@ $(function() {
 		var button2$num = 0;
 		{
 			button2$_web = 'Button';
+			;
 		}
 		$('#div1').append("<button type='button' id='button2'></button>");
 		function button2$set_num(num) {
 			button2$num = num;
 			;
-			button2$text = Number(num);
-			$('#button2').html(button2$text);
-			;
+			button2$text = String(num);
+			$('#button2').html(button2$text);;
 		}
 		$('#button2').click(function () {
-			view$text = (view$text + String((button2$num)));
-			$('#view').html(view$text);
-			;
+			view$text = ($('#view').html() + String((button2$num)));
+			$('#view').html(view$text);;
 		});
 		button2$set_num(2);
 		var button3 = '';
@@ -179,19 +180,18 @@ $(function() {
 		var button3$num = 0;
 		{
 			button3$_web = 'Button';
+			;
 		}
 		$('#div1').append("<button type='button' id='button3'></button>");
 		function button3$set_num(num) {
 			button3$num = num;
 			;
-			button3$text = Number(num);
-			$('#button3').html(button3$text);
-			;
+			button3$text = String(num);
+			$('#button3').html(button3$text);;
 		}
 		$('#button3').click(function () {
-			view$text = (view$text + String((button3$num)));
-			$('#view').html(view$text);
-			;
+			view$text = ($('#view').html() + String((button3$num)));
+			$('#view').html(view$text);;
 		});
 		button3$set_num(3);
 	}
@@ -221,19 +221,18 @@ $(function() {
 	var button4$num = 0;
 	{
 		button4$_web = 'Button';
+		;
 	}
 	$('#div1').append("<button type='button' id='button4'></button>");
 	function button4$set_num(num) {
 		button4$num = num;
 		;
-		button4$text = Number(num);
-		$('#button4').html(button4$text);
-		;
+		button4$text = String(num);
+		$('#button4').html(button4$text);;
 	}
 	$('#button4').click(function () {
-		view$text = (view$text + String((button4$num)));
-		$('#view').html(view$text);
-		;
+		view$text = ($('#view').html() + String((button4$num)));
+		$('#view').html(view$text);;
 	});
 	button4$set_num(4);
 	var button5 = '';
@@ -262,19 +261,18 @@ $(function() {
 	var button5$num = 0;
 	{
 		button5$_web = 'Button';
+		;
 	}
 	$('body').append("<button type='button' id='button5'></button>");
 	function button5$set_num(num) {
 		button5$num = num;
 		;
-		button5$text = Number(num);
-		$('#button5').html(button5$text);
-		;
+		button5$text = String(num);
+		$('#button5').html(button5$text);;
 	}
 	$('#button5').click(function () {
-		view$text = (view$text + String((button5$num)));
-		$('#view').html(view$text);
-		;
+		view$text = ($('#view').html() + String((button5$num)));
+		$('#view').html(view$text);;
 	});
 	button5$set_num(5);
 	var button6 = '';
@@ -303,19 +301,18 @@ $(function() {
 	var button6$num = 0;
 	{
 		button6$_web = 'Button';
+		;
 	}
 	$('body').append("<button type='button' id='button6'></button>");
 	function button6$set_num(num) {
 		button6$num = num;
 		;
-		button6$text = Number(num);
-		$('#button6').html(button6$text);
-		;
+		button6$text = String(num);
+		$('#button6').html(button6$text);;
 	}
 	$('#button6').click(function () {
-		view$text = (view$text + String((button6$num)));
-		$('#view').html(view$text);
-		;
+		view$text = ($('#view').html() + String((button6$num)));
+		$('#view').html(view$text);;
 	});
 	button6$set_num(6);
 	var button7 = '';
@@ -344,19 +341,18 @@ $(function() {
 	var button7$num = 0;
 	{
 		button7$_web = 'Button';
+		;
 	}
 	$('body').append("<button type='button' id='button7'></button>");
 	function button7$set_num(num) {
 		button7$num = num;
 		;
-		button7$text = Number(num);
-		$('#button7').html(button7$text);
-		;
+		button7$text = String(num);
+		$('#button7').html(button7$text);;
 	}
 	$('#button7').click(function () {
-		view$text = (view$text + String((button7$num)));
-		$('#view').html(view$text);
-		;
+		view$text = ($('#view').html() + String((button7$num)));
+		$('#view').html(view$text);;
 	});
 	button7$set_num(7);
 	var button8 = '';
@@ -385,19 +381,18 @@ $(function() {
 	var button8$num = 0;
 	{
 		button8$_web = 'Button';
+		;
 	}
 	$('body').append("<button type='button' id='button8'></button>");
 	function button8$set_num(num) {
 		button8$num = num;
 		;
-		button8$text = Number(num);
-		$('#button8').html(button8$text);
-		;
+		button8$text = String(num);
+		$('#button8').html(button8$text);;
 	}
 	$('#button8').click(function () {
-		view$text = (view$text + String((button8$num)));
-		$('#view').html(view$text);
-		;
+		view$text = ($('#view').html() + String((button8$num)));
+		$('#view').html(view$text);;
 	});
 	button8$set_num(8);
 	var button9 = '';
@@ -426,19 +421,18 @@ $(function() {
 	var button9$num = 0;
 	{
 		button9$_web = 'Button';
+		;
 	}
 	$('body').append("<button type='button' id='button9'></button>");
 	function button9$set_num(num) {
 		button9$num = num;
 		;
-		button9$text = Number(num);
-		$('#button9').html(button9$text);
-		;
+		button9$text = String(num);
+		$('#button9').html(button9$text);;
 	}
 	$('#button9').click(function () {
-		view$text = (view$text + String((button9$num)));
-		$('#view').html(view$text);
-		;
+		view$text = ($('#view').html() + String((button9$num)));
+		$('#view').html(view$text);;
 	});
 	button9$set_num(9);
 	var button0 = '';
@@ -467,19 +461,18 @@ $(function() {
 	var button0$num = 0;
 	{
 		button0$_web = 'Button';
+		;
 	}
 	$('body').append("<button type='button' id='button0'></button>");
 	function button0$set_num(num) {
 		button0$num = num;
 		;
-		button0$text = Number(num);
-		$('#button0').html(button0$text);
-		;
+		button0$text = String(num);
+		$('#button0').html(button0$text);;
 	}
 	$('#button0').click(function () {
-		view$text = (view$text + String((button0$num)));
-		$('#view').html(view$text);
-		;
+		view$text = ($('#view').html() + String((button0$num)));
+		$('#view').html(view$text);;
 	});
 	button0$set_num(0);
 	button1$id = 'slsd';
@@ -509,11 +502,11 @@ $(function() {
 	var eq_btn$text = '';
 	{
 		eq_btn$_web = 'Button';
+		;
 	}
 	$('body').append("<button type='button' id='eq_btn'></button>");
 	eq_btn$text = '=';
-	$('#eq_btn').html(eq_btn$text);
-	;
+	$('#eq_btn').html(eq_btn$text);;
 	$('#eq_btn').click(function () {
 		var a = '';
 	});
@@ -552,11 +545,14 @@ $(function() {
 	var xaller_icon$ismap = false;
 	{
 		xaller_icon$_web = 'Image';
+		;
 	}
 	$('body').append("<img id='xaller_icon'>");
 	xaller_icon$src = 'xaller.png';
 	$('#xaller_icon').attr('src', xaller_icon$src);
 	;
+	button1$text = $('#xaller_icon').attr('src');
+	$('#button1').html(button1$text);;
 	var plus_btn = '';
 	var plus_btn$_web = '';
 	var plus_btn$accesskey = '';
@@ -582,15 +578,14 @@ $(function() {
 	var plus_btn$text = '';
 	{
 		plus_btn$_web = 'Button';
+		;
 	}
 	$('body').append("<button type='button' id='plus_btn'></button>");
 	plus_btn$text = '+';
-	$('#plus_btn').html(plus_btn$text);
-	;
+	$('#plus_btn').html(plus_btn$text);;
 	$('#plus_btn').click(function () {
-		view$text = (view$text + '+');
-		$('#view').html(view$text);
-		;
+		view$text = ($('#view').html() + '+');
+		$('#view').html(view$text);;
 	});
 	return;
 });

@@ -7,6 +7,7 @@ import copy
 import Global
 import FunctionClass
 import ValueClass
+import WebClass
 import genfunc
 
 class Type(object):
@@ -73,39 +74,20 @@ class Variable(object):
             # TODO: 静的な変数だった場合は内容を更新するようにする
             genfunc.out_expression(new)
         elif str(type(new)) == "<class 'ValueClass.Variable'>":
-            genfunc.outnoln(genfunc.expname(new.name))
+#            genfunc.outnoln(genfunc.expname(new.name))
+            new.refer()
 
-        if genfunc.is_var_web(self):
-            web_type_name = genfunc.get_var(self.name[:self.name.rfind(".")]+"._web").value.string
+        if js_out:
+            genfunc.solvebuf()
+            genfunc.out(";")
+
             member_name = genfunc.expid(self.name[self.name.find(".")+1:])
             parent_name = genfunc.expid(self.name[:self.name.find(".")])
 
-            type_to_tag = {"Image":"img", "Button":"button"}
-            tag_name = 'none'
-            if member_name in Global.html_rules['global']['attr']:
-                tag_name = 'global'
-            if ((web_type_name in type_to_tag
-                 and member_name in Global.html_rules[type_to_tag[web_type_name]]['attr'].keys())):
-                tag_name = type_to_tag[web_type_name]
+            wob = WebClass.WebObject.find_by_name(parent_name)
+            if wob is None: return
+            wob.change(member_name, genfunc.expname(self.name))
 
-            ret = False
-            if js_out:
-                genfunc.solvebuf()
-                genfunc.out(";")
-                if member_name == 'text':
-                    genfunc.outnoln("$(%s).html(" % genfunc.S("#" + genfunc.expid(parent_name)))
-                elif tag_name != 'none':
-                    genfunc.outnoln("$('%s').attr('%s', " %
-                                    ("#" + genfunc.expid(parent_name),
-                                     member_name))
-                else:
-                    ret = True
-            else:
-                ret = True
-            if not ret:
-                genfunc.outnoln(genfunc.expname(self.name))
-                if js_out: genfunc.outnoln(")")
-                genfunc.out(";")
 
     # NOTE: JS出力はバッファに行います
     def refer(self, js_out=True):
@@ -130,7 +112,18 @@ class Variable(object):
             #     else:
             #         Global.jsbuf += genfunc.expname(self.name)
             # else:
-            Global.jsbuf += genfunc.expname(self.name)
+            if '.' in self.name:
+                parent_name = self.name[:self.name.find('.')]
+                member_name = self.name[self.name.find('.')+1:]
+                wob = WebClass.WebObject.find_by_name(parent_name)
+                if wob:
+                    tmp = wob.refer(genfunc.expname(member_name))
+                    if tmp == '':
+                        tmp = genfunc.expname(self.name)
+                    Global.jsbuf += tmp
+                    return
+            else:
+                Global.jsbuf += genfunc.expname(self.name)
         return self.value
 
 
@@ -191,7 +184,8 @@ class Variable(object):
                     else:
                         if external:
                             Global.Vars[-1].external = True
-                            genfunc.create_external(var.name, pos)
+                            Global.wobs.append(WebClass.WebObject(var, pos))
+                            Global.wobs[-1].create()
                     break
                 exel += 1
 

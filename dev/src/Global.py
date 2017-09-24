@@ -16,6 +16,7 @@ Funcs = []
 vtypes = []
 tokens = []
 lines = []
+wobs = []
 
 html_rules = None
 
