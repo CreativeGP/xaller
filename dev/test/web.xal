@@ -28,15 +28,29 @@
 
 -(HTML):string {}
 
--(Color) {
-    (r)int
-    (g)int
-    (b)int
-    (a)int
-}
+# -(Color) {
+#     (r)int
+#     (g)int
+#     (b)int
+#     (a)int
+# }
 
 -(Button):Web_Object {
     (text)string
+
+    (autofocus)bool
+    (autocomlete)string
+    (disabled)bool
+    (form)string
+    (formaction)string
+    (formenctype)string
+    (formmethod)string
+    (formnovalidate)bool
+    (formtarget)string
+    (name)string
+    (type)string
+    (value)string
+
     @ (__init) {
 	._web = 'Button'
     }
@@ -95,3 +109,168 @@
 	._web = 'Textbox'
     }
 }
+
+-(Input):Web_Object {
+    (type)string
+    (autocomplete)string
+    (autofocus)bool
+    (capture)bool
+    (disabled)bool
+    (form)string
+    (formaction)string
+    (formactype)string
+    (formmethod)string
+    (formnovalidate)bool
+    (formtarget)string
+    (height)int
+    (inputmode)string
+    (list)string
+    (max)int
+    (maxlength)int
+    (min)int
+    (minlength)int
+    (multiple)bool
+    (name)string
+    (pattern)string
+    (placeholder)string
+    (readonly)bool
+    (required)bool
+    (selectionDirection)string
+    (selectionStart)int
+    (selectionEnd)int
+    (size)int
+    (spellcheck)string
+    (src)string
+    (step)string
+    (value)string
+    (width)int
+
+    @ (__init) {
+        ._web = 'Input'
+    }
+}
+
+-(Checkbox):Input {
+    # NOTE(cgp) コンストラクタで意図的に._webをCheckboxに変える。
+    # DOM出力はInput型のコンストラクタで行われているので二重に出力されないように
+    # 未定義のCheckboxという識別子に変える。
+    @ (__init) {
+        ._web = 'Checkbox'
+        .type = 'checkbox'
+    }
+}
+
+-(Color_Selector):Input {
+    @ (__init) {
+        ._web = 'Color_Selector'
+        .type = 'color'
+    }
+}
+
+-(Date_Selector):Input {
+    @ (__init) {
+        ._web = 'Date_Selector'
+        .type = 'date'
+    }
+}
+
+-(Email_Input):Input {
+    @ (__init) {
+        ._web = 'Email_Input'
+        .type = 'email'
+    }
+}
+
+-(File_Selector):Input {
+    @ (__init) {
+        ._web = 'File_Selector'
+        .type = 'file'
+    }
+}
+
+-(Month_Selector):Input {
+    @ (__init) {
+        ._web = 'Month_Selector'
+        .type = 'month'
+    }
+}
+
+-(Number_Selector):Input {
+    @ (__init) {
+        ._web = 'Number_Selector'
+        .type = 'number'
+    }
+}
+
+-(Password):Input {
+    @ (__init) {
+        ._web = 'Password'
+        .type = 'password'
+    }
+}
+
+-(Radio_Button):Input {
+    @ (__init) {
+        ._web = 'Radio_Button'
+        .type = 'radio'
+    }
+}
+
+
+-(Range_Selector):Input {
+    @ (__init) {
+        ._web = 'Range_Selector'
+        .type = 'range'
+    }
+}
+
+-(Reset_Button):Input {
+    @ (__init) {
+        ._web = 'Reset_Button'
+        .type = 'reset'
+    }
+}
+
+-(Search_Input):Input {
+    @ (__init) {
+        ._web = 'Search_Input'
+        .type = 'search'
+    }
+}
+
+-(Submit_Button):Input {
+    @ (__init) {
+        ._web = 'Submit_Button'
+        .type = 'submit'
+    }
+}
+
+-(TEL_Input):Input {
+    @ (__init) {
+        ._web = 'TEL_Input'
+        .type = 'tel'
+    }
+}
+
+-(URL_Input):Input {
+    @ (__init) {
+        ._web = 'URL_Input'
+        .type = 'url'
+    }
+}
+
+-(Time_Input):Input {
+    @ (__init) {
+        ._web = 'Time_Input'
+        .type = 'time'
+    }
+}
+
+-(Week_Selector):Input {
+    @ (__init) {
+        ._web = 'Time_Input'
+        .type = 'time'
+    }
+}
+
+
