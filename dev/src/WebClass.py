@@ -9,7 +9,16 @@ import genfunc
 class WebObject:
     """This class represents a web part."""
 
-    html_tag_names = {"Image":"img", "Button":"button", "Textbox":"textarea"}
+    html_tag_names = {
+        "Image":"img", "Button":"button", "Textbox":"textarea", "Input":"input",
+        "Checkbox":"input", "Color_Selector":"input", "Date_Selector":"input",
+        "Email_Input":"input", "File_Selector":"input", "Month_Selector":"input",
+        "Number_Selector":"input", "Password":"input", "Radio_Button":"input",
+        "Range_Selector":"input", "Reset_Button":"input", "Search_Input":"input",
+        "Submit_Button":"input", "TEL_Input":"input", "URL_Input":"input",
+        "Time_Input":"input", "Week_Selector":"input"
+        
+    }
 
     def __init__(self, variable, pos):
         self.var = variable
@@ -69,6 +78,10 @@ class WebObject:
             genfunc.out('$(%s).%s("<img id=%s>");'
                 % (genfunc.S(selector), func,
                    genfunc.S(genfunc.expid(self.var.name))))
+        elif typename == 'Input':
+            genfunc.out('$(%s).%s("<input id=%s>");'
+                % (genfunc.S(selector), func,
+                   genfunc.S(genfunc.expid(self.var.name))))
 
 
     def find_by_name(name):
@@ -98,6 +111,9 @@ class WebObject:
         if self.get_web_type_name() in WebObject.html_tag_names:
             rules = Global.html_rules[WebObject.html_tag_names[self.get_web_type_name()]]
             if name in rules['attr'].keys():
+                if rules['attr'][name]['type'] == 'boolean':
+                    # NOTE(cgp) 論理属性なのでJSの出力にはprop関数を使う
+                    return 'boolean_attr'
                 return 'attr'
         return 'no'
 
@@ -110,10 +126,18 @@ class WebObject:
             return ("$(%s).html()"
                     % (genfunc.S("#" + genfunc.expid(self.var.name))))
         elif attr_kind != 'no':
-            # TODO(cgp) Check if the attribute is boolean.
-            return ("$('%s').attr('%s')" %
-                    ("#" + genfunc.expid(self.var.name),
-                     mem_name))
+            if mem_name == 'type':
+                return ("$('%s').get(0).%s" %
+                        ("#" + genfunc.expid(self.var.name),
+                         mem_name))
+            elif attr_kind == 'boolean_attr':
+                return ("$('%s').prop('%s')" %
+                        ("#" + genfunc.expid(self.var.name),
+                         mem_name))
+            else:
+                return ("$('%s').attr('%s')" %
+                        ("#" + genfunc.expid(self.var.name),
+                         mem_name))
         return ''
 
 
@@ -126,6 +150,15 @@ class WebObject:
                             % (genfunc.S("#" + genfunc.expid(self.var.name)),
                                dst_string))
         elif attr_kind != 'no':
-            genfunc.out("$('%s').attr('%s', %s);" %
-                        ("#" + genfunc.expid(self.var.name),
-                         mem_name, dst_string))
+            if mem_name == 'type':
+                genfunc.out("$('%s').get(0).%s = %s;" %
+                            ("#" + genfunc.expid(self.var.name),
+                             mem_name, dst_string))
+            elif attr_kind == 'boolean_attr':
+                genfunc.out("$('%s').prop('%s', %s);" %
+                            ("#" + genfunc.expid(self.var.name),
+                             mem_name, dst_string))
+            else:
+                genfunc.out("$('%s').attr('%s', %s);" %
+                            ("#" + genfunc.expid(self.var.name),
+                             mem_name, dst_string))
