@@ -15,7 +15,9 @@
     }
     @ (click) {
         # 文字を後ろにくっつける
-        view.text = (concat view.text (.num)string)
+        (eq mode 0) ? {
+            view.text = (concat view.text (.num)string)
+        }
         mode = 1
     }
 }
@@ -96,7 +98,6 @@ eq_btn.text = '='
         # view.text = '62+41'
         (a)int
         (b)int
-        a = (+ 3 (- 2 5) (- 5 4))
         a = (substr view.text 0 (stridx view.text using_operation))int
         b = (substr view.text (+ 2 (stridx view.text using_operation)) (negative 1))int
         cond (eq using_operation '+') ? {
