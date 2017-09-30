@@ -66,7 +66,6 @@ $(function() {
 	var main$tabindex = 0;
 	{
 		main$_web = 'Div';
-		;
 	}
 	$('body').append("<div id='main'></div>");var view = '';
 	var view$_web = '';
@@ -109,7 +108,6 @@ $(function() {
 	var view$wrap = '';
 	{
 		view$_web = 'Textbox';
-		;
 	}
 	$('#main').append("<textarea id='view'></textarea>");var num1 = '';
 	var num1$_web = '';
@@ -135,7 +133,6 @@ $(function() {
 	var num1$tabindex = 0;
 	{
 		num1$_web = 'Div';
-		;
 	}
 	$('body').append("<div id='num1'></div>");var num2 = '';
 	var num2$_web = '';
@@ -161,7 +158,6 @@ $(function() {
 	var num2$tabindex = 0;
 	{
 		num2$_web = 'Div';
-		;
 	}
 	$('body').append("<div id='num2'></div>");var num3 = '';
 	var num3$_web = '';
@@ -187,7 +183,6 @@ $(function() {
 	var num3$tabindex = 0;
 	{
 		num3$_web = 'Div';
-		;
 	}
 	$('body').append("<div id='num3'></div>");var operators = '';
 	var operators$_web = '';
@@ -213,7 +208,6 @@ $(function() {
 	var operators$tabindex = 0;
 	{
 		operators$_web = 'Div';
-		;
 	}
 	$('body').append("<div id='operators'></div>");var button9 = '';
 	var button9$_web = '';
@@ -253,22 +247,19 @@ $(function() {
 	var button9$num = 0;
 	{
 		button9$_web = 'Button';
-		;
 	}
 	$('#num1').append("<button id='button9'></button>");var num = 0;
 	function button9$set_num(num) {
 		button9$num = num;
-		;
 		button9$text = String(num);
-		$('#button9').html(button9$text);;
+		$('#button9').html(button9$text);
 	}
 	$('#button9').click(function () {
 		if ((mode == 0)) {
 			view$text = ($('#view').html() + String((button9$num)));
-			$('#view').html(view$text);;
+			$('#view').html(view$text);
 		}
 		mode = 1;
-		;
 	});
 	button9$set_num(9);
 	var button8 = '';
@@ -309,22 +300,19 @@ $(function() {
 	var button8$num = 0;
 	{
 		button8$_web = 'Button';
-		;
 	}
 	$('#num1').append("<button id='button8'></button>");var num = 0;
 	function button8$set_num(num) {
 		button8$num = num;
-		;
 		button8$text = String(num);
-		$('#button8').html(button8$text);;
+		$('#button8').html(button8$text);
 	}
 	$('#button8').click(function () {
 		if ((mode == 0)) {
 			view$text = ($('#view').html() + String((button8$num)));
-			$('#view').html(view$text);;
+			$('#view').html(view$text);
 		}
 		mode = 1;
-		;
 	});
 	button8$set_num(8);
 	var button7 = '';
@@ -365,22 +353,19 @@ $(function() {
 	var button7$num = 0;
 	{
 		button7$_web = 'Button';
-		;
 	}
 	$('#num1').append("<button id='button7'></button>");var num = 0;
 	function button7$set_num(num) {
 		button7$num = num;
-		;
 		button7$text = String(num);
-		$('#button7').html(button7$text);;
+		$('#button7').html(button7$text);
 	}
 	$('#button7').click(function () {
 		if ((mode == 0)) {
 			view$text = ($('#view').html() + String((button7$num)));
-			$('#view').html(view$text);;
+			$('#view').html(view$text);
 		}
 		mode = 1;
-		;
 	});
 	button7$set_num(7);
 	var button6 = '';
@@ -421,22 +406,19 @@ $(function() {
 	var button6$num = 0;
 	{
 		button6$_web = 'Button';
-		;
 	}
 	$('#num2').append("<button id='button6'></button>");var num = 0;
 	function button6$set_num(num) {
 		button6$num = num;
-		;
 		button6$text = String(num);
-		$('#button6').html(button6$text);;
+		$('#button6').html(button6$text);
 	}
 	$('#button6').click(function () {
 		if ((mode == 0)) {
 			view$text = ($('#view').html() + String((button6$num)));
-			$('#view').html(view$text);;
+			$('#view').html(view$text);
 		}
 		mode = 1;
-		;
 	});
 	button6$set_num(6);
 	var button5 = '';
@@ -477,22 +459,19 @@ $(function() {
 	var button5$num = 0;
 	{
 		button5$_web = 'Button';
-		;
 	}
 	$('#num2').append("<button id='button5'></button>");var num = 0;
 	function button5$set_num(num) {
 		button5$num = num;
-		;
 		button5$text = String(num);
-		$('#button5').html(button5$text);;
+		$('#button5').html(button5$text);
 	}
 	$('#button5').click(function () {
 		if ((mode == 0)) {
 			view$text = ($('#view').html() + String((button5$num)));
-			$('#view').html(view$text);;
+			$('#view').html(view$text);
 		}
 		mode = 1;
-		;
 	});
 	button5$set_num(5);
 	var button4 = '';
@@ -533,22 +512,19 @@ $(function() {
 	var button4$num = 0;
 	{
 		button4$_web = 'Button';
-		;
 	}
 	$('#num2').append("<button id='button4'></button>");var num = 0;
 	function button4$set_num(num) {
 		button4$num = num;
-		;
 		button4$text = String(num);
-		$('#button4').html(button4$text);;
+		$('#button4').html(button4$text);
 	}
 	$('#button4').click(function () {
 		if ((mode == 0)) {
 			view$text = ($('#view').html() + String((button4$num)));
-			$('#view').html(view$text);;
+			$('#view').html(view$text);
 		}
 		mode = 1;
-		;
 	});
 	button4$set_num(4);
 	var button3 = '';
@@ -589,22 +565,19 @@ $(function() {
 	var button3$num = 0;
 	{
 		button3$_web = 'Button';
-		;
 	}
 	$('#num3').append("<button id='button3'></button>");var num = 0;
 	function button3$set_num(num) {
 		button3$num = num;
-		;
 		button3$text = String(num);
-		$('#button3').html(button3$text);;
+		$('#button3').html(button3$text);
 	}
 	$('#button3').click(function () {
 		if ((mode == 0)) {
 			view$text = ($('#view').html() + String((button3$num)));
-			$('#view').html(view$text);;
+			$('#view').html(view$text);
 		}
 		mode = 1;
-		;
 	});
 	button3$set_num(3);
 	var button2 = '';
@@ -645,22 +618,19 @@ $(function() {
 	var button2$num = 0;
 	{
 		button2$_web = 'Button';
-		;
 	}
 	$('#num3').append("<button id='button2'></button>");var num = 0;
 	function button2$set_num(num) {
 		button2$num = num;
-		;
 		button2$text = String(num);
-		$('#button2').html(button2$text);;
+		$('#button2').html(button2$text);
 	}
 	$('#button2').click(function () {
 		if ((mode == 0)) {
 			view$text = ($('#view').html() + String((button2$num)));
-			$('#view').html(view$text);;
+			$('#view').html(view$text);
 		}
 		mode = 1;
-		;
 	});
 	button2$set_num(2);
 	var button1 = '';
@@ -701,22 +671,19 @@ $(function() {
 	var button1$num = 0;
 	{
 		button1$_web = 'Button';
-		;
 	}
 	$('#num3').append("<button id='button1'></button>");var num = 0;
 	function button1$set_num(num) {
 		button1$num = num;
-		;
 		button1$text = String(num);
-		$('#button1').html(button1$text);;
+		$('#button1').html(button1$text);
 	}
 	$('#button1').click(function () {
 		if ((mode == 0)) {
 			view$text = ($('#view').html() + String((button1$num)));
-			$('#view').html(view$text);;
+			$('#view').html(view$text);
 		}
 		mode = 1;
-		;
 	});
 	button1$set_num(1);
 	var button0 = '';
@@ -757,22 +724,19 @@ $(function() {
 	var button0$num = 0;
 	{
 		button0$_web = 'Button';
-		;
 	}
 	$('#num3').append("<button id='button0'></button>");var num = 0;
 	function button0$set_num(num) {
 		button0$num = num;
-		;
 		button0$text = String(num);
-		$('#button0').html(button0$text);;
+		$('#button0').html(button0$text);
 	}
 	$('#button0').click(function () {
 		if ((mode == 0)) {
 			view$text = ($('#view').html() + String((button0$num)));
-			$('#view').html(view$text);;
+			$('#view').html(view$text);
 		}
 		mode = 1;
-		;
 	});
 	button0$set_num(0);
 	var plus_btn = '';
@@ -812,18 +776,15 @@ $(function() {
 	var plus_btn$value = '';
 	{
 		plus_btn$_web = 'Button';
-		;
 	}
 	$('#operators').append("<button id='plus_btn'></button>");plus_btn$text = '+';
-	$('#plus_btn').html(plus_btn$text);;
+	$('#plus_btn').html(plus_btn$text);
 	$('#plus_btn').click(function () {
 		if ((mode == 1)) {
 			view$text = ($('#view').html() + '+');
-			$('#view').html(view$text);;
+			$('#view').html(view$text);
 			mode = 0;
-			;
 			using_operation = '+';
-			;
 		}
 	});
 	var product_btn = '';
@@ -863,18 +824,15 @@ $(function() {
 	var product_btn$value = '';
 	{
 		product_btn$_web = 'Button';
-		;
 	}
 	$('#operators').append("<button id='product_btn'></button>");product_btn$text = '*';
-	$('#product_btn').html(product_btn$text);;
+	$('#product_btn').html(product_btn$text);
 	$('#product_btn').click(function () {
 		if (p,(mode == 1)) {
 			view$text = ($('#view').html() + '*');
-			$('#view').html(view$text);;
+			$('#view').html(view$text);
 			mode = 0;
-			;
 			using_operation = '*';
-			;
 		}
 	});
 	var mi_btn = '';
@@ -914,18 +872,15 @@ $(function() {
 	var mi_btn$value = '';
 	{
 		mi_btn$_web = 'Button';
-		;
 	}
 	$('#operators').append("<button id='mi_btn'></button>");mi_btn$text = '-';
-	$('#mi_btn').html(mi_btn$text);;
+	$('#mi_btn').html(mi_btn$text);
 	$('#mi_btn').click(function () {
 		if ((mode == 1)) {
 			view$text = ($('#view').html() + '-');
-			$('#view').html(view$text);;
+			$('#view').html(view$text);
 			mode = 0;
-			;
 			using_operation = '-';
-			;
 		}
 	});
 	var divid_btn = '';
@@ -965,18 +920,15 @@ $(function() {
 	var divid_btn$value = '';
 	{
 		divid_btn$_web = 'Button';
-		;
 	}
 	$('#operators').append("<button id='divid_btn'></button>");divid_btn$text = '/';
-	$('#divid_btn').html(divid_btn$text);;
+	$('#divid_btn').html(divid_btn$text);
 	$('#divid_btn').click(function () {
 		if ((mode == 1)) {
 			view$text = ($('#view').html() + '/');
-			$('#view').html(view$text);;
+			$('#view').html(view$text);
 			mode = 0;
-			;
 			using_operation = '/';
-			;
 		}
 	});
 	var eq_btn = '';
@@ -1016,39 +968,31 @@ $(function() {
 	var eq_btn$value = '';
 	{
 		eq_btn$_web = 'Button';
-		;
 	}
 	$('#operators').append("<button id='eq_btn'></button>");eq_btn$text = '=';
-	$('#eq_btn').html(eq_btn$text);;
+	$('#eq_btn').html(eq_btn$text);
 	$('#eq_btn').click(function () {
 		if ((mode == 1)) {
 			var ans = 0;
 			var a = 0;
 			var b = 0;
 			a = Number(substr$($('#view').html(),0,stridx$($('#view').html(),using_operation)));
-			;
 			b = Number(substr$($('#view').html(),(2 + stridx$($('#view').html(),using_operation)) ,  negative(1)));
-			;
 			if ((using_operation == '+')) {
 				ans = (a + b);
-				;
 			}
 			else if ((using_operation == '-')) {
 				ans = (a - b);
-				;
 			}
 			else if ((using_operation == '*')) {
 				ans = (a * b);
-				;
 			}
 			else if ((using_operation == '/')) {
 				ans = (a / b);
-				;
 			}
 			view$text = ($('#view').html() + '=' + String((ans)));
-			$('#view').html(view$text);;
+			$('#view').html(view$text);
 			mode = 0;
-			;
 		}
 	});
 	return;

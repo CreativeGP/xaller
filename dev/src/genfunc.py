@@ -1001,7 +1001,7 @@ def translate(token_list, static_default=None):
                 memdst[i].subst(memsrc[i])
                 out(";")
                 memdst[i].value = memsrc[i].value
-#        return True
+        return True
 
     # プログラム変数作成 ^( name ) race
     elif len(run_tokens) >= 4 and \

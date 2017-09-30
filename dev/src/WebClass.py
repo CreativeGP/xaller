@@ -167,9 +167,9 @@ class WebObject:
         attr_kind = self.is_attr_name(mem_name)
 
         if mem_name == 'text':
-            genfunc.outnoln("$(%s).html(%s);"
-                            % (genfunc.S("#" + genfunc.expid(self.var.name)),
-                               dst_string))
+            genfunc.out("$(%s).html(%s);"
+                        % (genfunc.S("#" + genfunc.expid(self.var.name)),
+                           dst_string))
         elif attr_kind != 'no':
             if mem_name == 'type':
                 genfunc.out("$('%s').get(0).%s = %s;" %
