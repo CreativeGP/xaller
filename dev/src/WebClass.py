@@ -72,7 +72,7 @@ class WebObject:
                                   genfunc.S(genfunc.expname(self.var.name))))
             if closetag:
                 genfunc.outnoln('</%s>' % tagname)
-            genfunc.outnoln('");')
+            genfunc.out('");')
 
         # if typename == 'HTML':
         #     genfunc.out('$(%s).%s("<ran id=%s></ran>");'
