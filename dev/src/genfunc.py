@@ -19,7 +19,6 @@ def insert(dst, pos, src):
     """Insert an element to the list."""
     return dst[:pos] + src + dst[pos:]
 
-# TODO: タグの規則の反映（終了タグや開始タグをつけるかどうか）
 # TODO: out_expression()のバグ、二重のビルドイン関数を読んだときに正しく出力されなかった
 # TODO: 条件分岐文の中のメンバ表記のJS出力がバグる
 
@@ -552,17 +551,18 @@ def out_expression(token_list, get_string=False):
                                        Global.jsbuf[tmp:]))
                     is_arg = token_list[i+2].string != ")"
 
+                del buildin[-1]
+                del begof[-1]
+
                 if is_arg:
                     # 引数だった場合
-                    # 区切り文字を加える (cp L414 415)
+                    # NOTE(cgp) 区切り文字を加える、注意する点は”buildin[-1]は消した後である"
+                    # からこのコードは正常に動くのであること
                     sep = Global.sep_type[buildin[-1]]
                     Global.jsbuf += ("%s "
                                      % (','
                                         if buildin[-1] == ',' else
                                         ' ' + sep + ' '))
-
-                del buildin[-1]
-                del begof[-1]
             else:
                 # その他の場合:
                 # 基本的に引数が回ってくるはずなので区切り文字で区切って出力する
