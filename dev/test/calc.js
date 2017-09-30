@@ -67,7 +67,8 @@ $(function() {
 	{
 		main$_web = 'Div';
 	}
-	$('body').append("<div id='main'></div>");var view = '';
+	$('body').append("<div id='main'></div>");
+	var view = '';
 	var view$_web = '';
 	var view$accesskey = '';
 	var view$class = '';
@@ -109,7 +110,8 @@ $(function() {
 	{
 		view$_web = 'Textbox';
 	}
-	$('#main').append("<textarea id='view'></textarea>");var num1 = '';
+	$('#main').append("<textarea id='view'></textarea>");
+	var num1 = '';
 	var num1$_web = '';
 	var num1$accesskey = '';
 	var num1$class = '';
@@ -134,7 +136,8 @@ $(function() {
 	{
 		num1$_web = 'Div';
 	}
-	$('body').append("<div id='num1'></div>");var num2 = '';
+	$('body').append("<div id='num1'></div>");
+	var num2 = '';
 	var num2$_web = '';
 	var num2$accesskey = '';
 	var num2$class = '';
@@ -159,7 +162,8 @@ $(function() {
 	{
 		num2$_web = 'Div';
 	}
-	$('body').append("<div id='num2'></div>");var num3 = '';
+	$('body').append("<div id='num2'></div>");
+	var num3 = '';
 	var num3$_web = '';
 	var num3$accesskey = '';
 	var num3$class = '';
@@ -184,7 +188,8 @@ $(function() {
 	{
 		num3$_web = 'Div';
 	}
-	$('body').append("<div id='num3'></div>");var operators = '';
+	$('body').append("<div id='num3'></div>");
+	var operators = '';
 	var operators$_web = '';
 	var operators$accesskey = '';
 	var operators$class = '';
@@ -209,7 +214,8 @@ $(function() {
 	{
 		operators$_web = 'Div';
 	}
-	$('body').append("<div id='operators'></div>");var button9 = '';
+	$('body').append("<div id='operators'></div>");
+	var button9 = '';
 	var button9$_web = '';
 	var button9$accesskey = '';
 	var button9$class = '';
@@ -248,7 +254,8 @@ $(function() {
 	{
 		button9$_web = 'Button';
 	}
-	$('#num1').append("<button id='button9'></button>");var num = 0;
+	$('#num1').append("<button id='button9'></button>");
+	var num = 0;
 	function button9$set_num(num) {
 		button9$num = num;
 		button9$text = String(num);
@@ -301,7 +308,8 @@ $(function() {
 	{
 		button8$_web = 'Button';
 	}
-	$('#num1').append("<button id='button8'></button>");var num = 0;
+	$('#num1').append("<button id='button8'></button>");
+	var num = 0;
 	function button8$set_num(num) {
 		button8$num = num;
 		button8$text = String(num);
@@ -354,7 +362,8 @@ $(function() {
 	{
 		button7$_web = 'Button';
 	}
-	$('#num1').append("<button id='button7'></button>");var num = 0;
+	$('#num1').append("<button id='button7'></button>");
+	var num = 0;
 	function button7$set_num(num) {
 		button7$num = num;
 		button7$text = String(num);
@@ -407,7 +416,8 @@ $(function() {
 	{
 		button6$_web = 'Button';
 	}
-	$('#num2').append("<button id='button6'></button>");var num = 0;
+	$('#num2').append("<button id='button6'></button>");
+	var num = 0;
 	function button6$set_num(num) {
 		button6$num = num;
 		button6$text = String(num);
@@ -460,7 +470,8 @@ $(function() {
 	{
 		button5$_web = 'Button';
 	}
-	$('#num2').append("<button id='button5'></button>");var num = 0;
+	$('#num2').append("<button id='button5'></button>");
+	var num = 0;
 	function button5$set_num(num) {
 		button5$num = num;
 		button5$text = String(num);
@@ -513,7 +524,8 @@ $(function() {
 	{
 		button4$_web = 'Button';
 	}
-	$('#num2').append("<button id='button4'></button>");var num = 0;
+	$('#num2').append("<button id='button4'></button>");
+	var num = 0;
 	function button4$set_num(num) {
 		button4$num = num;
 		button4$text = String(num);
@@ -566,7 +578,8 @@ $(function() {
 	{
 		button3$_web = 'Button';
 	}
-	$('#num3').append("<button id='button3'></button>");var num = 0;
+	$('#num3').append("<button id='button3'></button>");
+	var num = 0;
 	function button3$set_num(num) {
 		button3$num = num;
 		button3$text = String(num);
@@ -619,7 +632,8 @@ $(function() {
 	{
 		button2$_web = 'Button';
 	}
-	$('#num3').append("<button id='button2'></button>");var num = 0;
+	$('#num3').append("<button id='button2'></button>");
+	var num = 0;
 	function button2$set_num(num) {
 		button2$num = num;
 		button2$text = String(num);
@@ -672,7 +686,8 @@ $(function() {
 	{
 		button1$_web = 'Button';
 	}
-	$('#num3').append("<button id='button1'></button>");var num = 0;
+	$('#num3').append("<button id='button1'></button>");
+	var num = 0;
 	function button1$set_num(num) {
 		button1$num = num;
 		button1$text = String(num);
@@ -725,7 +740,8 @@ $(function() {
 	{
 		button0$_web = 'Button';
 	}
-	$('#num3').append("<button id='button0'></button>");var num = 0;
+	$('#num3').append("<button id='button0'></button>");
+	var num = 0;
 	function button0$set_num(num) {
 		button0$num = num;
 		button0$text = String(num);
@@ -777,7 +793,8 @@ $(function() {
 	{
 		plus_btn$_web = 'Button';
 	}
-	$('#operators').append("<button id='plus_btn'></button>");plus_btn$text = '+';
+	$('#operators').append("<button id='plus_btn'></button>");
+	plus_btn$text = '+';
 	$('#plus_btn').html(plus_btn$text);
 	$('#plus_btn').click(function () {
 		if ((mode == 1)) {
@@ -825,7 +842,8 @@ $(function() {
 	{
 		product_btn$_web = 'Button';
 	}
-	$('#operators').append("<button id='product_btn'></button>");product_btn$text = '*';
+	$('#operators').append("<button id='product_btn'></button>");
+	product_btn$text = '*';
 	$('#product_btn').html(product_btn$text);
 	$('#product_btn').click(function () {
 		if (p,(mode == 1)) {
@@ -873,7 +891,8 @@ $(function() {
 	{
 		mi_btn$_web = 'Button';
 	}
-	$('#operators').append("<button id='mi_btn'></button>");mi_btn$text = '-';
+	$('#operators').append("<button id='mi_btn'></button>");
+	mi_btn$text = '-';
 	$('#mi_btn').html(mi_btn$text);
 	$('#mi_btn').click(function () {
 		if ((mode == 1)) {
@@ -921,7 +940,8 @@ $(function() {
 	{
 		divid_btn$_web = 'Button';
 	}
-	$('#operators').append("<button id='divid_btn'></button>");divid_btn$text = '/';
+	$('#operators').append("<button id='divid_btn'></button>");
+	divid_btn$text = '/';
 	$('#divid_btn').html(divid_btn$text);
 	$('#divid_btn').click(function () {
 		if ((mode == 1)) {
@@ -969,7 +989,8 @@ $(function() {
 	{
 		eq_btn$_web = 'Button';
 	}
-	$('#operators').append("<button id='eq_btn'></button>");eq_btn$text = '=';
+	$('#operators').append("<button id='eq_btn'></button>");
+	eq_btn$text = '=';
 	$('#eq_btn').html(eq_btn$text);
 	$('#eq_btn').click(function () {
 		if ((mode == 1)) {
