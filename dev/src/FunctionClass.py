@@ -32,9 +32,17 @@ class Function(object):
         # 引数リストを作成
         arglist = []
         for i in range(arg_count):
-            arglist.append(ValueClass.Variable(
-                block.root[i*4+4].string,
-                ValueClass.Value('', genfunc.get_value_type(block.root[i*4+6].string))))
+            new_arg_value_type = genfunc.get_value_type(block.root[i*4+6].string)
+            new_arg_name = block.root[i*4+4].string
+            ValueClass.Variable.create(ValueClass.Variable(
+                new_arg_name,
+                ValueClass.Value('', new_arg_value_type)), arglist)
+
+            # if new_arg_value_type.race == 'Dirty':
+            #     print('a')
+            #     members_list = genfunc.get_members(block.root[i*4+4].string)
+            #     arglist.extend(members_list)
+
         self.name = block.root[2].string
         self.block_ind = block_ind
         self.args = [arglist]

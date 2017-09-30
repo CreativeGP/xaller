@@ -157,7 +157,7 @@ class Variable(object):
         else:
             variables.append(var)
             if external:
-                Global.Vars[-1].external = True
+                variables[-1].external = True
 
         # 型にメンバがある場合はそれも実際に作成
         for member in var.value.type.variables:
@@ -183,7 +183,7 @@ class Variable(object):
                         pass
                     else:
                         if external:
-                            Global.Vars[-1].external = True
+                            variables[-1].external = True
                             Global.wobs.append(WebClass.WebObject(var, pos))
                             Global.wobs[-1].create()
                     break

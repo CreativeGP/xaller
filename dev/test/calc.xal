@@ -1,93 +1,120 @@
 <web.xal>
 
-# @ (foo) {
-# }
+@ (negative (i)int) {
+    return (- 0 i)
+}
 
-# (i)int
-# loop
-# {
-#     (foo)
-#     (eq i 9) ? {
-#         escape
-#     }
-# }
+(mode)int
+(using_operation)string
 
-# +(view)Textbox
-# view.cols = 3
+-(numbtn):Button {
+    (num)int
+    @ (set_num (num)int) {
+        .num = num
+        .text = (num)string
+    }
+    @ (click) {
+        # 文字を後ろにくっつける
+        view.text = (concat view.text (.num)string)
+        mode = 1
+    }
+}
 
-# -(numbtn):Button {
-#     (num)int
-#     @ (set_num (num)int) {
-#         .num = num
-#         .text = (num)string
-#     }
-#     @ (click) {
-#         # 文字を後ろにくっつける
-#         view.text = (concat view.text (.num)string)
-#     }
-# }
 
-# +(div1)Div {
-# +(button1)numbtn 
-# (button1.set_num 1)
-# +(button2)numbtn
-# (button2.set_num 2)
-# +(button3)numbtn
-# (button3.set_num 3)
-# }
++(main)Div
++(view)Textbox in main
++(num1)Div
++(num2)Div
++(num3)Div
++(operators)Div
 
-# +(button4)numbtn
-# (button4.set_num 4)
-# +(button5)numbtn
-# (button5.set_num 5)
-# +(button6)numbtn
-# (button6.set_num 6)
-# +(button7)numbtn
-# (button7.set_num 7)
-# +(button8)numbtn
-# (button8.set_num 8)
-# +(button9)numbtn
-# (button9.set_num 9)
-# +(button0)numbtn
-# (button0.set_num 0)
-# button1.id = 'slsd'
-# +(eq_btn)Button
-# eq_btn.text = '='
-# @ (eq_btn.click) {
-#     (a)string
-# }
++(button9)numbtn in num1
+(button9.set_num 9)
++(button8)numbtn in num1
+(button8.set_num 8)
++(button7)numbtn in num1
+(button7.set_num 7)
++(button6)numbtn in num2
+(button6.set_num 6)
++(button5)numbtn in num2
+(button5.set_num 5)
++(button4)numbtn in num2
+(button4.set_num 4)
++(button3)numbtn in num3
+(button3.set_num 3)
++(button2)numbtn in num3
+(button2.set_num 2)
++(button1)numbtn in num3
+(button1.set_num 1)
++(button0)numbtn in num3
+(button0.set_num 0)
 
-# +(xaller_icon)Image
-# xaller_icon.src = 'xaller.png'
-# xaller_icon.id = 'xicon'
-# button1.text = xaller_icon.src
++(plus_btn)Button in operators
+plus_btn.text = '+'
+@ (plus_btn.click) {
+    (eq mode 1) ? {
+        view.text = (concat view.text '+')
+        mode = 0
+        using_operation = '+'
+    }
+}
 
-+(plus_btn)Button
-(s)string
-plus_btn.text = (strrep ' calc c  d  ' 'c' 'C')
++(product_btn)Button in operators
+product_btn.text = '*'
+@ (product_btn.click) {
+p    (eq mode 1) ? {
+        view.text = (concat view.text '*')
+        mode = 0
+        using_operation = '*'
+    }
+}
 
-# date: HTML5 日付 (時刻を除く年、月、日) を入力するためのコントロール。
-# datetime-local: HTML5 タイムゾーン情報がない日付と時刻を入力するためのコントロール。
-# hidden: 表示しないコントロールですが、その値はサーバーに送信します。
-# image: 画像による送信ボタン。画像のソースを定義するために src 属性を、また代替テキストを定義するために alt 属性を使用しなければなりません。height および width 属性を使用して、画像のサイズをピクセル値で定義できます。
++(mi_btn)Button in operators
+mi_btn.text = '-'
+@ (mi_btn.click) {
+    (eq mode 1) ? {
+        view.text = (concat view.text '-')
+        mode = 0
+        using_operation = '-'
+    }
+}
 
-# email: HTML5 電子メールアドレスを入力するためのフィールド。
-# file: ユーザーにファイルを選択させるコントロール。コントロールで選択できるファイルの種類を定義するには、accept 属性を使用します。
-# month: HTML5 タイムゾーン情報がない年と月を入力するためのコントロール。
-# number: HTML5 数値を入力するためのコントロール。
-# password: 入力値を隠す 1 行テキストフィールド。入力可能な最大文字数を指定するには、maxlength 属性を使用します。
-# 注記: パスワードなどの機密情報を扱うフォーム (例えばログインフォーム) は HTTPS で提供するべきです。Firefox は、安全でないログインフォームに対して警告を表示する仕組みを複数実装しています。安全でないパスワード をご覧ください。他のブラウザーも、同様の仕組みを実装しています。
-# radio: 複数の選択肢からひとつの値を選択できるラジオボタン。
-# range: HTML5 正確な値であることが重要ではない数値を入力するためのコントロール。
-# reset: フォームのコントロールをデフォルト値にリセットするボタン。
-# search: HTML5 検索文字列を入力するための 1 行入力フィールド。改行は自動的に入力値から取り除かれます。
-# submit: フォームを送信するボタン。
-# tel: HTML5 電話番号を入力するためのコントロール。改行は自動的に入力値から取り除かれますが、他に強要される文法はありません。pattern や maxlength といった属性を使用して、コントロールに入力する値を制限できます。適宜 :valid および :invalid CSS 疑似クラスが適用されます。
-# text: 1 行入力フィールド。改行は自動的に入力値から取り除かれます。
-# time: HTML5 タイムゾーン情報がない時刻を入力するためのコントロール。
-# url: HTML5 URL を入力するためのフィールド。入力された値は送信前に、空文字列またはひとつの妥当な絶対 URL が含まれているかの検証を受けます。pattern や maxlength といった属性を使用して、コントロールに入力する値を制限できます。適宜 :valid および :invalid CSS 疑似クラスが適用されます。
-# week: HTML5 年と週番号で構成される日付を入力するためのコントロール。週番号はタイムゾーンを伴いません。
++(divid_btn)Button in operators
+divid_btn.text = '/'
+@ (divid_btn.click) {
+    (eq mode 1) ? {
+        view.text = (concat view.text '/')
+        mode = 0
+        using_operation = '/'
+    }
+}
 
-+(cb1)Week_Selector
++(eq_btn)Button in operators
+eq_btn.text = '='
+@ (eq_btn.click) {
+    (eq mode 1) ? {
+        (ans)int
+        # view.text = '62+41'
+        (a)int
+        (b)int
+        a = (substr view.text 0 (stridx view.text using_operation))int
+        b = (substr view.text (+ 2 (stridx view.text using_operation)) (negative 1))int
+        cond (eq using_operation '+') ? {
+            ans = (+ a b)
+        }
+        branch (eq using_operation '-') ? {
+            ans = (- a b)
+        }
+        branch (eq using_operation '*') ? {
+            ans = (* a b)
+        }
+        branch (eq using_operation '/') ? {
+            ans = (/ a b)
+        }
+        view.text = (concat view.text '=' (ans)string)
+        mode = 0
+    }
+}
+
 
 end

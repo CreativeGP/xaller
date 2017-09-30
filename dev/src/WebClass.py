@@ -16,7 +16,7 @@ class WebObject:
         "Number_Selector":"input", "Password":"input", "Radio_Button":"input",
         "Range_Selector":"input", "Reset_Button":"input", "Search_Input":"input",
         "Submit_Button":"input", "TEL_Input":"input", "URL_Input":"input",
-        "Time_Input":"input", "Week_Selector":"input"
+        "Time_Input":"input", "Week_Selector":"input", "Div":"div",
         
     }
 
@@ -53,35 +53,56 @@ class WebObject:
         else:
             selector = "#" + self.pos[self.pos.find(" ")+1:]
 
-        if typename == 'HTML':
-            genfunc.out('$(%s).%s("<ran id=%s></ran>");'
-                % (genfunc.S(selector), func,
-                   genfunc.S(genfunc.expid(self.var.name))))
-        if typename == 'Label':
-            genfunc.out('$(%s).%s("<p id=%s></p>");'
-                % (genfunc.S(selector), func,
-                   genfunc.S(genfunc.expid(self.var.name))))
-        elif typename == 'Button':
-            genfunc.out('$(%s).%s("<button type=%s id=%s></button>");'
-                % (genfunc.S(selector), func, genfunc.S('button'),
-                   genfunc.S(genfunc.expid(self.var.name))))
-        elif typename == 'Textbox':
-            genfunc.out('$(%s).%s("<textarea id=%s name=%s></textarea>");'
-                % (genfunc.S(selector), func,
-                   genfunc.S(genfunc.expid(self.var.name)),
-                   genfunc.S(genfunc.expid(self.var.name))))
-        elif typename == 'Div':
-            genfunc.out('$(%s).%s("<div id=%s></div>");'
-                % (genfunc.S(selector), func,
-                   genfunc.S(genfunc.expid(self.var.name))))
-        elif typename == 'Image':
-            genfunc.out('$(%s).%s("<img id=%s>");'
-                % (genfunc.S(selector), func,
-                   genfunc.S(genfunc.expid(self.var.name))))
-        elif typename == 'Input':
-            genfunc.out('$(%s).%s("<input id=%s>");'
-                % (genfunc.S(selector), func,
-                   genfunc.S(genfunc.expid(self.var.name))))
+        if typename in WebObject.html_tag_names:
+            tagname = WebObject.html_tag_names[typename]
+            opentag = True
+            closetag = True
+
+            genfunc.outnoln('$(%s).%s("'
+                % (genfunc.S(selector), func))
+
+            if 'den_beg' in Global.html_rules[tagname]['ommision']:
+                opentag = False
+            if 'den_end' in Global.html_rules[tagname]['ommision']:
+                closetag = False
+
+            if opentag:
+                genfunc.outnoln('<%s id=%s>'
+                               % (tagname,
+                                  genfunc.S(genfunc.expname(self.var.name))))
+            if closetag:
+                genfunc.outnoln('</%s>' % tagname)
+            genfunc.outnoln('");')
+
+        # if typename == 'HTML':
+        #     genfunc.out('$(%s).%s("<ran id=%s></ran>");'
+        #         % (genfunc.S(selector), func,
+        #            genfunc.S(genfunc.expid(self.var.name))))
+        # if typename == 'Label':
+        #     genfunc.out('$(%s).%s("<p id=%s></p>");'
+        #         % (genfunc.S(selector), func,
+        #            genfunc.S(genfunc.expid(self.var.name))))
+        # elif typename == 'Button':
+        #     genfunc.out('$(%s).%s("<button type=%s id=%s></button>");'
+        #         % (genfunc.S(selector), func, genfunc.S('button'),
+        #            genfunc.S(genfunc.expid(self.var.name))))
+        # elif typename == 'Textbox':
+        #     genfunc.out('$(%s).%s("<textarea id=%s name=%s></textarea>");'
+        #         % (genfunc.S(selector), func,
+        #            genfunc.S(genfunc.expid(self.var.name)),
+        #            genfunc.S(genfunc.expid(self.var.name))))
+        # elif typename == 'Div':
+        #     genfunc.out('$(%s).%s("<div id=%s></div>");'
+        #         % (genfunc.S(selector), func,
+        #            genfunc.S(genfunc.expid(self.var.name))))
+        # elif typename == 'Image':
+        #     genfunc.out('$(%s).%s("<img id=%s>");'
+        #         % (genfunc.S(selector), func,
+        #            genfunc.S(genfunc.expid(self.var.name))))
+        # elif typename == 'Input':
+        #     genfunc.out('$(%s).%s("<input id=%s>");'
+        #         % (genfunc.S(selector), func,
+        #            genfunc.S(genfunc.expid(self.var.name))))
 
 
     def find_by_name(name):
