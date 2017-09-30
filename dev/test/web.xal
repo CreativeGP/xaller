@@ -111,6 +111,8 @@
 }
 
 -(Input):Web_Object {
+    (text)string
+
     (type)string
     (autocomplete)string
     (autofocus)bool

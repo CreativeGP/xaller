@@ -19,8 +19,9 @@ def insert(dst, pos, src):
     """Insert an element to the list."""
     return dst[:pos] + src + dst[pos:]
 
-# TODO: エンコードの設定をしておく
-
+# TODO: タグの規則の反映（終了タグや開始タグをつけるかどうか）
+# TODO: out_expression()のバグ、二重のビルドイン関数を読んだときに正しく出力されなかった
+# TODO: 条件分岐文の中のメンバ表記のJS出力がバグる
 
 def is_plain(tkn):
     """Returns true if the token is not in comment or string."""
@@ -731,6 +732,8 @@ def add_type(block_ind):
     """Create new type."""
     inh_count = int((len(Global.blocks[block_ind].root) - 4) / 2)
     new_type = ValueClass.Type(Global.blocks[block_ind].root[2].string, 'Dirty')
+    if new_type.race != 'Dirty':
+        err("Pure type couldn't have members.")
     dbgprintnoln(("New type '%s' inheritanced by type"
                   % Global.blocks[block_ind].root[2].string))
     for i in range(inh_count):
@@ -768,12 +771,10 @@ def add_type(block_ind):
                is_plain(token_list[0]) and token_list[0].string == "@" and \
                is_plain(token_list[1]) and token_list[1].string == "(" and \
                is_plain(token_list[-1]) and token_list[-1].string == ")":
-                if new_type.race != 'Dirty': err("Pure type couldn't have members.")
                 for i, block in enumerate(Global.blocks):
                     if block.root[0].line == token.line:
                         new_type.functions.append(FunctionClass.Function(i))
                         Global.exel = block.body[-1].line
-                        print('a')
                         break
 
             elif len(token_list) >= 4 and \
@@ -781,13 +782,24 @@ def add_type(block_ind):
                  is_plain(token_list[1]) and \
                  is_plain(token_list[2]) and token_list[2].string == ')' and \
                  is_plain(token_list[3]):
-                if new_type.race != 'Dirty':
-                    err("Pure type couldn't have members.")
                 value_type = get_value_type(token_list[3].string)
                 if value_type is None:
                     err("Undefined type '%s'." % token_list[3].string)
                 new_type.variables.append(ValueClass.Variable(
                     token_list[1].string, get_default_value(value_type)))
+
+            elif len(token_list) >= 5 and \
+                 is_plain(token_list[0]) and token_list[0].string == '+' and \
+                 is_plain(token_list[1]) and token_list[1].string == '(' and \
+                 is_plain(token_list[2]) and \
+                 is_plain(token_list[3]) and token_list[3].string == ')' and \
+                 is_plain(token_list[4]):
+                value_type = get_value_type(token_list[4].string)
+                if value_type is None:
+                    err("Undefined type '%s'." % token_list[4].string)
+                ValueClass.Variable.create(ValueClass.Variable(
+                    token_list[2].string, get_default_value(value_type)),
+                                           new_type.variables, True)
             del token_list[:]
     Global.vtypes.append(new_type)
 
@@ -950,11 +962,11 @@ def translate(token_list, static_default=None):
         # out_expression(run_tokens[2:])
         # その変数自体に代入
         # HACK: _web変数だけ動的に代入
-        if run_tokens[0].string[run_tokens[0].string.rfind('.')+1:] == '_web':
-            get_var(run_tokens[0].string).value.string = run_tokens[2].string
         var = get_var(run_tokens[0].string)
         if var is None:
             err("Undefined variable '%s'" % run_tokens[0].string)
+        if run_tokens[0].string[run_tokens[0].string.rfind('.')+1:] == '_web':
+            get_var(run_tokens[0].string).value.string = run_tokens[2].string
         string = run_tokens[2].string
         # if len(run_tokens) == 3 and is_var_exists(string):
         #     var.subst(get_var(string))
@@ -1001,7 +1013,8 @@ def translate(token_list, static_default=None):
         return True
 
     # 外部変数作成 ^+( name ) race
-    # NOTE: 普通の変数作成と違うのは部分埋め込みがサポートされている点と、Web用変数しか作成できない点
+    # NOTE: 普通の変数作成とほとんど一緒、中心の処理はVariable.create関数なので
+    # 第四引数にTrueを渡しているかどうかで決まる。
     elif (len(run_tokens) >= 5 or len(run_tokens) >= 7) and \
          is_plain(run_tokens[0]) and run_tokens[0].string == '+' and \
          is_plain(run_tokens[1]) and run_tokens[1].string == '(' and \
@@ -1012,11 +1025,12 @@ def translate(token_list, static_default=None):
         pos = "at end"
         if len(run_tokens) == 7:
             pos = run_tokens[5].string + " " + run_tokens[6].string
+
+        # 内包要素関係
         if len(translate.element_stack) > 0:
             # 内包される要素があった場合
             included_block = Global.blocks[translate.element_stack[-1]]
             pos = "in " + included_block.root[2].string
-        print(get_block_idx(Global.exel + 1))
         if get_block_idx(Global.exel + 1) != -1:
             out("{")
             translate.element_stack.append(get_block_idx(Global.exel + 1))
