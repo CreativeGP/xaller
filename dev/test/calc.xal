@@ -20,7 +20,7 @@
     }
 }
 
-
++(test)Input
 +(main)Div
 +(view)Textbox in main
 +(num1)Div
