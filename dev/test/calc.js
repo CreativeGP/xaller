@@ -263,8 +263,10 @@ $(function() {
 		$('#button9').html(button9$text);;
 	}
 	$('#button9').click(function () {
-		view$text = ($('#view').html() + String((button9$num)));
-		$('#view').html(view$text);;
+		if ((mode == 0)) {
+			view$text = ($('#view').html() + String((button9$num)));
+			$('#view').html(view$text);;
+		}
 		mode = 1;
 		;
 	});
@@ -317,8 +319,10 @@ $(function() {
 		$('#button8').html(button8$text);;
 	}
 	$('#button8').click(function () {
-		view$text = ($('#view').html() + String((button8$num)));
-		$('#view').html(view$text);;
+		if ((mode == 0)) {
+			view$text = ($('#view').html() + String((button8$num)));
+			$('#view').html(view$text);;
+		}
 		mode = 1;
 		;
 	});
@@ -371,8 +375,10 @@ $(function() {
 		$('#button7').html(button7$text);;
 	}
 	$('#button7').click(function () {
-		view$text = ($('#view').html() + String((button7$num)));
-		$('#view').html(view$text);;
+		if ((mode == 0)) {
+			view$text = ($('#view').html() + String((button7$num)));
+			$('#view').html(view$text);;
+		}
 		mode = 1;
 		;
 	});
@@ -425,8 +431,10 @@ $(function() {
 		$('#button6').html(button6$text);;
 	}
 	$('#button6').click(function () {
-		view$text = ($('#view').html() + String((button6$num)));
-		$('#view').html(view$text);;
+		if ((mode == 0)) {
+			view$text = ($('#view').html() + String((button6$num)));
+			$('#view').html(view$text);;
+		}
 		mode = 1;
 		;
 	});
@@ -479,8 +487,10 @@ $(function() {
 		$('#button5').html(button5$text);;
 	}
 	$('#button5').click(function () {
-		view$text = ($('#view').html() + String((button5$num)));
-		$('#view').html(view$text);;
+		if ((mode == 0)) {
+			view$text = ($('#view').html() + String((button5$num)));
+			$('#view').html(view$text);;
+		}
 		mode = 1;
 		;
 	});
@@ -533,8 +543,10 @@ $(function() {
 		$('#button4').html(button4$text);;
 	}
 	$('#button4').click(function () {
-		view$text = ($('#view').html() + String((button4$num)));
-		$('#view').html(view$text);;
+		if ((mode == 0)) {
+			view$text = ($('#view').html() + String((button4$num)));
+			$('#view').html(view$text);;
+		}
 		mode = 1;
 		;
 	});
@@ -587,8 +599,10 @@ $(function() {
 		$('#button3').html(button3$text);;
 	}
 	$('#button3').click(function () {
-		view$text = ($('#view').html() + String((button3$num)));
-		$('#view').html(view$text);;
+		if ((mode == 0)) {
+			view$text = ($('#view').html() + String((button3$num)));
+			$('#view').html(view$text);;
+		}
 		mode = 1;
 		;
 	});
@@ -641,8 +655,10 @@ $(function() {
 		$('#button2').html(button2$text);;
 	}
 	$('#button2').click(function () {
-		view$text = ($('#view').html() + String((button2$num)));
-		$('#view').html(view$text);;
+		if ((mode == 0)) {
+			view$text = ($('#view').html() + String((button2$num)));
+			$('#view').html(view$text);;
+		}
 		mode = 1;
 		;
 	});
@@ -695,8 +711,10 @@ $(function() {
 		$('#button1').html(button1$text);;
 	}
 	$('#button1').click(function () {
-		view$text = ($('#view').html() + String((button1$num)));
-		$('#view').html(view$text);;
+		if ((mode == 0)) {
+			view$text = ($('#view').html() + String((button1$num)));
+			$('#view').html(view$text);;
+		}
 		mode = 1;
 		;
 	});
@@ -749,8 +767,10 @@ $(function() {
 		$('#button0').html(button0$text);;
 	}
 	$('#button0').click(function () {
-		view$text = ($('#view').html() + String((button0$num)));
-		$('#view').html(view$text);;
+		if ((mode == 0)) {
+			view$text = ($('#view').html() + String((button0$num)));
+			$('#view').html(view$text);;
+		}
 		mode = 1;
 		;
 	});
@@ -1005,8 +1025,6 @@ $(function() {
 			var ans = 0;
 			var a = 0;
 			var b = 0;
-			a = (3 + (2 - 5) +  (5 - 4));
-			;
 			a = Number(substr$($('#view').html(),0,stridx$($('#view').html(),using_operation)));
 			;
 			b = Number(substr$($('#view').html(),(2 + stridx$($('#view').html(),using_operation)) ,  negative(1)));

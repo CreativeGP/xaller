@@ -19,7 +19,6 @@ def insert(dst, pos, src):
     """Insert an element to the list."""
     return dst[:pos] + src + dst[pos:]
 
-# TODO: out_expression()のバグ、二重のビルドイン関数を読んだときに正しく出力されなかった
 # TODO: 条件分岐文の中のメンバ表記のJS出力がバグる
 
 def is_plain(tkn):
@@ -803,6 +802,18 @@ def add_type(block_ind):
             del token_list[:]
     Global.vtypes.append(new_type)
 
+
+def get_js_indent_level():
+    """Get the indent level, which is incremented if the brace opened and decremented
+    if it closes, of Global.outjs.
+    """
+    level = 0
+    for char in Global.outjs:
+        if char == '{': level += 1
+        if char == '}': level -= 1
+    return level
+
+
 def translate(token_list, static_default=None):
     """Examine a statement staticly."""
     # NOTE: 疑似関数内static変数の準備
@@ -824,12 +835,15 @@ def translate(token_list, static_default=None):
             dbgprint(tkn.string)
 
     if len(run_tokens) == 1 and run_tokens[0].string == "{":
-        Global.tfs.append(None)
+        Global.brace_requests.append(get_js_indent_level())
         return True
     elif len(run_tokens) == 1 and run_tokens[0].string == "}":
-        if Global.tfs[-1] is None:
-            out("}")
-        elif Global.tfs[-1].event:
+        if ((len(Global.brace_requests) > 0
+             and Global.brace_requests[-1] == get_js_indent_level())):
+            out('}')
+            Global.brace_requests.pop()
+            return 1
+        if Global.tfs[-1].event:
             out("});")
         else:
             out("}")
