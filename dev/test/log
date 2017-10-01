@@ -1,0 +1,2502 @@
+Input file name: /home/cgp/Develop/xaller/dev/test/calc.xal
+Imported file name: /home/cgp/Develop/xaller/dev/test/calc.xal
+Imported file name: /home/cgp/Develop/xaller/dev/test/web.xal
+JS >>> function strlen$(str) { return str.length; }
+
+JS >>> function substr$(str, start, length=-1) { if (length == -1) { length = str.length - start;} return str.substr(start, length); }
+
+JS >>> 
+function strtrim$(str, char) {
+    res = ''
+    for (var i = 0; i < str.length; i++) {
+        if (str[i] != char) { res += str[i]; }
+    }
+    return res;
+}
+
+
+JS >>> 
+function strtriml$(str, char) {
+    res = ''
+    if (str[0] != char) { return str; }
+    for (var i = 0; i < str.length; i++) {
+        if (str[i] != char) { res = str.substr(i); break; }
+    }
+    return res;
+}
+
+
+JS >>> 
+function strtrimr$(str, char) {
+    res = ''
+    if (str[str.length-1] != char) { return str; }
+    for (var i = str.length-1; i >= 0; i--) {
+        if (str[i] != char) { res = str.substr(0, i+1); break; }
+    }
+    return res;
+}
+
+
+JS >>> function stridx$(cmpstr, string) { return cmpstr.indexOf(string); }
+
+JS >>> function strridx$(cmpstr, string) { return cmpstr.lastIndexOf(string); }
+
+JS >>> function strrep$(src, pattern, replacement) {
+var regExp = new RegExp(pattern, "g");
+return src.replace(regExp, replacement); }
+
+JS >>> $(function() {
+
+
+token_list:- ( Web_Object ) 
+New type 'Web_Object' inheritanced by type
+
+token_list:- ( HTML ) : string 
+New type 'HTML' inheritanced by type
+
+token_list: -(Color) { 
+
+token_list:     (r)int 
+
+token_list:     (g)int 
+
+token_list:     (b)int 
+
+token_list:     (a)int 
+
+token_list: } 
+
+token_list:- ( Button ) : Web_Object 
+New type 'Button' inheritanced by typeWeb_Object', 
+
+token_list:- ( Div ) : Web_Object 
+New type 'Div' inheritanced by typeWeb_Object', 
+
+token_list:- ( Image ) : Web_Object 
+New type 'Image' inheritanced by typeWeb_Object', 
+
+token_list:- ( Textbox ) : Web_Object 
+New type 'Textbox' inheritanced by typeWeb_Object', 
+
+token_list:- ( Input ) : Web_Object 
+New type 'Input' inheritanced by typeWeb_Object', 
+
+token_list:- ( Checkbox ) : Input 
+New type 'Checkbox' inheritanced by typeInput', 
+
+token_list:- ( Color_Selector ) : Input 
+New type 'Color_Selector' inheritanced by typeInput', 
+
+token_list:- ( Date_Selector ) : Input 
+New type 'Date_Selector' inheritanced by typeInput', 
+
+token_list:- ( Email_Input ) : Input 
+New type 'Email_Input' inheritanced by typeInput', 
+
+token_list:- ( File_Selector ) : Input 
+New type 'File_Selector' inheritanced by typeInput', 
+
+token_list:- ( Month_Selector ) : Input 
+New type 'Month_Selector' inheritanced by typeInput', 
+
+token_list:- ( Number_Selector ) : Input 
+New type 'Number_Selector' inheritanced by typeInput', 
+
+token_list:- ( Password ) : Input 
+New type 'Password' inheritanced by typeInput', 
+
+token_list:- ( Radio_Button ) : Input 
+New type 'Radio_Button' inheritanced by typeInput', 
+
+token_list:- ( Range_Selector ) : Input 
+New type 'Range_Selector' inheritanced by typeInput', 
+
+token_list:- ( Reset_Button ) : Input 
+New type 'Reset_Button' inheritanced by typeInput', 
+
+token_list:- ( Search_Input ) : Input 
+New type 'Search_Input' inheritanced by typeInput', 
+
+token_list:- ( Submit_Button ) : Input 
+New type 'Submit_Button' inheritanced by typeInput', 
+
+token_list:- ( TEL_Input ) : Input 
+New type 'TEL_Input' inheritanced by typeInput', 
+
+token_list:- ( URL_Input ) : Input 
+New type 'URL_Input' inheritanced by typeInput', 
+
+token_list:- ( Time_Input ) : Input 
+New type 'Time_Input' inheritanced by typeInput', 
+
+token_list:- ( Week_Selector ) : Input 
+New type 'Week_Selector' inheritanced by typeInput', 
+
+token_list:@ ( negative ( i ) int ) 
+JS >>> var i = 0;
+
+Creating function negative
+JS >>> function negative(
+JS >>> i
+JS >>> ) {
+JS >>> 
+
+
+token_list:return ( - 0 i ) 
+JS >>> return 
+JS >>> (0 - i)
+JS >>> 
+JS >>> 
+JS >>> ;
+
+
+token_list:} 
+JS >>> }
+
+
+token_list:( mode ) int 
+JS >>> var mode = 0;
+
+
+token_list:( using_operation ) string 
+JS >>> var using_operation = '';
+
+
+token_list:- ( numbtn ) : Button 
+New type 'numbtn' inheritanced by typeButton', 
+JS >>> var num = 0;
+
+
+token_list:+ ( main ) Div 
+JS >>> var main = '';
+
+JS >>> var main$_web = '';
+
+JS >>> var main$accesskey = '';
+
+JS >>> var main$class = '';
+
+JS >>> var main$contextmenu = '';
+
+JS >>> var main$dir = '';
+
+JS >>> var main$dropzone = '';
+
+JS >>> var main$id = '';
+
+JS >>> var main$itemid = '';
+
+JS >>> var main$itemprop = '';
+
+JS >>> var main$itemref = '';
+
+JS >>> var main$itemscope = '';
+
+JS >>> var main$itemtype = '';
+
+JS >>> var main$lang = '';
+
+JS >>> var main$style = '';
+
+JS >>> var main$title = '';
+
+JS >>> var main$translate = '';
+
+JS >>> var main$contenteditable = false;
+
+JS >>> var main$draggable = false;
+
+JS >>> var main$hidden = false;
+
+JS >>> var main$spellcheck = false;
+
+JS >>> var main$tabindex = 0;
+
+Creating function main.__init
+JS >>> {
+JS >>> 
+
+
+token_list:._web = Div 
+JS >>> main$_web = 
+JS >>> 
+JS >>> ;
+
+
+
+
+
+PROGRAM REPORT...
+Detected Global.tokens:
++-----------------------------------------------------------------------------+---------+-----+--------+----+----------+
+| name                                                                        | Comment | Str | Return | NL | Line(R)  |
++-----------------------------------------------------------------------------+---------+-----+--------+----+----------+
+| -                                                                           |         |     |        | NL | 1(1)     |
+| (                                                                           |         |     |        |    | 1(1)     |
+| Web_Object                                                                  |         |     |        |    | 1(1)     |
+| )                                                                           |         |     | R      |    | 1(1)     |
+| {                                                                           |         |     | R      | NL | 2(1)     |
+| (                                                                           |         |     |        | NL | 3(2)     |
+| _web                                                                        |         |     |        |    | 3(2)     |
+| )                                                                           |         |     |        |    | 3(2)     |
+| string                                                                      |         |     | R      |    | 3(2)     |
+| (                                                                           |         |     |        | NL | 4(4)     |
+| accesskey                                                                   |         |     |        |    | 4(4)     |
+| )                                                                           |         |     |        |    | 4(4)     |
+| string                                                                      |         |     | R      |    | 4(4)     |
+| (                                                                           |         |     |        | NL | 5(5)     |
+| class                                                                       |         |     |        |    | 5(5)     |
+| )                                                                           |         |     |        |    | 5(5)     |
+| string                                                                      |         |     | R      |    | 5(5)     |
+| (                                                                           |         |     |        | NL | 6(6)     |
+| contextmenu                                                                 |         |     |        |    | 6(6)     |
+| )                                                                           |         |     |        |    | 6(6)     |
+| string                                                                      |         |     | R      |    | 6(6)     |
+|     (dataset)                                                               | #       |     | R      | NL | 7(7)     |
+| (                                                                           |         |     |        | NL | 8(8)     |
+| dir                                                                         |         |     |        |    | 8(8)     |
+| )                                                                           |         |     |        |    | 8(8)     |
+| string                                                                      |         |     | R      |    | 8(8)     |
+| (                                                                           |         |     |        | NL | 9(9)     |
+| dropzone                                                                    |         |     |        |    | 9(9)     |
+| )                                                                           |         |     |        |    | 9(9)     |
+| string                                                                      |         |     | R      |    | 9(9)     |
+| (                                                                           |         |     |        | NL | 10(10)   |
+| id                                                                          |         |     |        |    | 10(10)   |
+| )                                                                           |         |     |        |    | 10(10)   |
+| string                                                                      |         |     | R      |    | 10(10)   |
+| (                                                                           |         |     |        | NL | 11(11)   |
+| itemid                                                                      |         |     |        |    | 11(11)   |
+| )                                                                           |         |     |        |    | 11(11)   |
+| string                                                                      |         |     | R      |    | 11(11)   |
+| (                                                                           |         |     |        | NL | 12(12)   |
+| itemprop                                                                    |         |     |        |    | 12(12)   |
+| )                                                                           |         |     |        |    | 12(12)   |
+| string                                                                      |         |     | R      |    | 12(12)   |
+| (                                                                           |         |     |        | NL | 13(13)   |
+| itemref                                                                     |         |     |        |    | 13(13)   |
+| )                                                                           |         |     |        |    | 13(13)   |
+| string                                                                      |         |     | R      |    | 13(13)   |
+| (                                                                           |         |     |        | NL | 14(14)   |
+| itemscope                                                                   |         |     |        |    | 14(14)   |
+| )                                                                           |         |     |        |    | 14(14)   |
+| string                                                                      |         |     | R      |    | 14(14)   |
+| (                                                                           |         |     |        | NL | 15(15)   |
+| itemtype                                                                    |         |     |        |    | 15(15)   |
+| )                                                                           |         |     |        |    | 15(15)   |
+| string                                                                      |         |     | R      |    | 15(15)   |
+| (                                                                           |         |     |        | NL | 16(16)   |
+| lang                                                                        |         |     |        |    | 16(16)   |
+| )                                                                           |         |     |        |    | 16(16)   |
+| string                                                                      |         |     | R      |    | 16(16)   |
+| (                                                                           |         |     |        | NL | 17(17)   |
+| style                                                                       |         |     |        |    | 17(17)   |
+| )                                                                           |         |     |        |    | 17(17)   |
+| string                                                                      |         |     | R      |    | 17(17)   |
+| (                                                                           |         |     |        | NL | 18(18)   |
+| title                                                                       |         |     |        |    | 18(18)   |
+| )                                                                           |         |     |        |    | 18(18)   |
+| string                                                                      |         |     | R      |    | 18(18)   |
+| (                                                                           |         |     |        | NL | 19(19)   |
+| translate                                                                   |         |     |        |    | 19(19)   |
+| )                                                                           |         |     |        |    | 19(19)   |
+| string                                                                      |         |     | R      |    | 19(19)   |
+| (                                                                           |         |     |        | NL | 20(21)   |
+| contenteditable                                                             |         |     |        |    | 20(21)   |
+| )                                                                           |         |     |        |    | 20(21)   |
+| bool                                                                        |         |     | R      |    | 20(21)   |
+| (                                                                           |         |     |        | NL | 21(22)   |
+| draggable                                                                   |         |     |        |    | 21(22)   |
+| )                                                                           |         |     |        |    | 21(22)   |
+| bool                                                                        |         |     | R      |    | 21(22)   |
+| (                                                                           |         |     |        | NL | 22(23)   |
+| hidden                                                                      |         |     |        |    | 22(23)   |
+| )                                                                           |         |     |        |    | 22(23)   |
+| bool                                                                        |         |     | R      |    | 22(23)   |
+| (                                                                           |         |     |        | NL | 23(24)   |
+| spellcheck                                                                  |         |     |        |    | 23(24)   |
+| )                                                                           |         |     |        |    | 23(24)   |
+| bool                                                                        |         |     | R      |    | 23(24)   |
+| (                                                                           |         |     |        | NL | 24(26)   |
+| tabindex                                                                    |         |     |        |    | 24(26)   |
+| )                                                                           |         |     |        |    | 24(26)   |
+| int                                                                         |         |     | R      |    | 24(26)   |
+| }                                                                           |         |     | R      | NL | 25(27)   |
+| -                                                                           |         |     |        | NL | 26(29)   |
+| (                                                                           |         |     |        |    | 26(29)   |
+| HTML                                                                        |         |     |        |    | 26(29)   |
+| )                                                                           |         |     |        |    | 26(29)   |
+| :                                                                           |         |     |        |    | 26(29)   |
+| string                                                                      |         |     | R      |    | 26(29)   |
+| {                                                                           |         |     | R      | NL | 27(29)   |
+| }                                                                           |         |     | R      | NL | 28(29)   |
+|  -(Color) {                                                                 | #       |     | R      | NL | 29(31)   |
+|      (r)int                                                                 | #       |     | R      | NL | 30(32)   |
+|      (g)int                                                                 | #       |     | R      | NL | 31(33)   |
+|      (b)int                                                                 | #       |     | R      | NL | 32(34)   |
+|      (a)int                                                                 | #       |     | R      | NL | 33(35)   |
+|  }                                                                          | #       |     | R      | NL | 34(36)   |
+| -                                                                           |         |     |        | NL | 35(38)   |
+| (                                                                           |         |     |        |    | 35(38)   |
+| Button                                                                      |         |     |        |    | 35(38)   |
+| )                                                                           |         |     |        |    | 35(38)   |
+| :                                                                           |         |     |        |    | 35(38)   |
+| Web_Object                                                                  |         |     | R      |    | 35(38)   |
+| {                                                                           |         |     | R      | NL | 36(38)   |
+| (                                                                           |         |     |        | NL | 37(39)   |
+| text                                                                        |         |     |        |    | 37(39)   |
+| )                                                                           |         |     |        |    | 37(39)   |
+| string                                                                      |         |     | R      |    | 37(39)   |
+| (                                                                           |         |     |        | NL | 38(41)   |
+| autofocus                                                                   |         |     |        |    | 38(41)   |
+| )                                                                           |         |     |        |    | 38(41)   |
+| bool                                                                        |         |     | R      |    | 38(41)   |
+| (                                                                           |         |     |        | NL | 39(42)   |
+| autocomlete                                                                 |         |     |        |    | 39(42)   |
+| )                                                                           |         |     |        |    | 39(42)   |
+| string                                                                      |         |     | R      |    | 39(42)   |
+| (                                                                           |         |     |        | NL | 40(43)   |
+| disabled                                                                    |         |     |        |    | 40(43)   |
+| )                                                                           |         |     |        |    | 40(43)   |
+| bool                                                                        |         |     | R      |    | 40(43)   |
+| (                                                                           |         |     |        | NL | 41(44)   |
+| form                                                                        |         |     |        |    | 41(44)   |
+| )                                                                           |         |     |        |    | 41(44)   |
+| string                                                                      |         |     | R      |    | 41(44)   |
+| (                                                                           |         |     |        | NL | 42(45)   |
+| formaction                                                                  |         |     |        |    | 42(45)   |
+| )                                                                           |         |     |        |    | 42(45)   |
+| string                                                                      |         |     | R      |    | 42(45)   |
+| (                                                                           |         |     |        | NL | 43(46)   |
+| formenctype                                                                 |         |     |        |    | 43(46)   |
+| )                                                                           |         |     |        |    | 43(46)   |
+| string                                                                      |         |     | R      |    | 43(46)   |
+| (                                                                           |         |     |        | NL | 44(47)   |
+| formmethod                                                                  |         |     |        |    | 44(47)   |
+| )                                                                           |         |     |        |    | 44(47)   |
+| string                                                                      |         |     | R      |    | 44(47)   |
+| (                                                                           |         |     |        | NL | 45(48)   |
+| formnovalidate                                                              |         |     |        |    | 45(48)   |
+| )                                                                           |         |     |        |    | 45(48)   |
+| bool                                                                        |         |     | R      |    | 45(48)   |
+| (                                                                           |         |     |        | NL | 46(49)   |
+| formtarget                                                                  |         |     |        |    | 46(49)   |
+| )                                                                           |         |     |        |    | 46(49)   |
+| string                                                                      |         |     | R      |    | 46(49)   |
+| (                                                                           |         |     |        | NL | 47(50)   |
+| name                                                                        |         |     |        |    | 47(50)   |
+| )                                                                           |         |     |        |    | 47(50)   |
+| string                                                                      |         |     | R      |    | 47(50)   |
+| (                                                                           |         |     |        | NL | 48(51)   |
+| type                                                                        |         |     |        |    | 48(51)   |
+| )                                                                           |         |     |        |    | 48(51)   |
+| string                                                                      |         |     | R      |    | 48(51)   |
+| (                                                                           |         |     |        | NL | 49(52)   |
+| value                                                                       |         |     |        |    | 49(52)   |
+| )                                                                           |         |     |        |    | 49(52)   |
+| string                                                                      |         |     | R      |    | 49(52)   |
+| @                                                                           |         |     |        | NL | 50(54)   |
+| (                                                                           |         |     |        |    | 50(54)   |
+| __init                                                                      |         |     |        |    | 50(54)   |
+| )                                                                           |         |     | R      |    | 50(54)   |
+| {                                                                           |         |     | R      | NL | 51(54)   |
+| ._web                                                                       |         |     |        | NL | 52(55)   |
+| =                                                                           |         |     |        |    | 52(55)   |
+| Button                                                                      |         | "   | R      |    | 52(55)   |
+| }                                                                           |         |     | R      | NL | 53(56)   |
+| }                                                                           |         |     | R      | NL | 54(57)   |
+| -                                                                           |         |     |        | NL | 55(59)   |
+| (                                                                           |         |     |        |    | 55(59)   |
+| Div                                                                         |         |     |        |    | 55(59)   |
+| )                                                                           |         |     |        |    | 55(59)   |
+| :                                                                           |         |     |        |    | 55(59)   |
+| Web_Object                                                                  |         |     | R      |    | 55(59)   |
+| {                                                                           |         |     | R      | NL | 56(59)   |
+| @                                                                           |         |     |        | NL | 57(60)   |
+| (                                                                           |         |     |        |    | 57(60)   |
+| __init                                                                      |         |     |        |    | 57(60)   |
+| )                                                                           |         |     | R      |    | 57(60)   |
+| {                                                                           |         |     | R      | NL | 58(60)   |
+| ._web                                                                       |         |     |        | NL | 59(61)   |
+| =                                                                           |         |     |        |    | 59(61)   |
+| Div                                                                         |         | "   | R      |    | 59(61)   |
+| }                                                                           |         |     | R      | NL | 60(62)   |
+| }                                                                           |         |     | R      | NL | 61(63)   |
+| -                                                                           |         |     |        | NL | 62(65)   |
+| (                                                                           |         |     |        |    | 62(65)   |
+| Image                                                                       |         |     |        |    | 62(65)   |
+| )                                                                           |         |     |        |    | 62(65)   |
+| :                                                                           |         |     |        |    | 62(65)   |
+| Web_Object                                                                  |         |     | R      |    | 62(65)   |
+| {                                                                           |         |     | R      | NL | 63(65)   |
+| (                                                                           |         |     |        | NL | 64(66)   |
+| alt                                                                         |         |     |        |    | 64(66)   |
+| )                                                                           |         |     |        |    | 64(66)   |
+| string                                                                      |         |     | R      |    | 64(66)   |
+| (                                                                           |         |     |        | NL | 65(67)   |
+| crossorigin                                                                 |         |     |        |    | 65(67)   |
+| )                                                                           |         |     |        |    | 65(67)   |
+| string                                                                      |         |     | R      |    | 65(67)   |
+| (                                                                           |         |     |        | NL | 66(68)   |
+| longdesc                                                                    |         |     |        |    | 66(68)   |
+| )                                                                           |         |     |        |    | 66(68)   |
+| string                                                                      |         |     | R      |    | 66(68)   |
+| (                                                                           |         |     |        | NL | 67(69)   |
+| referrerpolicy                                                              |         |     |        |    | 67(69)   |
+| )                                                                           |         |     |        |    | 67(69)   |
+| string                                                                      |         |     | R      |    | 67(69)   |
+| (                                                                           |         |     |        | NL | 68(70)   |
+| sizes                                                                       |         |     |        |    | 68(70)   |
+| )                                                                           |         |     |        |    | 68(70)   |
+| string                                                                      |         |     | R      |    | 68(70)   |
+| (                                                                           |         |     |        | NL | 69(71)   |
+| src                                                                         |         |     |        |    | 69(71)   |
+| )                                                                           |         |     |        |    | 69(71)   |
+| string                                                                      |         |     | R      |    | 69(71)   |
+| (                                                                           |         |     |        | NL | 70(72)   |
+| srcset                                                                      |         |     |        |    | 70(72)   |
+| )                                                                           |         |     |        |    | 70(72)   |
+| string                                                                      |         |     | R      |    | 70(72)   |
+| (                                                                           |         |     |        | NL | 71(73)   |
+| usemap                                                                      |         |     |        |    | 71(73)   |
+| )                                                                           |         |     |        |    | 71(73)   |
+| string                                                                      |         |     | R      |    | 71(73)   |
+| (                                                                           |         |     |        | NL | 72(75)   |
+| width                                                                       |         |     |        |    | 72(75)   |
+| )                                                                           |         |     |        |    | 72(75)   |
+| int                                                                         |         |     | R      |    | 72(75)   |
+| (                                                                           |         |     |        | NL | 73(76)   |
+| height                                                                      |         |     |        |    | 73(76)   |
+| )                                                                           |         |     |        |    | 73(76)   |
+| int                                                                         |         |     | R      |    | 73(76)   |
+| (                                                                           |         |     |        | NL | 74(78)   |
+| ismap                                                                       |         |     |        |    | 74(78)   |
+| )                                                                           |         |     |        |    | 74(78)   |
+| bool                                                                        |         |     | R      |    | 74(78)   |
+| @                                                                           |         |     |        | NL | 75(80)   |
+| (                                                                           |         |     |        |    | 75(80)   |
+| __init                                                                      |         |     |        |    | 75(80)   |
+| )                                                                           |         |     | R      |    | 75(80)   |
+| {                                                                           |         |     | R      | NL | 76(80)   |
+| ._web                                                                       |         |     |        | NL | 77(81)   |
+| =                                                                           |         |     |        |    | 77(81)   |
+| Image                                                                       |         | "   | R      |    | 77(81)   |
+| }                                                                           |         |     | R      | NL | 78(82)   |
+| }                                                                           |         |     | R      | NL | 79(83)   |
+| -                                                                           |         |     |        | NL | 80(85)   |
+| (                                                                           |         |     |        |    | 80(85)   |
+| Textbox                                                                     |         |     |        |    | 80(85)   |
+| )                                                                           |         |     |        |    | 80(85)   |
+| :                                                                           |         |     |        |    | 80(85)   |
+| Web_Object                                                                  |         |     | R      |    | 80(85)   |
+| {                                                                           |         |     | R      | NL | 81(85)   |
+| (                                                                           |         |     |        | NL | 82(86)   |
+| rows                                                                        |         |     |        |    | 82(86)   |
+| )                                                                           |         |     |        |    | 82(86)   |
+| int                                                                         |         |     | R      |    | 82(86)   |
+| (                                                                           |         |     |        | NL | 83(87)   |
+| cols                                                                        |         |     |        |    | 83(87)   |
+| )                                                                           |         |     |        |    | 83(87)   |
+| int                                                                         |         |     | R      |    | 83(87)   |
+| (                                                                           |         |     |        | NL | 84(88)   |
+| maxlength                                                                   |         |     |        |    | 84(88)   |
+| )                                                                           |         |     |        |    | 84(88)   |
+| int                                                                         |         |     | R      |    | 84(88)   |
+| (                                                                           |         |     |        | NL | 85(89)   |
+| minlength                                                                   |         |     |        |    | 85(89)   |
+| )                                                                           |         |     |        |    | 85(89)   |
+| int                                                                         |         |     | R      |    | 85(89)   |
+| (                                                                           |         |     |        | NL | 86(91)   |
+| text                                                                        |         |     |        |    | 86(91)   |
+| )                                                                           |         |     |        |    | 86(91)   |
+| string                                                                      |         |     | R      |    | 86(91)   |
+| (                                                                           |         |     |        | NL | 87(92)   |
+| autocapitalize                                                              |         |     |        |    | 87(92)   |
+| )                                                                           |         |     |        |    | 87(92)   |
+| bool                                                                        |         |     | R      |    | 87(92)   |
+| (                                                                           |         |     |        | NL | 88(93)   |
+| autocomplete                                                                |         |     |        |    | 88(93)   |
+| )                                                                           |         |     |        |    | 88(93)   |
+| bool                                                                        |         |     | R      |    | 88(93)   |
+| (                                                                           |         |     |        | NL | 89(94)   |
+| autofocus                                                                   |         |     |        |    | 89(94)   |
+| )                                                                           |         |     |        |    | 89(94)   |
+| bool                                                                        |         |     | R      |    | 89(94)   |
+| (                                                                           |         |     |        | NL | 90(95)   |
+| disabled                                                                    |         |     |        |    | 90(95)   |
+| )                                                                           |         |     |        |    | 90(95)   |
+| bool                                                                        |         |     | R      |    | 90(95)   |
+| (                                                                           |         |     |        | NL | 91(96)   |
+| spellcheck                                                                  |         |     |        |    | 91(96)   |
+| )                                                                           |         |     |        |    | 91(96)   |
+| bool                                                                        |         |     | R      |    | 91(96)   |
+| (                                                                           |         |     |        | NL | 92(97)   |
+| readonly                                                                    |         |     |        |    | 92(97)   |
+| )                                                                           |         |     |        |    | 92(97)   |
+| bool                                                                        |         |     | R      |    | 92(97)   |
+| (                                                                           |         |     |        | NL | 93(99)   |
+| selectionDirection                                                          |         |     |        |    | 93(99)   |
+| )                                                                           |         |     |        |    | 93(99)   |
+| string                                                                      |         |     | R      |    | 93(99)   |
+| (                                                                           |         |     |        | NL | 94(100)  |
+| selectionEnd                                                                |         |     |        |    | 94(100)  |
+| )                                                                           |         |     |        |    | 94(100)  |
+| int                                                                         |         |     | R      |    | 94(100)  |
+| (                                                                           |         |     |        | NL | 95(101)  |
+| selectionStart                                                              |         |     |        |    | 95(101)  |
+| )                                                                           |         |     |        |    | 95(101)  |
+| int                                                                         |         |     | R      |    | 95(101)  |
+|     (required)string                                                        | #       |     | R      | NL | 96(103)  |
+| (                                                                           |         |     |        | NL | 97(104)  |
+| form                                                                        |         |     |        |    | 97(104)  |
+| )                                                                           |         |     |        |    | 97(104)  |
+| string                                                                      |         |     | R      |    | 97(104)  |
+| (                                                                           |         |     |        | NL | 98(105)  |
+| placeholder                                                                 |         |     |        |    | 98(105)  |
+| )                                                                           |         |     |        |    | 98(105)  |
+| string                                                                      |         |     | R      |    | 98(105)  |
+| (                                                                           |         |     |        | NL | 99(106)  |
+| wrap                                                                        |         |     |        |    | 99(106)  |
+| )                                                                           |         |     |        |    | 99(106)  |
+| string                                                                      |         |     | R      |    | 99(106)  |
+| @                                                                           |         |     |        | NL | 100(108) |
+| (                                                                           |         |     |        |    | 100(108) |
+| __init                                                                      |         |     |        |    | 100(108) |
+| )                                                                           |         |     | R      |    | 100(108) |
+| {                                                                           |         |     | R      | NL | 101(108) |
+| ._web                                                                       |         |     |        | NL | 102(109) |
+| =                                                                           |         |     |        |    | 102(109) |
+| Textbox                                                                     |         | "   | R      |    | 102(109) |
+| }                                                                           |         |     | R      | NL | 103(110) |
+| }                                                                           |         |     | R      | NL | 104(111) |
+| -                                                                           |         |     |        | NL | 105(113) |
+| (                                                                           |         |     |        |    | 105(113) |
+| Input                                                                       |         |     |        |    | 105(113) |
+| )                                                                           |         |     |        |    | 105(113) |
+| :                                                                           |         |     |        |    | 105(113) |
+| Web_Object                                                                  |         |     | R      |    | 105(113) |
+| {                                                                           |         |     | R      | NL | 106(113) |
+| (                                                                           |         |     |        | NL | 107(114) |
+| text                                                                        |         |     |        |    | 107(114) |
+| )                                                                           |         |     |        |    | 107(114) |
+| string                                                                      |         |     | R      |    | 107(114) |
+| (                                                                           |         |     |        | NL | 108(116) |
+| type                                                                        |         |     |        |    | 108(116) |
+| )                                                                           |         |     |        |    | 108(116) |
+| string                                                                      |         |     | R      |    | 108(116) |
+| (                                                                           |         |     |        | NL | 109(117) |
+| autocomplete                                                                |         |     |        |    | 109(117) |
+| )                                                                           |         |     |        |    | 109(117) |
+| string                                                                      |         |     | R      |    | 109(117) |
+| (                                                                           |         |     |        | NL | 110(118) |
+| autofocus                                                                   |         |     |        |    | 110(118) |
+| )                                                                           |         |     |        |    | 110(118) |
+| bool                                                                        |         |     | R      |    | 110(118) |
+| (                                                                           |         |     |        | NL | 111(119) |
+| capture                                                                     |         |     |        |    | 111(119) |
+| )                                                                           |         |     |        |    | 111(119) |
+| bool                                                                        |         |     | R      |    | 111(119) |
+| (                                                                           |         |     |        | NL | 112(120) |
+| disabled                                                                    |         |     |        |    | 112(120) |
+| )                                                                           |         |     |        |    | 112(120) |
+| bool                                                                        |         |     | R      |    | 112(120) |
+| (                                                                           |         |     |        | NL | 113(121) |
+| form                                                                        |         |     |        |    | 113(121) |
+| )                                                                           |         |     |        |    | 113(121) |
+| string                                                                      |         |     | R      |    | 113(121) |
+| (                                                                           |         |     |        | NL | 114(122) |
+| formaction                                                                  |         |     |        |    | 114(122) |
+| )                                                                           |         |     |        |    | 114(122) |
+| string                                                                      |         |     | R      |    | 114(122) |
+| (                                                                           |         |     |        | NL | 115(123) |
+| formactype                                                                  |         |     |        |    | 115(123) |
+| )                                                                           |         |     |        |    | 115(123) |
+| string                                                                      |         |     | R      |    | 115(123) |
+| (                                                                           |         |     |        | NL | 116(124) |
+| formmethod                                                                  |         |     |        |    | 116(124) |
+| )                                                                           |         |     |        |    | 116(124) |
+| string                                                                      |         |     | R      |    | 116(124) |
+| (                                                                           |         |     |        | NL | 117(125) |
+| formnovalidate                                                              |         |     |        |    | 117(125) |
+| )                                                                           |         |     |        |    | 117(125) |
+| bool                                                                        |         |     | R      |    | 117(125) |
+| (                                                                           |         |     |        | NL | 118(126) |
+| formtarget                                                                  |         |     |        |    | 118(126) |
+| )                                                                           |         |     |        |    | 118(126) |
+| string                                                                      |         |     | R      |    | 118(126) |
+| (                                                                           |         |     |        | NL | 119(127) |
+| height                                                                      |         |     |        |    | 119(127) |
+| )                                                                           |         |     |        |    | 119(127) |
+| int                                                                         |         |     | R      |    | 119(127) |
+| (                                                                           |         |     |        | NL | 120(128) |
+| inputmode                                                                   |         |     |        |    | 120(128) |
+| )                                                                           |         |     |        |    | 120(128) |
+| string                                                                      |         |     | R      |    | 120(128) |
+| (                                                                           |         |     |        | NL | 121(129) |
+| list                                                                        |         |     |        |    | 121(129) |
+| )                                                                           |         |     |        |    | 121(129) |
+| string                                                                      |         |     | R      |    | 121(129) |
+| (                                                                           |         |     |        | NL | 122(130) |
+| max                                                                         |         |     |        |    | 122(130) |
+| )                                                                           |         |     |        |    | 122(130) |
+| int                                                                         |         |     | R      |    | 122(130) |
+| (                                                                           |         |     |        | NL | 123(131) |
+| maxlength                                                                   |         |     |        |    | 123(131) |
+| )                                                                           |         |     |        |    | 123(131) |
+| int                                                                         |         |     | R      |    | 123(131) |
+| (                                                                           |         |     |        | NL | 124(132) |
+| min                                                                         |         |     |        |    | 124(132) |
+| )                                                                           |         |     |        |    | 124(132) |
+| int                                                                         |         |     | R      |    | 124(132) |
+| (                                                                           |         |     |        | NL | 125(133) |
+| minlength                                                                   |         |     |        |    | 125(133) |
+| )                                                                           |         |     |        |    | 125(133) |
+| int                                                                         |         |     | R      |    | 125(133) |
+| (                                                                           |         |     |        | NL | 126(134) |
+| multiple                                                                    |         |     |        |    | 126(134) |
+| )                                                                           |         |     |        |    | 126(134) |
+| bool                                                                        |         |     | R      |    | 126(134) |
+| (                                                                           |         |     |        | NL | 127(135) |
+| name                                                                        |         |     |        |    | 127(135) |
+| )                                                                           |         |     |        |    | 127(135) |
+| string                                                                      |         |     | R      |    | 127(135) |
+| (                                                                           |         |     |        | NL | 128(136) |
+| pattern                                                                     |         |     |        |    | 128(136) |
+| )                                                                           |         |     |        |    | 128(136) |
+| string                                                                      |         |     | R      |    | 128(136) |
+| (                                                                           |         |     |        | NL | 129(137) |
+| placeholder                                                                 |         |     |        |    | 129(137) |
+| )                                                                           |         |     |        |    | 129(137) |
+| string                                                                      |         |     | R      |    | 129(137) |
+| (                                                                           |         |     |        | NL | 130(138) |
+| readonly                                                                    |         |     |        |    | 130(138) |
+| )                                                                           |         |     |        |    | 130(138) |
+| bool                                                                        |         |     | R      |    | 130(138) |
+| (                                                                           |         |     |        | NL | 131(139) |
+| required                                                                    |         |     |        |    | 131(139) |
+| )                                                                           |         |     |        |    | 131(139) |
+| bool                                                                        |         |     | R      |    | 131(139) |
+| (                                                                           |         |     |        | NL | 132(140) |
+| selectionDirection                                                          |         |     |        |    | 132(140) |
+| )                                                                           |         |     |        |    | 132(140) |
+| string                                                                      |         |     | R      |    | 132(140) |
+| (                                                                           |         |     |        | NL | 133(141) |
+| selectionStart                                                              |         |     |        |    | 133(141) |
+| )                                                                           |         |     |        |    | 133(141) |
+| int                                                                         |         |     | R      |    | 133(141) |
+| (                                                                           |         |     |        | NL | 134(142) |
+| selectionEnd                                                                |         |     |        |    | 134(142) |
+| )                                                                           |         |     |        |    | 134(142) |
+| int                                                                         |         |     | R      |    | 134(142) |
+| (                                                                           |         |     |        | NL | 135(143) |
+| size                                                                        |         |     |        |    | 135(143) |
+| )                                                                           |         |     |        |    | 135(143) |
+| int                                                                         |         |     | R      |    | 135(143) |
+| (                                                                           |         |     |        | NL | 136(144) |
+| spellcheck                                                                  |         |     |        |    | 136(144) |
+| )                                                                           |         |     |        |    | 136(144) |
+| string                                                                      |         |     | R      |    | 136(144) |
+| (                                                                           |         |     |        | NL | 137(145) |
+| src                                                                         |         |     |        |    | 137(145) |
+| )                                                                           |         |     |        |    | 137(145) |
+| string                                                                      |         |     | R      |    | 137(145) |
+| (                                                                           |         |     |        | NL | 138(146) |
+| step                                                                        |         |     |        |    | 138(146) |
+| )                                                                           |         |     |        |    | 138(146) |
+| string                                                                      |         |     | R      |    | 138(146) |
+| (                                                                           |         |     |        | NL | 139(147) |
+| value                                                                       |         |     |        |    | 139(147) |
+| )                                                                           |         |     |        |    | 139(147) |
+| string                                                                      |         |     | R      |    | 139(147) |
+| (                                                                           |         |     |        | NL | 140(148) |
+| width                                                                       |         |     |        |    | 140(148) |
+| )                                                                           |         |     |        |    | 140(148) |
+| int                                                                         |         |     | R      |    | 140(148) |
+| @                                                                           |         |     |        | NL | 141(150) |
+| (                                                                           |         |     |        |    | 141(150) |
+| __init                                                                      |         |     |        |    | 141(150) |
+| )                                                                           |         |     | R      |    | 141(150) |
+| {                                                                           |         |     | R      | NL | 142(150) |
+| ._web                                                                       |         |     |        | NL | 143(151) |
+| =                                                                           |         |     |        |    | 143(151) |
+| Input                                                                       |         | "   | R      |    | 143(151) |
+| }                                                                           |         |     | R      | NL | 144(152) |
+| }                                                                           |         |     | R      | NL | 145(153) |
+| -                                                                           |         |     |        | NL | 146(155) |
+| (                                                                           |         |     |        |    | 146(155) |
+| Checkbox                                                                    |         |     |        |    | 146(155) |
+| )                                                                           |         |     |        |    | 146(155) |
+| :                                                                           |         |     |        |    | 146(155) |
+| Input                                                                       |         |     | R      |    | 146(155) |
+| {                                                                           |         |     | R      | NL | 147(155) |
+|  NOTE(cgp) コンストラクタで意図的に._webをCheckboxに変える。                | #       |     | R      | NL | 148(156) |
+|  DOM出力はInput型のコンストラクタで行われているので二重に出力されないように | #       |     | R      | NL | 149(157) |
+|  未定義のCheckboxという識別子に変える。                                     | #       |     | R      | NL | 150(158) |
+| @                                                                           |         |     |        | NL | 151(159) |
+| (                                                                           |         |     |        |    | 151(159) |
+| __init                                                                      |         |     |        |    | 151(159) |
+| )                                                                           |         |     | R      |    | 151(159) |
+| {                                                                           |         |     | R      | NL | 152(159) |
+| ._web                                                                       |         |     |        | NL | 153(160) |
+| =                                                                           |         |     |        |    | 153(160) |
+| Checkbox                                                                    |         | "   | R      |    | 153(160) |
+| .type                                                                       |         |     |        | NL | 154(161) |
+| =                                                                           |         |     |        |    | 154(161) |
+| checkbox                                                                    |         | "   | R      |    | 154(161) |
+| }                                                                           |         |     | R      | NL | 155(162) |
+| }                                                                           |         |     | R      | NL | 156(163) |
+| -                                                                           |         |     |        | NL | 157(165) |
+| (                                                                           |         |     |        |    | 157(165) |
+| Color_Selector                                                              |         |     |        |    | 157(165) |
+| )                                                                           |         |     |        |    | 157(165) |
+| :                                                                           |         |     |        |    | 157(165) |
+| Input                                                                       |         |     | R      |    | 157(165) |
+| {                                                                           |         |     | R      | NL | 158(165) |
+| @                                                                           |         |     |        | NL | 159(166) |
+| (                                                                           |         |     |        |    | 159(166) |
+| __init                                                                      |         |     |        |    | 159(166) |
+| )                                                                           |         |     | R      |    | 159(166) |
+| {                                                                           |         |     | R      | NL | 160(166) |
+| ._web                                                                       |         |     |        | NL | 161(167) |
+| =                                                                           |         |     |        |    | 161(167) |
+| Color_Selector                                                              |         | "   | R      |    | 161(167) |
+| .type                                                                       |         |     |        | NL | 162(168) |
+| =                                                                           |         |     |        |    | 162(168) |
+| color                                                                       |         | "   | R      |    | 162(168) |
+| }                                                                           |         |     | R      | NL | 163(169) |
+| }                                                                           |         |     | R      | NL | 164(170) |
+| -                                                                           |         |     |        | NL | 165(172) |
+| (                                                                           |         |     |        |    | 165(172) |
+| Date_Selector                                                               |         |     |        |    | 165(172) |
+| )                                                                           |         |     |        |    | 165(172) |
+| :                                                                           |         |     |        |    | 165(172) |
+| Input                                                                       |         |     | R      |    | 165(172) |
+| {                                                                           |         |     | R      | NL | 166(172) |
+| @                                                                           |         |     |        | NL | 167(173) |
+| (                                                                           |         |     |        |    | 167(173) |
+| __init                                                                      |         |     |        |    | 167(173) |
+| )                                                                           |         |     | R      |    | 167(173) |
+| {                                                                           |         |     | R      | NL | 168(173) |
+| ._web                                                                       |         |     |        | NL | 169(174) |
+| =                                                                           |         |     |        |    | 169(174) |
+| Date_Selector                                                               |         | "   | R      |    | 169(174) |
+| .type                                                                       |         |     |        | NL | 170(175) |
+| =                                                                           |         |     |        |    | 170(175) |
+| date                                                                        |         | "   | R      |    | 170(175) |
+| }                                                                           |         |     | R      | NL | 171(176) |
+| }                                                                           |         |     | R      | NL | 172(177) |
+| -                                                                           |         |     |        | NL | 173(179) |
+| (                                                                           |         |     |        |    | 173(179) |
+| Email_Input                                                                 |         |     |        |    | 173(179) |
+| )                                                                           |         |     |        |    | 173(179) |
+| :                                                                           |         |     |        |    | 173(179) |
+| Input                                                                       |         |     | R      |    | 173(179) |
+| {                                                                           |         |     | R      | NL | 174(179) |
+| @                                                                           |         |     |        | NL | 175(180) |
+| (                                                                           |         |     |        |    | 175(180) |
+| __init                                                                      |         |     |        |    | 175(180) |
+| )                                                                           |         |     | R      |    | 175(180) |
+| {                                                                           |         |     | R      | NL | 176(180) |
+| ._web                                                                       |         |     |        | NL | 177(181) |
+| =                                                                           |         |     |        |    | 177(181) |
+| Email_Input                                                                 |         | "   | R      |    | 177(181) |
+| .type                                                                       |         |     |        | NL | 178(182) |
+| =                                                                           |         |     |        |    | 178(182) |
+| email                                                                       |         | "   | R      |    | 178(182) |
+| }                                                                           |         |     | R      | NL | 179(183) |
+| }                                                                           |         |     | R      | NL | 180(184) |
+| -                                                                           |         |     |        | NL | 181(186) |
+| (                                                                           |         |     |        |    | 181(186) |
+| File_Selector                                                               |         |     |        |    | 181(186) |
+| )                                                                           |         |     |        |    | 181(186) |
+| :                                                                           |         |     |        |    | 181(186) |
+| Input                                                                       |         |     | R      |    | 181(186) |
+| {                                                                           |         |     | R      | NL | 182(186) |
+| @                                                                           |         |     |        | NL | 183(187) |
+| (                                                                           |         |     |        |    | 183(187) |
+| __init                                                                      |         |     |        |    | 183(187) |
+| )                                                                           |         |     | R      |    | 183(187) |
+| {                                                                           |         |     | R      | NL | 184(187) |
+| ._web                                                                       |         |     |        | NL | 185(188) |
+| =                                                                           |         |     |        |    | 185(188) |
+| File_Selector                                                               |         | "   | R      |    | 185(188) |
+| .type                                                                       |         |     |        | NL | 186(189) |
+| =                                                                           |         |     |        |    | 186(189) |
+| file                                                                        |         | "   | R      |    | 186(189) |
+| }                                                                           |         |     | R      | NL | 187(190) |
+| }                                                                           |         |     | R      | NL | 188(191) |
+| -                                                                           |         |     |        | NL | 189(193) |
+| (                                                                           |         |     |        |    | 189(193) |
+| Month_Selector                                                              |         |     |        |    | 189(193) |
+| )                                                                           |         |     |        |    | 189(193) |
+| :                                                                           |         |     |        |    | 189(193) |
+| Input                                                                       |         |     | R      |    | 189(193) |
+| {                                                                           |         |     | R      | NL | 190(193) |
+| @                                                                           |         |     |        | NL | 191(194) |
+| (                                                                           |         |     |        |    | 191(194) |
+| __init                                                                      |         |     |        |    | 191(194) |
+| )                                                                           |         |     | R      |    | 191(194) |
+| {                                                                           |         |     | R      | NL | 192(194) |
+| ._web                                                                       |         |     |        | NL | 193(195) |
+| =                                                                           |         |     |        |    | 193(195) |
+| Month_Selector                                                              |         | "   | R      |    | 193(195) |
+| .type                                                                       |         |     |        | NL | 194(196) |
+| =                                                                           |         |     |        |    | 194(196) |
+| month                                                                       |         | "   | R      |    | 194(196) |
+| }                                                                           |         |     | R      | NL | 195(197) |
+| }                                                                           |         |     | R      | NL | 196(198) |
+| -                                                                           |         |     |        | NL | 197(200) |
+| (                                                                           |         |     |        |    | 197(200) |
+| Number_Selector                                                             |         |     |        |    | 197(200) |
+| )                                                                           |         |     |        |    | 197(200) |
+| :                                                                           |         |     |        |    | 197(200) |
+| Input                                                                       |         |     | R      |    | 197(200) |
+| {                                                                           |         |     | R      | NL | 198(200) |
+| @                                                                           |         |     |        | NL | 199(201) |
+| (                                                                           |         |     |        |    | 199(201) |
+| __init                                                                      |         |     |        |    | 199(201) |
+| )                                                                           |         |     | R      |    | 199(201) |
+| {                                                                           |         |     | R      | NL | 200(201) |
+| ._web                                                                       |         |     |        | NL | 201(202) |
+| =                                                                           |         |     |        |    | 201(202) |
+| Number_Selector                                                             |         | "   | R      |    | 201(202) |
+| .type                                                                       |         |     |        | NL | 202(203) |
+| =                                                                           |         |     |        |    | 202(203) |
+| number                                                                      |         | "   | R      |    | 202(203) |
+| }                                                                           |         |     | R      | NL | 203(204) |
+| }                                                                           |         |     | R      | NL | 204(205) |
+| -                                                                           |         |     |        | NL | 205(207) |
+| (                                                                           |         |     |        |    | 205(207) |
+| Password                                                                    |         |     |        |    | 205(207) |
+| )                                                                           |         |     |        |    | 205(207) |
+| :                                                                           |         |     |        |    | 205(207) |
+| Input                                                                       |         |     | R      |    | 205(207) |
+| {                                                                           |         |     | R      | NL | 206(207) |
+| @                                                                           |         |     |        | NL | 207(208) |
+| (                                                                           |         |     |        |    | 207(208) |
+| __init                                                                      |         |     |        |    | 207(208) |
+| )                                                                           |         |     | R      |    | 207(208) |
+| {                                                                           |         |     | R      | NL | 208(208) |
+| ._web                                                                       |         |     |        | NL | 209(209) |
+| =                                                                           |         |     |        |    | 209(209) |
+| Password                                                                    |         | "   | R      |    | 209(209) |
+| .type                                                                       |         |     |        | NL | 210(210) |
+| =                                                                           |         |     |        |    | 210(210) |
+| password                                                                    |         | "   | R      |    | 210(210) |
+| }                                                                           |         |     | R      | NL | 211(211) |
+| }                                                                           |         |     | R      | NL | 212(212) |
+| -                                                                           |         |     |        | NL | 213(214) |
+| (                                                                           |         |     |        |    | 213(214) |
+| Radio_Button                                                                |         |     |        |    | 213(214) |
+| )                                                                           |         |     |        |    | 213(214) |
+| :                                                                           |         |     |        |    | 213(214) |
+| Input                                                                       |         |     | R      |    | 213(214) |
+| {                                                                           |         |     | R      | NL | 214(214) |
+| @                                                                           |         |     |        | NL | 215(215) |
+| (                                                                           |         |     |        |    | 215(215) |
+| __init                                                                      |         |     |        |    | 215(215) |
+| )                                                                           |         |     | R      |    | 215(215) |
+| {                                                                           |         |     | R      | NL | 216(215) |
+| ._web                                                                       |         |     |        | NL | 217(216) |
+| =                                                                           |         |     |        |    | 217(216) |
+| Radio_Button                                                                |         | "   | R      |    | 217(216) |
+| .type                                                                       |         |     |        | NL | 218(217) |
+| =                                                                           |         |     |        |    | 218(217) |
+| radio                                                                       |         | "   | R      |    | 218(217) |
+| }                                                                           |         |     | R      | NL | 219(218) |
+| }                                                                           |         |     | R      | NL | 220(219) |
+| -                                                                           |         |     |        | NL | 221(222) |
+| (                                                                           |         |     |        |    | 221(222) |
+| Range_Selector                                                              |         |     |        |    | 221(222) |
+| )                                                                           |         |     |        |    | 221(222) |
+| :                                                                           |         |     |        |    | 221(222) |
+| Input                                                                       |         |     | R      |    | 221(222) |
+| {                                                                           |         |     | R      | NL | 222(222) |
+| @                                                                           |         |     |        | NL | 223(223) |
+| (                                                                           |         |     |        |    | 223(223) |
+| __init                                                                      |         |     |        |    | 223(223) |
+| )                                                                           |         |     | R      |    | 223(223) |
+| {                                                                           |         |     | R      | NL | 224(223) |
+| ._web                                                                       |         |     |        | NL | 225(224) |
+| =                                                                           |         |     |        |    | 225(224) |
+| Range_Selector                                                              |         | "   | R      |    | 225(224) |
+| .type                                                                       |         |     |        | NL | 226(225) |
+| =                                                                           |         |     |        |    | 226(225) |
+| range                                                                       |         | "   | R      |    | 226(225) |
+| }                                                                           |         |     | R      | NL | 227(226) |
+| }                                                                           |         |     | R      | NL | 228(227) |
+| -                                                                           |         |     |        | NL | 229(229) |
+| (                                                                           |         |     |        |    | 229(229) |
+| Reset_Button                                                                |         |     |        |    | 229(229) |
+| )                                                                           |         |     |        |    | 229(229) |
+| :                                                                           |         |     |        |    | 229(229) |
+| Input                                                                       |         |     | R      |    | 229(229) |
+| {                                                                           |         |     | R      | NL | 230(229) |
+| @                                                                           |         |     |        | NL | 231(230) |
+| (                                                                           |         |     |        |    | 231(230) |
+| __init                                                                      |         |     |        |    | 231(230) |
+| )                                                                           |         |     | R      |    | 231(230) |
+| {                                                                           |         |     | R      | NL | 232(230) |
+| ._web                                                                       |         |     |        | NL | 233(231) |
+| =                                                                           |         |     |        |    | 233(231) |
+| Reset_Button                                                                |         | "   | R      |    | 233(231) |
+| .type                                                                       |         |     |        | NL | 234(232) |
+| =                                                                           |         |     |        |    | 234(232) |
+| reset                                                                       |         | "   | R      |    | 234(232) |
+| }                                                                           |         |     | R      | NL | 235(233) |
+| }                                                                           |         |     | R      | NL | 236(234) |
+| -                                                                           |         |     |        | NL | 237(236) |
+| (                                                                           |         |     |        |    | 237(236) |
+| Search_Input                                                                |         |     |        |    | 237(236) |
+| )                                                                           |         |     |        |    | 237(236) |
+| :                                                                           |         |     |        |    | 237(236) |
+| Input                                                                       |         |     | R      |    | 237(236) |
+| {                                                                           |         |     | R      | NL | 238(236) |
+| @                                                                           |         |     |        | NL | 239(237) |
+| (                                                                           |         |     |        |    | 239(237) |
+| __init                                                                      |         |     |        |    | 239(237) |
+| )                                                                           |         |     | R      |    | 239(237) |
+| {                                                                           |         |     | R      | NL | 240(237) |
+| ._web                                                                       |         |     |        | NL | 241(238) |
+| =                                                                           |         |     |        |    | 241(238) |
+| Search_Input                                                                |         | "   | R      |    | 241(238) |
+| .type                                                                       |         |     |        | NL | 242(239) |
+| =                                                                           |         |     |        |    | 242(239) |
+| search                                                                      |         | "   | R      |    | 242(239) |
+| }                                                                           |         |     | R      | NL | 243(240) |
+| }                                                                           |         |     | R      | NL | 244(241) |
+| -                                                                           |         |     |        | NL | 245(243) |
+| (                                                                           |         |     |        |    | 245(243) |
+| Submit_Button                                                               |         |     |        |    | 245(243) |
+| )                                                                           |         |     |        |    | 245(243) |
+| :                                                                           |         |     |        |    | 245(243) |
+| Input                                                                       |         |     | R      |    | 245(243) |
+| {                                                                           |         |     | R      | NL | 246(243) |
+| @                                                                           |         |     |        | NL | 247(244) |
+| (                                                                           |         |     |        |    | 247(244) |
+| __init                                                                      |         |     |        |    | 247(244) |
+| )                                                                           |         |     | R      |    | 247(244) |
+| {                                                                           |         |     | R      | NL | 248(244) |
+| ._web                                                                       |         |     |        | NL | 249(245) |
+| =                                                                           |         |     |        |    | 249(245) |
+| Submit_Button                                                               |         | "   | R      |    | 249(245) |
+| .type                                                                       |         |     |        | NL | 250(246) |
+| =                                                                           |         |     |        |    | 250(246) |
+| submit                                                                      |         | "   | R      |    | 250(246) |
+| }                                                                           |         |     | R      | NL | 251(247) |
+| }                                                                           |         |     | R      | NL | 252(248) |
+| -                                                                           |         |     |        | NL | 253(250) |
+| (                                                                           |         |     |        |    | 253(250) |
+| TEL_Input                                                                   |         |     |        |    | 253(250) |
+| )                                                                           |         |     |        |    | 253(250) |
+| :                                                                           |         |     |        |    | 253(250) |
+| Input                                                                       |         |     | R      |    | 253(250) |
+| {                                                                           |         |     | R      | NL | 254(250) |
+| @                                                                           |         |     |        | NL | 255(251) |
+| (                                                                           |         |     |        |    | 255(251) |
+| __init                                                                      |         |     |        |    | 255(251) |
+| )                                                                           |         |     | R      |    | 255(251) |
+| {                                                                           |         |     | R      | NL | 256(251) |
+| ._web                                                                       |         |     |        | NL | 257(252) |
+| =                                                                           |         |     |        |    | 257(252) |
+| TEL_Input                                                                   |         | "   | R      |    | 257(252) |
+| .type                                                                       |         |     |        | NL | 258(253) |
+| =                                                                           |         |     |        |    | 258(253) |
+| tel                                                                         |         | "   | R      |    | 258(253) |
+| }                                                                           |         |     | R      | NL | 259(254) |
+| }                                                                           |         |     | R      | NL | 260(255) |
+| -                                                                           |         |     |        | NL | 261(257) |
+| (                                                                           |         |     |        |    | 261(257) |
+| URL_Input                                                                   |         |     |        |    | 261(257) |
+| )                                                                           |         |     |        |    | 261(257) |
+| :                                                                           |         |     |        |    | 261(257) |
+| Input                                                                       |         |     | R      |    | 261(257) |
+| {                                                                           |         |     | R      | NL | 262(257) |
+| @                                                                           |         |     |        | NL | 263(258) |
+| (                                                                           |         |     |        |    | 263(258) |
+| __init                                                                      |         |     |        |    | 263(258) |
+| )                                                                           |         |     | R      |    | 263(258) |
+| {                                                                           |         |     | R      | NL | 264(258) |
+| ._web                                                                       |         |     |        | NL | 265(259) |
+| =                                                                           |         |     |        |    | 265(259) |
+| URL_Input                                                                   |         | "   | R      |    | 265(259) |
+| .type                                                                       |         |     |        | NL | 266(260) |
+| =                                                                           |         |     |        |    | 266(260) |
+| url                                                                         |         | "   | R      |    | 266(260) |
+| }                                                                           |         |     | R      | NL | 267(261) |
+| }                                                                           |         |     | R      | NL | 268(262) |
+| -                                                                           |         |     |        | NL | 269(264) |
+| (                                                                           |         |     |        |    | 269(264) |
+| Time_Input                                                                  |         |     |        |    | 269(264) |
+| )                                                                           |         |     |        |    | 269(264) |
+| :                                                                           |         |     |        |    | 269(264) |
+| Input                                                                       |         |     | R      |    | 269(264) |
+| {                                                                           |         |     | R      | NL | 270(264) |
+| @                                                                           |         |     |        | NL | 271(265) |
+| (                                                                           |         |     |        |    | 271(265) |
+| __init                                                                      |         |     |        |    | 271(265) |
+| )                                                                           |         |     | R      |    | 271(265) |
+| {                                                                           |         |     | R      | NL | 272(265) |
+| ._web                                                                       |         |     |        | NL | 273(266) |
+| =                                                                           |         |     |        |    | 273(266) |
+| Time_Input                                                                  |         | "   | R      |    | 273(266) |
+| .type                                                                       |         |     |        | NL | 274(267) |
+| =                                                                           |         |     |        |    | 274(267) |
+| time                                                                        |         | "   | R      |    | 274(267) |
+| }                                                                           |         |     | R      | NL | 275(268) |
+| }                                                                           |         |     | R      | NL | 276(269) |
+| -                                                                           |         |     |        | NL | 277(271) |
+| (                                                                           |         |     |        |    | 277(271) |
+| Week_Selector                                                               |         |     |        |    | 277(271) |
+| )                                                                           |         |     |        |    | 277(271) |
+| :                                                                           |         |     |        |    | 277(271) |
+| Input                                                                       |         |     | R      |    | 277(271) |
+| {                                                                           |         |     | R      | NL | 278(271) |
+| @                                                                           |         |     |        | NL | 279(272) |
+| (                                                                           |         |     |        |    | 279(272) |
+| __init                                                                      |         |     |        |    | 279(272) |
+| )                                                                           |         |     | R      |    | 279(272) |
+| {                                                                           |         |     | R      | NL | 280(272) |
+| ._web                                                                       |         |     |        | NL | 281(273) |
+| =                                                                           |         |     |        |    | 281(273) |
+| Time_Input                                                                  |         | "   | R      |    | 281(273) |
+| .type                                                                       |         |     |        | NL | 282(274) |
+| =                                                                           |         |     |        |    | 282(274) |
+| time                                                                        |         | "   | R      |    | 282(274) |
+| }                                                                           |         |     | R      | NL | 283(275) |
+| }                                                                           |         |     | R      | NL | 284(276) |
+| @                                                                           |         |     |        | NL | 285(3)   |
+| (                                                                           |         |     |        |    | 285(3)   |
+| negative                                                                    |         |     |        |    | 285(3)   |
+| (                                                                           |         |     |        |    | 285(3)   |
+| i                                                                           |         |     |        |    | 285(3)   |
+| )                                                                           |         |     |        |    | 285(3)   |
+| int                                                                         |         |     |        |    | 285(3)   |
+| )                                                                           |         |     | R      |    | 285(3)   |
+| {                                                                           |         |     | R      | NL | 286(3)   |
+| return                                                                      |         |     |        | NL | 287(4)   |
+| (                                                                           |         |     |        |    | 287(4)   |
+| -                                                                           |         |     |        |    | 287(4)   |
+| 0                                                                           |         |     |        |    | 287(4)   |
+| i                                                                           |         |     |        |    | 287(4)   |
+| )                                                                           |         |     | R      |    | 287(4)   |
+| }                                                                           |         |     | R      | NL | 288(5)   |
+| (                                                                           |         |     |        | NL | 289(7)   |
+| mode                                                                        |         |     |        |    | 289(7)   |
+| )                                                                           |         |     |        |    | 289(7)   |
+| int                                                                         |         |     | R      |    | 289(7)   |
+| (                                                                           |         |     |        | NL | 290(8)   |
+| using_operation                                                             |         |     |        |    | 290(8)   |
+| )                                                                           |         |     |        |    | 290(8)   |
+| string                                                                      |         |     | R      |    | 290(8)   |
+| -                                                                           |         |     |        | NL | 291(10)  |
+| (                                                                           |         |     |        |    | 291(10)  |
+| numbtn                                                                      |         |     |        |    | 291(10)  |
+| )                                                                           |         |     |        |    | 291(10)  |
+| :                                                                           |         |     |        |    | 291(10)  |
+| Button                                                                      |         |     | R      |    | 291(10)  |
+| {                                                                           |         |     | R      | NL | 292(10)  |
+| (                                                                           |         |     |        | NL | 293(11)  |
+| num                                                                         |         |     |        |    | 293(11)  |
+| )                                                                           |         |     |        |    | 293(11)  |
+| int                                                                         |         |     | R      |    | 293(11)  |
+| @                                                                           |         |     |        | NL | 294(12)  |
+| (                                                                           |         |     |        |    | 294(12)  |
+| set_num                                                                     |         |     |        |    | 294(12)  |
+| (                                                                           |         |     |        |    | 294(12)  |
+| num                                                                         |         |     |        |    | 294(12)  |
+| )                                                                           |         |     |        |    | 294(12)  |
+| int                                                                         |         |     |        |    | 294(12)  |
+| )                                                                           |         |     | R      |    | 294(12)  |
+| {                                                                           |         |     | R      | NL | 295(12)  |
+| .num                                                                        |         |     |        | NL | 296(13)  |
+| =                                                                           |         |     |        |    | 296(13)  |
+| num                                                                         |         |     | R      |    | 296(13)  |
+| .text                                                                       |         |     |        | NL | 297(14)  |
+| =                                                                           |         |     |        |    | 297(14)  |
+| (                                                                           |         |     |        |    | 297(14)  |
+| num                                                                         |         |     |        |    | 297(14)  |
+| )                                                                           |         |     |        |    | 297(14)  |
+| string                                                                      |         |     | R      |    | 297(14)  |
+| }                                                                           |         |     | R      | NL | 298(15)  |
+| @                                                                           |         |     |        | NL | 299(16)  |
+| (                                                                           |         |     |        |    | 299(16)  |
+| click                                                                       |         |     |        |    | 299(16)  |
+| )                                                                           |         |     | R      |    | 299(16)  |
+| {                                                                           |         |     | R      | NL | 300(16)  |
+|  文字を後ろにくっつける                                                     | #       |     | R      | NL | 301(17)  |
+| view.text                                                                   |         |     |        | NL | 302(18)  |
+| =                                                                           |         |     |        |    | 302(18)  |
+| (                                                                           |         |     |        |    | 302(18)  |
+| concat                                                                      |         |     |        |    | 302(18)  |
+| view.text                                                                   |         |     |        |    | 302(18)  |
+| (                                                                           |         |     |        |    | 302(18)  |
+| .num                                                                        |         |     |        |    | 302(18)  |
+| )                                                                           |         |     |        |    | 302(18)  |
+| string                                                                      |         |     |        |    | 302(18)  |
+| )                                                                           |         |     | R      |    | 302(18)  |
+| mode                                                                        |         |     |        | NL | 303(19)  |
+| =                                                                           |         |     |        |    | 303(19)  |
+| 1                                                                           |         |     | R      |    | 303(19)  |
+| }                                                                           |         |     | R      | NL | 304(20)  |
+| }                                                                           |         |     | R      | NL | 305(21)  |
+| +                                                                           |         |     |        | NL | 306(23)  |
+| (                                                                           |         |     |        |    | 306(23)  |
+| main                                                                        |         |     |        |    | 306(23)  |
+| )                                                                           |         |     |        |    | 306(23)  |
+| Div                                                                         |         |     | R      |    | 306(23)  |
+| +                                                                           |         |     |        | NL | 307(24)  |
+| (                                                                           |         |     |        |    | 307(24)  |
+| view                                                                        |         |     |        |    | 307(24)  |
+| )                                                                           |         |     |        |    | 307(24)  |
+| Textbox                                                                     |         |     |        |    | 307(24)  |
+| in                                                                          |         |     |        |    | 307(24)  |
+| main                                                                        |         |     | R      |    | 307(24)  |
+| +                                                                           |         |     |        | NL | 308(25)  |
+| (                                                                           |         |     |        |    | 308(25)  |
+| num1                                                                        |         |     |        |    | 308(25)  |
+| )                                                                           |         |     |        |    | 308(25)  |
+| Div                                                                         |         |     | R      |    | 308(25)  |
+| +                                                                           |         |     |        | NL | 309(26)  |
+| (                                                                           |         |     |        |    | 309(26)  |
+| num2                                                                        |         |     |        |    | 309(26)  |
+| )                                                                           |         |     |        |    | 309(26)  |
+| Div                                                                         |         |     | R      |    | 309(26)  |
+| +                                                                           |         |     |        | NL | 310(27)  |
+| (                                                                           |         |     |        |    | 310(27)  |
+| num3                                                                        |         |     |        |    | 310(27)  |
+| )                                                                           |         |     |        |    | 310(27)  |
+| Div                                                                         |         |     | R      |    | 310(27)  |
+| +                                                                           |         |     |        | NL | 311(28)  |
+| (                                                                           |         |     |        |    | 311(28)  |
+| operators                                                                   |         |     |        |    | 311(28)  |
+| )                                                                           |         |     |        |    | 311(28)  |
+| Div                                                                         |         |     | R      |    | 311(28)  |
+| +                                                                           |         |     |        | NL | 312(30)  |
+| (                                                                           |         |     |        |    | 312(30)  |
+| button9                                                                     |         |     |        |    | 312(30)  |
+| )                                                                           |         |     |        |    | 312(30)  |
+| numbtn                                                                      |         |     |        |    | 312(30)  |
+| in                                                                          |         |     |        |    | 312(30)  |
+| num1                                                                        |         |     | R      |    | 312(30)  |
+| (                                                                           |         |     |        | NL | 313(31)  |
+| button9.set_num                                                             |         |     |        |    | 313(31)  |
+| 9                                                                           |         |     |        |    | 313(31)  |
+| )                                                                           |         |     | R      |    | 313(31)  |
+| +                                                                           |         |     |        | NL | 314(32)  |
+| (                                                                           |         |     |        |    | 314(32)  |
+| button8                                                                     |         |     |        |    | 314(32)  |
+| )                                                                           |         |     |        |    | 314(32)  |
+| numbtn                                                                      |         |     |        |    | 314(32)  |
+| in                                                                          |         |     |        |    | 314(32)  |
+| num1                                                                        |         |     | R      |    | 314(32)  |
+| (                                                                           |         |     |        | NL | 315(33)  |
+| button8.set_num                                                             |         |     |        |    | 315(33)  |
+| 8                                                                           |         |     |        |    | 315(33)  |
+| )                                                                           |         |     | R      |    | 315(33)  |
+| +                                                                           |         |     |        | NL | 316(34)  |
+| (                                                                           |         |     |        |    | 316(34)  |
+| button7                                                                     |         |     |        |    | 316(34)  |
+| )                                                                           |         |     |        |    | 316(34)  |
+| numbtn                                                                      |         |     |        |    | 316(34)  |
+| in                                                                          |         |     |        |    | 316(34)  |
+| num1                                                                        |         |     | R      |    | 316(34)  |
+| (                                                                           |         |     |        | NL | 317(35)  |
+| button7.set_num                                                             |         |     |        |    | 317(35)  |
+| 7                                                                           |         |     |        |    | 317(35)  |
+| )                                                                           |         |     | R      |    | 317(35)  |
+| +                                                                           |         |     |        | NL | 318(36)  |
+| (                                                                           |         |     |        |    | 318(36)  |
+| button6                                                                     |         |     |        |    | 318(36)  |
+| )                                                                           |         |     |        |    | 318(36)  |
+| numbtn                                                                      |         |     |        |    | 318(36)  |
+| in                                                                          |         |     |        |    | 318(36)  |
+| num2                                                                        |         |     | R      |    | 318(36)  |
+| (                                                                           |         |     |        | NL | 319(37)  |
+| button6.set_num                                                             |         |     |        |    | 319(37)  |
+| 6                                                                           |         |     |        |    | 319(37)  |
+| )                                                                           |         |     | R      |    | 319(37)  |
+| +                                                                           |         |     |        | NL | 320(38)  |
+| (                                                                           |         |     |        |    | 320(38)  |
+| button5                                                                     |         |     |        |    | 320(38)  |
+| )                                                                           |         |     |        |    | 320(38)  |
+| numbtn                                                                      |         |     |        |    | 320(38)  |
+| in                                                                          |         |     |        |    | 320(38)  |
+| num2                                                                        |         |     | R      |    | 320(38)  |
+| (                                                                           |         |     |        | NL | 321(39)  |
+| button5.set_num                                                             |         |     |        |    | 321(39)  |
+| 5                                                                           |         |     |        |    | 321(39)  |
+| )                                                                           |         |     | R      |    | 321(39)  |
+| +                                                                           |         |     |        | NL | 322(40)  |
+| (                                                                           |         |     |        |    | 322(40)  |
+| button4                                                                     |         |     |        |    | 322(40)  |
+| )                                                                           |         |     |        |    | 322(40)  |
+| numbtn                                                                      |         |     |        |    | 322(40)  |
+| in                                                                          |         |     |        |    | 322(40)  |
+| num2                                                                        |         |     | R      |    | 322(40)  |
+| (                                                                           |         |     |        | NL | 323(41)  |
+| button4.set_num                                                             |         |     |        |    | 323(41)  |
+| 4                                                                           |         |     |        |    | 323(41)  |
+| )                                                                           |         |     | R      |    | 323(41)  |
+| +                                                                           |         |     |        | NL | 324(42)  |
+| (                                                                           |         |     |        |    | 324(42)  |
+| button3                                                                     |         |     |        |    | 324(42)  |
+| )                                                                           |         |     |        |    | 324(42)  |
+| numbtn                                                                      |         |     |        |    | 324(42)  |
+| in                                                                          |         |     |        |    | 324(42)  |
+| num3                                                                        |         |     | R      |    | 324(42)  |
+| (                                                                           |         |     |        | NL | 325(43)  |
+| button3.set_num                                                             |         |     |        |    | 325(43)  |
+| 3                                                                           |         |     |        |    | 325(43)  |
+| )                                                                           |         |     | R      |    | 325(43)  |
+| +                                                                           |         |     |        | NL | 326(44)  |
+| (                                                                           |         |     |        |    | 326(44)  |
+| button2                                                                     |         |     |        |    | 326(44)  |
+| )                                                                           |         |     |        |    | 326(44)  |
+| numbtn                                                                      |         |     |        |    | 326(44)  |
+| in                                                                          |         |     |        |    | 326(44)  |
+| num3                                                                        |         |     | R      |    | 326(44)  |
+| (                                                                           |         |     |        | NL | 327(45)  |
+| button2.set_num                                                             |         |     |        |    | 327(45)  |
+| 2                                                                           |         |     |        |    | 327(45)  |
+| )                                                                           |         |     | R      |    | 327(45)  |
+| +                                                                           |         |     |        | NL | 328(46)  |
+| (                                                                           |         |     |        |    | 328(46)  |
+| button1                                                                     |         |     |        |    | 328(46)  |
+| )                                                                           |         |     |        |    | 328(46)  |
+| numbtn                                                                      |         |     |        |    | 328(46)  |
+| in                                                                          |         |     |        |    | 328(46)  |
+| num3                                                                        |         |     | R      |    | 328(46)  |
+| (                                                                           |         |     |        | NL | 329(47)  |
+| button1.set_num                                                             |         |     |        |    | 329(47)  |
+| 1                                                                           |         |     |        |    | 329(47)  |
+| )                                                                           |         |     | R      |    | 329(47)  |
+| +                                                                           |         |     |        | NL | 330(48)  |
+| (                                                                           |         |     |        |    | 330(48)  |
+| button0                                                                     |         |     |        |    | 330(48)  |
+| )                                                                           |         |     |        |    | 330(48)  |
+| numbtn                                                                      |         |     |        |    | 330(48)  |
+| in                                                                          |         |     |        |    | 330(48)  |
+| num3                                                                        |         |     | R      |    | 330(48)  |
+| (                                                                           |         |     |        | NL | 331(49)  |
+| button0.set_num                                                             |         |     |        |    | 331(49)  |
+| 0                                                                           |         |     |        |    | 331(49)  |
+| )                                                                           |         |     | R      |    | 331(49)  |
+| +                                                                           |         |     |        | NL | 332(51)  |
+| (                                                                           |         |     |        |    | 332(51)  |
+| plus_btn                                                                    |         |     |        |    | 332(51)  |
+| )                                                                           |         |     |        |    | 332(51)  |
+| Button                                                                      |         |     |        |    | 332(51)  |
+| in                                                                          |         |     |        |    | 332(51)  |
+| operators                                                                   |         |     | R      |    | 332(51)  |
+| plus_btn.text                                                               |         |     |        | NL | 333(52)  |
+| =                                                                           |         |     |        |    | 333(52)  |
+| +                                                                           |         | "   | R      |    | 333(52)  |
+| @                                                                           |         |     |        | NL | 334(53)  |
+| (                                                                           |         |     |        |    | 334(53)  |
+| plus_btn.click                                                              |         |     |        |    | 334(53)  |
+| )                                                                           |         |     | R      |    | 334(53)  |
+| {                                                                           |         |     | R      | NL | 335(53)  |
+| (                                                                           |         |     |        | NL | 336(54)  |
+| eq                                                                          |         |     |        |    | 336(54)  |
+| mode                                                                        |         |     |        |    | 336(54)  |
+| 1                                                                           |         |     |        |    | 336(54)  |
+| )                                                                           |         |     |        |    | 336(54)  |
+| ?                                                                           |         |     | R      |    | 336(54)  |
+| {                                                                           |         |     | R      | NL | 337(54)  |
+| view.text                                                                   |         |     |        | NL | 338(55)  |
+| =                                                                           |         |     |        |    | 338(55)  |
+| (                                                                           |         |     |        |    | 338(55)  |
+| concat                                                                      |         |     |        |    | 338(55)  |
+| view.text                                                                   |         |     |        |    | 338(55)  |
+| +                                                                           |         | "   |        |    | 338(55)  |
+| )                                                                           |         |     | R      |    | 338(55)  |
+| mode                                                                        |         |     |        | NL | 339(56)  |
+| =                                                                           |         |     |        |    | 339(56)  |
+| 0                                                                           |         |     | R      |    | 339(56)  |
+| using_operation                                                             |         |     |        | NL | 340(57)  |
+| =                                                                           |         |     |        |    | 340(57)  |
+| +                                                                           |         | "   | R      |    | 340(57)  |
+| }                                                                           |         |     | R      | NL | 341(58)  |
+| }                                                                           |         |     | R      | NL | 342(59)  |
+| +                                                                           |         |     |        | NL | 343(61)  |
+| (                                                                           |         |     |        |    | 343(61)  |
+| product_btn                                                                 |         |     |        |    | 343(61)  |
+| )                                                                           |         |     |        |    | 343(61)  |
+| Button                                                                      |         |     |        |    | 343(61)  |
+| in                                                                          |         |     |        |    | 343(61)  |
+| operators                                                                   |         |     | R      |    | 343(61)  |
+| product_btn.text                                                            |         |     |        | NL | 344(62)  |
+| =                                                                           |         |     |        |    | 344(62)  |
+| *                                                                           |         | "   | R      |    | 344(62)  |
+| @                                                                           |         |     |        | NL | 345(63)  |
+| (                                                                           |         |     |        |    | 345(63)  |
+| product_btn.click                                                           |         |     |        |    | 345(63)  |
+| )                                                                           |         |     | R      |    | 345(63)  |
+| {                                                                           |         |     | R      | NL | 346(63)  |
+| (                                                                           |         |     |        | NL | 347(64)  |
+| eq                                                                          |         |     |        |    | 347(64)  |
+| mode                                                                        |         |     |        |    | 347(64)  |
+| 1                                                                           |         |     |        |    | 347(64)  |
+| )                                                                           |         |     |        |    | 347(64)  |
+| ?                                                                           |         |     | R      |    | 347(64)  |
+| {                                                                           |         |     | R      | NL | 348(64)  |
+| view.text                                                                   |         |     |        | NL | 349(65)  |
+| =                                                                           |         |     |        |    | 349(65)  |
+| (                                                                           |         |     |        |    | 349(65)  |
+| concat                                                                      |         |     |        |    | 349(65)  |
+| view.text                                                                   |         |     |        |    | 349(65)  |
+| *                                                                           |         | "   |        |    | 349(65)  |
+| )                                                                           |         |     | R      |    | 349(65)  |
+| mode                                                                        |         |     |        | NL | 350(66)  |
+| =                                                                           |         |     |        |    | 350(66)  |
+| 0                                                                           |         |     | R      |    | 350(66)  |
+| using_operation                                                             |         |     |        | NL | 351(67)  |
+| =                                                                           |         |     |        |    | 351(67)  |
+| *                                                                           |         | "   | R      |    | 351(67)  |
+| }                                                                           |         |     | R      | NL | 352(68)  |
+| }                                                                           |         |     | R      | NL | 353(69)  |
+| +                                                                           |         |     |        | NL | 354(71)  |
+| (                                                                           |         |     |        |    | 354(71)  |
+| mi_btn                                                                      |         |     |        |    | 354(71)  |
+| )                                                                           |         |     |        |    | 354(71)  |
+| Button                                                                      |         |     |        |    | 354(71)  |
+| in                                                                          |         |     |        |    | 354(71)  |
+| operators                                                                   |         |     | R      |    | 354(71)  |
+| mi_btn.text                                                                 |         |     |        | NL | 355(72)  |
+| =                                                                           |         |     |        |    | 355(72)  |
+| -                                                                           |         | "   | R      |    | 355(72)  |
+| @                                                                           |         |     |        | NL | 356(73)  |
+| (                                                                           |         |     |        |    | 356(73)  |
+| mi_btn.click                                                                |         |     |        |    | 356(73)  |
+| )                                                                           |         |     | R      |    | 356(73)  |
+| {                                                                           |         |     | R      | NL | 357(73)  |
+| (                                                                           |         |     |        | NL | 358(74)  |
+| eq                                                                          |         |     |        |    | 358(74)  |
+| mode                                                                        |         |     |        |    | 358(74)  |
+| 1                                                                           |         |     |        |    | 358(74)  |
+| )                                                                           |         |     |        |    | 358(74)  |
+| ?                                                                           |         |     | R      |    | 358(74)  |
+| {                                                                           |         |     | R      | NL | 359(74)  |
+| view.text                                                                   |         |     |        | NL | 360(75)  |
+| =                                                                           |         |     |        |    | 360(75)  |
+| (                                                                           |         |     |        |    | 360(75)  |
+| concat                                                                      |         |     |        |    | 360(75)  |
+| view.text                                                                   |         |     |        |    | 360(75)  |
+| -                                                                           |         | "   |        |    | 360(75)  |
+| )                                                                           |         |     | R      |    | 360(75)  |
+| mode                                                                        |         |     |        | NL | 361(76)  |
+| =                                                                           |         |     |        |    | 361(76)  |
+| 0                                                                           |         |     | R      |    | 361(76)  |
+| using_operation                                                             |         |     |        | NL | 362(77)  |
+| =                                                                           |         |     |        |    | 362(77)  |
+| -                                                                           |         | "   | R      |    | 362(77)  |
+| }                                                                           |         |     | R      | NL | 363(78)  |
+| }                                                                           |         |     | R      | NL | 364(79)  |
+| +                                                                           |         |     |        | NL | 365(81)  |
+| (                                                                           |         |     |        |    | 365(81)  |
+| divid_btn                                                                   |         |     |        |    | 365(81)  |
+| )                                                                           |         |     |        |    | 365(81)  |
+| Button                                                                      |         |     |        |    | 365(81)  |
+| in                                                                          |         |     |        |    | 365(81)  |
+| operators                                                                   |         |     | R      |    | 365(81)  |
+| divid_btn.text                                                              |         |     |        | NL | 366(82)  |
+| =                                                                           |         |     |        |    | 366(82)  |
+| /                                                                           |         | "   | R      |    | 366(82)  |
+| @                                                                           |         |     |        | NL | 367(83)  |
+| (                                                                           |         |     |        |    | 367(83)  |
+| divid_btn.click                                                             |         |     |        |    | 367(83)  |
+| )                                                                           |         |     | R      |    | 367(83)  |
+| {                                                                           |         |     | R      | NL | 368(83)  |
+| (                                                                           |         |     |        | NL | 369(84)  |
+| eq                                                                          |         |     |        |    | 369(84)  |
+| mode                                                                        |         |     |        |    | 369(84)  |
+| 1                                                                           |         |     |        |    | 369(84)  |
+| )                                                                           |         |     |        |    | 369(84)  |
+| ?                                                                           |         |     | R      |    | 369(84)  |
+| {                                                                           |         |     | R      | NL | 370(84)  |
+| view.text                                                                   |         |     |        | NL | 371(85)  |
+| =                                                                           |         |     |        |    | 371(85)  |
+| (                                                                           |         |     |        |    | 371(85)  |
+| concat                                                                      |         |     |        |    | 371(85)  |
+| view.text                                                                   |         |     |        |    | 371(85)  |
+| /                                                                           |         | "   |        |    | 371(85)  |
+| )                                                                           |         |     | R      |    | 371(85)  |
+| mode                                                                        |         |     |        | NL | 372(86)  |
+| =                                                                           |         |     |        |    | 372(86)  |
+| 0                                                                           |         |     | R      |    | 372(86)  |
+| using_operation                                                             |         |     |        | NL | 373(87)  |
+| =                                                                           |         |     |        |    | 373(87)  |
+| /                                                                           |         | "   | R      |    | 373(87)  |
+| }                                                                           |         |     | R      | NL | 374(88)  |
+| }                                                                           |         |     | R      | NL | 375(89)  |
+| +                                                                           |         |     |        | NL | 376(91)  |
+| (                                                                           |         |     |        |    | 376(91)  |
+| eq_btn                                                                      |         |     |        |    | 376(91)  |
+| )                                                                           |         |     |        |    | 376(91)  |
+| Button                                                                      |         |     |        |    | 376(91)  |
+| in                                                                          |         |     |        |    | 376(91)  |
+| operators                                                                   |         |     | R      |    | 376(91)  |
+| eq_btn.text                                                                 |         |     |        | NL | 377(92)  |
+| =                                                                           |         |     |        |    | 377(92)  |
+| =                                                                           |         | "   | R      |    | 377(92)  |
+| @                                                                           |         |     |        | NL | 378(93)  |
+| (                                                                           |         |     |        |    | 378(93)  |
+| eq_btn.click                                                                |         |     |        |    | 378(93)  |
+| )                                                                           |         |     | R      |    | 378(93)  |
+| {                                                                           |         |     | R      | NL | 379(93)  |
+| (                                                                           |         |     |        | NL | 380(94)  |
+| eq                                                                          |         |     |        |    | 380(94)  |
+| mode                                                                        |         |     |        |    | 380(94)  |
+| 1                                                                           |         |     |        |    | 380(94)  |
+| )                                                                           |         |     |        |    | 380(94)  |
+| ?                                                                           |         |     | R      |    | 380(94)  |
+| {                                                                           |         |     | R      | NL | 381(94)  |
+| (                                                                           |         |     |        | NL | 382(95)  |
+| ans                                                                         |         |     |        |    | 382(95)  |
+| )                                                                           |         |     |        |    | 382(95)  |
+| int                                                                         |         |     | R      |    | 382(95)  |
+|  view.text = '62+41'                                                        | #       |     | R      | NL | 383(96)  |
+| (                                                                           |         |     |        | NL | 384(97)  |
+| a                                                                           |         |     |        |    | 384(97)  |
+| )                                                                           |         |     |        |    | 384(97)  |
+| int                                                                         |         |     | R      |    | 384(97)  |
+| (                                                                           |         |     |        | NL | 385(98)  |
+| b                                                                           |         |     |        |    | 385(98)  |
+| )                                                                           |         |     |        |    | 385(98)  |
+| int                                                                         |         |     | R      |    | 385(98)  |
+| a                                                                           |         |     |        | NL | 386(99)  |
+| =                                                                           |         |     |        |    | 386(99)  |
+| (                                                                           |         |     |        |    | 386(99)  |
+| substr                                                                      |         |     |        |    | 386(99)  |
+| view.text                                                                   |         |     |        |    | 386(99)  |
+| 0                                                                           |         |     |        |    | 386(99)  |
+| (                                                                           |         |     |        |    | 386(99)  |
+| stridx                                                                      |         |     |        |    | 386(99)  |
+| view.text                                                                   |         |     |        |    | 386(99)  |
+| using_operation                                                             |         |     |        |    | 386(99)  |
+| )                                                                           |         |     |        |    | 386(99)  |
+| )                                                                           |         |     |        |    | 386(99)  |
+| int                                                                         |         |     | R      |    | 386(99)  |
+| b                                                                           |         |     |        | NL | 387(100) |
+| =                                                                           |         |     |        |    | 387(100) |
+| (                                                                           |         |     |        |    | 387(100) |
+| substr                                                                      |         |     |        |    | 387(100) |
+| view.text                                                                   |         |     |        |    | 387(100) |
+| (                                                                           |         |     |        |    | 387(100) |
+| +                                                                           |         |     |        |    | 387(100) |
+| 1                                                                           |         |     |        |    | 387(100) |
+| (                                                                           |         |     |        |    | 387(100) |
+| stridx                                                                      |         |     |        |    | 387(100) |
+| view.text                                                                   |         |     |        |    | 387(100) |
+| using_operation                                                             |         |     |        |    | 387(100) |
+| )                                                                           |         |     |        |    | 387(100) |
+| )                                                                           |         |     |        |    | 387(100) |
+| (                                                                           |         |     |        |    | 387(100) |
+| negative                                                                    |         |     |        |    | 387(100) |
+| 1                                                                           |         |     |        |    | 387(100) |
+| )                                                                           |         |     |        |    | 387(100) |
+| )                                                                           |         |     |        |    | 387(100) |
+| int                                                                         |         |     | R      |    | 387(100) |
+| cond                                                                        |         |     |        | NL | 388(101) |
+| (                                                                           |         |     |        |    | 388(101) |
+| eq                                                                          |         |     |        |    | 388(101) |
+| using_operation                                                             |         |     |        |    | 388(101) |
+| +                                                                           |         | "   |        |    | 388(101) |
+| )                                                                           |         |     |        |    | 388(101) |
+| ?                                                                           |         |     | R      |    | 388(101) |
+| {                                                                           |         |     | R      | NL | 389(101) |
+| ans                                                                         |         |     |        | NL | 390(102) |
+| =                                                                           |         |     |        |    | 390(102) |
+| (                                                                           |         |     |        |    | 390(102) |
+| +                                                                           |         |     |        |    | 390(102) |
+| a                                                                           |         |     |        |    | 390(102) |
+| b                                                                           |         |     |        |    | 390(102) |
+| )                                                                           |         |     | R      |    | 390(102) |
+| }                                                                           |         |     | R      | NL | 391(103) |
+| branch                                                                      |         |     |        | NL | 392(104) |
+| (                                                                           |         |     |        |    | 392(104) |
+| eq                                                                          |         |     |        |    | 392(104) |
+| using_operation                                                             |         |     |        |    | 392(104) |
+| -                                                                           |         | "   |        |    | 392(104) |
+| )                                                                           |         |     |        |    | 392(104) |
+| ?                                                                           |         |     | R      |    | 392(104) |
+| {                                                                           |         |     | R      | NL | 393(104) |
+| ans                                                                         |         |     |        | NL | 394(105) |
+| =                                                                           |         |     |        |    | 394(105) |
+| (                                                                           |         |     |        |    | 394(105) |
+| -                                                                           |         |     |        |    | 394(105) |
+| a                                                                           |         |     |        |    | 394(105) |
+| b                                                                           |         |     |        |    | 394(105) |
+| )                                                                           |         |     | R      |    | 394(105) |
+| }                                                                           |         |     | R      | NL | 395(106) |
+| branch                                                                      |         |     |        | NL | 396(107) |
+| (                                                                           |         |     |        |    | 396(107) |
+| eq                                                                          |         |     |        |    | 396(107) |
+| using_operation                                                             |         |     |        |    | 396(107) |
+| *                                                                           |         | "   |        |    | 396(107) |
+| )                                                                           |         |     |        |    | 396(107) |
+| ?                                                                           |         |     | R      |    | 396(107) |
+| {                                                                           |         |     | R      | NL | 397(107) |
+| ans                                                                         |         |     |        | NL | 398(108) |
+| =                                                                           |         |     |        |    | 398(108) |
+| (                                                                           |         |     |        |    | 398(108) |
+| *                                                                           |         |     |        |    | 398(108) |
+| a                                                                           |         |     |        |    | 398(108) |
+| b                                                                           |         |     |        |    | 398(108) |
+| )                                                                           |         |     | R      |    | 398(108) |
+| }                                                                           |         |     | R      | NL | 399(109) |
+| branch                                                                      |         |     |        | NL | 400(110) |
+| (                                                                           |         |     |        |    | 400(110) |
+| eq                                                                          |         |     |        |    | 400(110) |
+| using_operation                                                             |         |     |        |    | 400(110) |
+| /                                                                           |         | "   |        |    | 400(110) |
+| )                                                                           |         |     |        |    | 400(110) |
+| ?                                                                           |         |     | R      |    | 400(110) |
+| {                                                                           |         |     | R      | NL | 401(110) |
+| ans                                                                         |         |     |        | NL | 402(111) |
+| =                                                                           |         |     |        |    | 402(111) |
+| (                                                                           |         |     |        |    | 402(111) |
+| /                                                                           |         |     |        |    | 402(111) |
+| a                                                                           |         |     |        |    | 402(111) |
+| b                                                                           |         |     |        |    | 402(111) |
+| )                                                                           |         |     | R      |    | 402(111) |
+| }                                                                           |         |     | R      | NL | 403(112) |
+| view.text                                                                   |         |     |        | NL | 404(113) |
+| =                                                                           |         |     |        |    | 404(113) |
+| (                                                                           |         |     |        |    | 404(113) |
+| concat                                                                      |         |     |        |    | 404(113) |
+| view.text                                                                   |         |     |        |    | 404(113) |
+| =                                                                           |         | "   |        |    | 404(113) |
+| (                                                                           |         |     |        |    | 404(113) |
+| ans                                                                         |         |     |        |    | 404(113) |
+| )                                                                           |         |     |        |    | 404(113) |
+| string                                                                      |         |     |        |    | 404(113) |
+| )                                                                           |         |     | R      |    | 404(113) |
+| mode                                                                        |         |     |        | NL | 405(114) |
+| =                                                                           |         |     |        |    | 405(114) |
+| 0                                                                           |         |     | R      |    | 405(114) |
+| }                                                                           |         |     | R      | NL | 406(115) |
+| }                                                                           |         |     | R      | NL | 407(116) |
+| end                                                                         |         |     | R      | NL | 408(118) |
++-----------------------------------------------------------------------------+---------+-----+--------+----+----------+
+
+LINES 409
+- ( Web_Object ) 
+{ 
+( _web ) string 
+( accesskey ) string 
+( class ) string 
+( contextmenu ) string 
+    (dataset) 
+( dir ) string 
+( dropzone ) string 
+( id ) string 
+( itemid ) string 
+( itemprop ) string 
+( itemref ) string 
+( itemscope ) string 
+( itemtype ) string 
+( lang ) string 
+( style ) string 
+( title ) string 
+( translate ) string 
+( contenteditable ) bool 
+( draggable ) bool 
+( hidden ) bool 
+( spellcheck ) bool 
+( tabindex ) int 
+} 
+- ( HTML ) : string 
+{ 
+} 
+ -(Color) { 
+     (r)int 
+     (g)int 
+     (b)int 
+     (a)int 
+ } 
+- ( Button ) : Web_Object 
+{ 
+( text ) string 
+( autofocus ) bool 
+( autocomlete ) string 
+( disabled ) bool 
+( form ) string 
+( formaction ) string 
+( formenctype ) string 
+( formmethod ) string 
+( formnovalidate ) bool 
+( formtarget ) string 
+( name ) string 
+( type ) string 
+( value ) string 
+@ ( __init ) 
+{ 
+._web = Button 
+} 
+} 
+- ( Div ) : Web_Object 
+{ 
+@ ( __init ) 
+{ 
+._web = Div 
+} 
+} 
+- ( Image ) : Web_Object 
+{ 
+( alt ) string 
+( crossorigin ) string 
+( longdesc ) string 
+( referrerpolicy ) string 
+( sizes ) string 
+( src ) string 
+( srcset ) string 
+( usemap ) string 
+( width ) int 
+( height ) int 
+( ismap ) bool 
+@ ( __init ) 
+{ 
+._web = Image 
+} 
+} 
+- ( Textbox ) : Web_Object 
+{ 
+( rows ) int 
+( cols ) int 
+( maxlength ) int 
+( minlength ) int 
+( text ) string 
+( autocapitalize ) bool 
+( autocomplete ) bool 
+( autofocus ) bool 
+( disabled ) bool 
+( spellcheck ) bool 
+( readonly ) bool 
+( selectionDirection ) string 
+( selectionEnd ) int 
+( selectionStart ) int 
+    (required)string 
+( form ) string 
+( placeholder ) string 
+( wrap ) string 
+@ ( __init ) 
+{ 
+._web = Textbox 
+} 
+} 
+- ( Input ) : Web_Object 
+{ 
+( text ) string 
+( type ) string 
+( autocomplete ) string 
+( autofocus ) bool 
+( capture ) bool 
+( disabled ) bool 
+( form ) string 
+( formaction ) string 
+( formactype ) string 
+( formmethod ) string 
+( formnovalidate ) bool 
+( formtarget ) string 
+( height ) int 
+( inputmode ) string 
+( list ) string 
+( max ) int 
+( maxlength ) int 
+( min ) int 
+( minlength ) int 
+( multiple ) bool 
+( name ) string 
+( pattern ) string 
+( placeholder ) string 
+( readonly ) bool 
+( required ) bool 
+( selectionDirection ) string 
+( selectionStart ) int 
+( selectionEnd ) int 
+( size ) int 
+( spellcheck ) string 
+( src ) string 
+( step ) string 
+( value ) string 
+( width ) int 
+@ ( __init ) 
+{ 
+._web = Input 
+} 
+} 
+- ( Checkbox ) : Input 
+{ 
+ NOTE(cgp) コンストラクタで意図的に._webをCheckboxに変える。 
+ DOM出力はInput型のコンストラクタで行われているので二重に出力されないように 
+ 未定義のCheckboxという識別子に変える。 
+@ ( __init ) 
+{ 
+._web = Checkbox 
+.type = checkbox 
+} 
+} 
+- ( Color_Selector ) : Input 
+{ 
+@ ( __init ) 
+{ 
+._web = Color_Selector 
+.type = color 
+} 
+} 
+- ( Date_Selector ) : Input 
+{ 
+@ ( __init ) 
+{ 
+._web = Date_Selector 
+.type = date 
+} 
+} 
+- ( Email_Input ) : Input 
+{ 
+@ ( __init ) 
+{ 
+._web = Email_Input 
+.type = email 
+} 
+} 
+- ( File_Selector ) : Input 
+{ 
+@ ( __init ) 
+{ 
+._web = File_Selector 
+.type = file 
+} 
+} 
+- ( Month_Selector ) : Input 
+{ 
+@ ( __init ) 
+{ 
+._web = Month_Selector 
+.type = month 
+} 
+} 
+- ( Number_Selector ) : Input 
+{ 
+@ ( __init ) 
+{ 
+._web = Number_Selector 
+.type = number 
+} 
+} 
+- ( Password ) : Input 
+{ 
+@ ( __init ) 
+{ 
+._web = Password 
+.type = password 
+} 
+} 
+- ( Radio_Button ) : Input 
+{ 
+@ ( __init ) 
+{ 
+._web = Radio_Button 
+.type = radio 
+} 
+} 
+- ( Range_Selector ) : Input 
+{ 
+@ ( __init ) 
+{ 
+._web = Range_Selector 
+.type = range 
+} 
+} 
+- ( Reset_Button ) : Input 
+{ 
+@ ( __init ) 
+{ 
+._web = Reset_Button 
+.type = reset 
+} 
+} 
+- ( Search_Input ) : Input 
+{ 
+@ ( __init ) 
+{ 
+._web = Search_Input 
+.type = search 
+} 
+} 
+- ( Submit_Button ) : Input 
+{ 
+@ ( __init ) 
+{ 
+._web = Submit_Button 
+.type = submit 
+} 
+} 
+- ( TEL_Input ) : Input 
+{ 
+@ ( __init ) 
+{ 
+._web = TEL_Input 
+.type = tel 
+} 
+} 
+- ( URL_Input ) : Input 
+{ 
+@ ( __init ) 
+{ 
+._web = URL_Input 
+.type = url 
+} 
+} 
+- ( Time_Input ) : Input 
+{ 
+@ ( __init ) 
+{ 
+._web = Time_Input 
+.type = time 
+} 
+} 
+- ( Week_Selector ) : Input 
+{ 
+@ ( __init ) 
+{ 
+._web = Time_Input 
+.type = time 
+} 
+} 
+@ ( negative ( i ) int ) 
+{ 
+return ( - 0 i ) 
+} 
+( mode ) int 
+( using_operation ) string 
+- ( numbtn ) : Button 
+{ 
+( num ) int 
+@ ( set_num ( num ) int ) 
+{ 
+.num = num 
+.text = ( num ) string 
+} 
+@ ( click ) 
+{ 
+ 文字を後ろにくっつける 
+view.text = ( concat view.text ( .num ) string ) 
+mode = 1 
+} 
+} 
++ ( main ) Div 
++ ( view ) Textbox in main 
++ ( num1 ) Div 
++ ( num2 ) Div 
++ ( num3 ) Div 
++ ( operators ) Div 
++ ( button9 ) numbtn in num1 
+( button9.set_num 9 ) 
++ ( button8 ) numbtn in num1 
+( button8.set_num 8 ) 
++ ( button7 ) numbtn in num1 
+( button7.set_num 7 ) 
++ ( button6 ) numbtn in num2 
+( button6.set_num 6 ) 
++ ( button5 ) numbtn in num2 
+( button5.set_num 5 ) 
++ ( button4 ) numbtn in num2 
+( button4.set_num 4 ) 
++ ( button3 ) numbtn in num3 
+( button3.set_num 3 ) 
++ ( button2 ) numbtn in num3 
+( button2.set_num 2 ) 
++ ( button1 ) numbtn in num3 
+( button1.set_num 1 ) 
++ ( button0 ) numbtn in num3 
+( button0.set_num 0 ) 
++ ( plus_btn ) Button in operators 
+plus_btn.text = + 
+@ ( plus_btn.click ) 
+{ 
+( eq mode 1 ) ? 
+{ 
+view.text = ( concat view.text + ) 
+mode = 0 
+using_operation = + 
+} 
+} 
++ ( product_btn ) Button in operators 
+product_btn.text = * 
+@ ( product_btn.click ) 
+{ 
+( eq mode 1 ) ? 
+{ 
+view.text = ( concat view.text * ) 
+mode = 0 
+using_operation = * 
+} 
+} 
++ ( mi_btn ) Button in operators 
+mi_btn.text = - 
+@ ( mi_btn.click ) 
+{ 
+( eq mode 1 ) ? 
+{ 
+view.text = ( concat view.text - ) 
+mode = 0 
+using_operation = - 
+} 
+} 
++ ( divid_btn ) Button in operators 
+divid_btn.text = / 
+@ ( divid_btn.click ) 
+{ 
+( eq mode 1 ) ? 
+{ 
+view.text = ( concat view.text / ) 
+mode = 0 
+using_operation = / 
+} 
+} 
++ ( eq_btn ) Button in operators 
+eq_btn.text = = 
+@ ( eq_btn.click ) 
+{ 
+( eq mode 1 ) ? 
+{ 
+( ans ) int 
+ view.text = '62+41' 
+( a ) int 
+( b ) int 
+a = ( substr view.text 0 ( stridx view.text using_operation ) ) int 
+b = ( substr view.text ( + 1 ( stridx view.text using_operation ) ) ( negative 1 ) ) int 
+cond ( eq using_operation + ) ? 
+{ 
+ans = ( + a b ) 
+} 
+branch ( eq using_operation - ) ? 
+{ 
+ans = ( - a b ) 
+} 
+branch ( eq using_operation * ) ? 
+{ 
+ans = ( * a b ) 
+} 
+branch ( eq using_operation / ) ? 
+{ 
+ans = ( / a b ) 
+} 
+view.text = ( concat view.text = ( ans ) string ) 
+mode = 0 
+} 
+} 
+end 
+
+
+BLOCKS 64
+BLOCK1 This block is dominated by block 
+
+root:- ( Web_Object ) 
+
+body:{ ( _web ) string ( accesskey ) string ( class ) string ( contextmenu ) string     (dataset) ( dir ) string ( dropzone ) string ( id ) string ( itemid ) string ( itemprop ) string ( itemref ) string ( itemscope ) string ( itemtype ) string ( lang ) string ( style ) string ( title ) string ( translate ) string ( contenteditable ) bool ( draggable ) bool ( hidden ) bool ( spellcheck ) bool ( tabindex ) int } 
+
+
+BLOCK2 This block is dominated by block 
+
+root:- ( HTML ) : string 
+
+body:{ } 
+
+
+BLOCK3 This block is dominated by block 
+
+root:- ( Button ) : Web_Object 
+
+body:{ ( text ) string ( autofocus ) bool ( autocomlete ) string ( disabled ) bool ( form ) string ( formaction ) string ( formenctype ) string ( formmethod ) string ( formnovalidate ) bool ( formtarget ) string ( name ) string ( type ) string ( value ) string @ ( __init ) { ._web = Button } } 
+
+
+BLOCK4 This block is dominated by block 3
+
+root:@ ( __init ) 
+
+body:{ ._web = Button } 
+
+
+BLOCK5 This block is dominated by block 
+
+root:- ( Div ) : Web_Object 
+
+body:{ @ ( __init ) { ._web = Div } } 
+
+
+BLOCK6 This block is dominated by block 5
+
+root:@ ( __init ) 
+
+body:{ ._web = Div } 
+
+
+BLOCK7 This block is dominated by block 
+
+root:- ( Image ) : Web_Object 
+
+body:{ ( alt ) string ( crossorigin ) string ( longdesc ) string ( referrerpolicy ) string ( sizes ) string ( src ) string ( srcset ) string ( usemap ) string ( width ) int ( height ) int ( ismap ) bool @ ( __init ) { ._web = Image } } 
+
+
+BLOCK8 This block is dominated by block 7
+
+root:@ ( __init ) 
+
+body:{ ._web = Image } 
+
+
+BLOCK9 This block is dominated by block 
+
+root:- ( Textbox ) : Web_Object 
+
+body:{ ( rows ) int ( cols ) int ( maxlength ) int ( minlength ) int ( text ) string ( autocapitalize ) bool ( autocomplete ) bool ( autofocus ) bool ( disabled ) bool ( spellcheck ) bool ( readonly ) bool ( selectionDirection ) string ( selectionEnd ) int ( selectionStart ) int     (required)string ( form ) string ( placeholder ) string ( wrap ) string @ ( __init ) { ._web = Textbox } } 
+
+
+BLOCK10 This block is dominated by block 9
+
+root:@ ( __init ) 
+
+body:{ ._web = Textbox } 
+
+
+BLOCK11 This block is dominated by block 
+
+root:- ( Input ) : Web_Object 
+
+body:{ ( text ) string ( type ) string ( autocomplete ) string ( autofocus ) bool ( capture ) bool ( disabled ) bool ( form ) string ( formaction ) string ( formactype ) string ( formmethod ) string ( formnovalidate ) bool ( formtarget ) string ( height ) int ( inputmode ) string ( list ) string ( max ) int ( maxlength ) int ( min ) int ( minlength ) int ( multiple ) bool ( name ) string ( pattern ) string ( placeholder ) string ( readonly ) bool ( required ) bool ( selectionDirection ) string ( selectionStart ) int ( selectionEnd ) int ( size ) int ( spellcheck ) string ( src ) string ( step ) string ( value ) string ( width ) int @ ( __init ) { ._web = Input } } 
+
+
+BLOCK12 This block is dominated by block 11
+
+root:@ ( __init ) 
+
+body:{ ._web = Input } 
+
+
+BLOCK13 This block is dominated by block 
+
+root:- ( Checkbox ) : Input 
+
+body:{  NOTE(cgp) コンストラクタで意図的に._webをCheckboxに変える。  DOM出力はInput型のコンストラクタで行われているので二重に出力されないように  未定義のCheckboxという識別子に変える。 @ ( __init ) { ._web = Checkbox .type = checkbox } } 
+
+
+BLOCK14 This block is dominated by block 13
+
+root:@ ( __init ) 
+
+body:{ ._web = Checkbox .type = checkbox } 
+
+
+BLOCK15 This block is dominated by block 
+
+root:- ( Color_Selector ) : Input 
+
+body:{ @ ( __init ) { ._web = Color_Selector .type = color } } 
+
+
+BLOCK16 This block is dominated by block 15
+
+root:@ ( __init ) 
+
+body:{ ._web = Color_Selector .type = color } 
+
+
+BLOCK17 This block is dominated by block 
+
+root:- ( Date_Selector ) : Input 
+
+body:{ @ ( __init ) { ._web = Date_Selector .type = date } } 
+
+
+BLOCK18 This block is dominated by block 17
+
+root:@ ( __init ) 
+
+body:{ ._web = Date_Selector .type = date } 
+
+
+BLOCK19 This block is dominated by block 
+
+root:- ( Email_Input ) : Input 
+
+body:{ @ ( __init ) { ._web = Email_Input .type = email } } 
+
+
+BLOCK20 This block is dominated by block 19
+
+root:@ ( __init ) 
+
+body:{ ._web = Email_Input .type = email } 
+
+
+BLOCK21 This block is dominated by block 
+
+root:- ( File_Selector ) : Input 
+
+body:{ @ ( __init ) { ._web = File_Selector .type = file } } 
+
+
+BLOCK22 This block is dominated by block 21
+
+root:@ ( __init ) 
+
+body:{ ._web = File_Selector .type = file } 
+
+
+BLOCK23 This block is dominated by block 
+
+root:- ( Month_Selector ) : Input 
+
+body:{ @ ( __init ) { ._web = Month_Selector .type = month } } 
+
+
+BLOCK24 This block is dominated by block 23
+
+root:@ ( __init ) 
+
+body:{ ._web = Month_Selector .type = month } 
+
+
+BLOCK25 This block is dominated by block 
+
+root:- ( Number_Selector ) : Input 
+
+body:{ @ ( __init ) { ._web = Number_Selector .type = number } } 
+
+
+BLOCK26 This block is dominated by block 25
+
+root:@ ( __init ) 
+
+body:{ ._web = Number_Selector .type = number } 
+
+
+BLOCK27 This block is dominated by block 
+
+root:- ( Password ) : Input 
+
+body:{ @ ( __init ) { ._web = Password .type = password } } 
+
+
+BLOCK28 This block is dominated by block 27
+
+root:@ ( __init ) 
+
+body:{ ._web = Password .type = password } 
+
+
+BLOCK29 This block is dominated by block 
+
+root:- ( Radio_Button ) : Input 
+
+body:{ @ ( __init ) { ._web = Radio_Button .type = radio } } 
+
+
+BLOCK30 This block is dominated by block 29
+
+root:@ ( __init ) 
+
+body:{ ._web = Radio_Button .type = radio } 
+
+
+BLOCK31 This block is dominated by block 
+
+root:- ( Range_Selector ) : Input 
+
+body:{ @ ( __init ) { ._web = Range_Selector .type = range } } 
+
+
+BLOCK32 This block is dominated by block 31
+
+root:@ ( __init ) 
+
+body:{ ._web = Range_Selector .type = range } 
+
+
+BLOCK33 This block is dominated by block 
+
+root:- ( Reset_Button ) : Input 
+
+body:{ @ ( __init ) { ._web = Reset_Button .type = reset } } 
+
+
+BLOCK34 This block is dominated by block 33
+
+root:@ ( __init ) 
+
+body:{ ._web = Reset_Button .type = reset } 
+
+
+BLOCK35 This block is dominated by block 
+
+root:- ( Search_Input ) : Input 
+
+body:{ @ ( __init ) { ._web = Search_Input .type = search } } 
+
+
+BLOCK36 This block is dominated by block 35
+
+root:@ ( __init ) 
+
+body:{ ._web = Search_Input .type = search } 
+
+
+BLOCK37 This block is dominated by block 
+
+root:- ( Submit_Button ) : Input 
+
+body:{ @ ( __init ) { ._web = Submit_Button .type = submit } } 
+
+
+BLOCK38 This block is dominated by block 37
+
+root:@ ( __init ) 
+
+body:{ ._web = Submit_Button .type = submit } 
+
+
+BLOCK39 This block is dominated by block 
+
+root:- ( TEL_Input ) : Input 
+
+body:{ @ ( __init ) { ._web = TEL_Input .type = tel } } 
+
+
+BLOCK40 This block is dominated by block 39
+
+root:@ ( __init ) 
+
+body:{ ._web = TEL_Input .type = tel } 
+
+
+BLOCK41 This block is dominated by block 
+
+root:- ( URL_Input ) : Input 
+
+body:{ @ ( __init ) { ._web = URL_Input .type = url } } 
+
+
+BLOCK42 This block is dominated by block 41
+
+root:@ ( __init ) 
+
+body:{ ._web = URL_Input .type = url } 
+
+
+BLOCK43 This block is dominated by block 
+
+root:- ( Time_Input ) : Input 
+
+body:{ @ ( __init ) { ._web = Time_Input .type = time } } 
+
+
+BLOCK44 This block is dominated by block 43
+
+root:@ ( __init ) 
+
+body:{ ._web = Time_Input .type = time } 
+
+
+BLOCK45 This block is dominated by block 
+
+root:- ( Week_Selector ) : Input 
+
+body:{ @ ( __init ) { ._web = Time_Input .type = time } } 
+
+
+BLOCK46 This block is dominated by block 45
+
+root:@ ( __init ) 
+
+body:{ ._web = Time_Input .type = time } 
+
+
+BLOCK47 This block is dominated by block 
+
+root:@ ( negative ( i ) int ) 
+
+body:{ return ( - 0 i ) } 
+
+
+BLOCK48 This block is dominated by block 
+
+root:- ( numbtn ) : Button 
+
+body:{ ( num ) int @ ( set_num ( num ) int ) { .num = num .text = ( num ) string } @ ( click ) {  文字を後ろにくっつける view.text = ( concat view.text ( .num ) string ) mode = 1 } } 
+
+
+BLOCK49 This block is dominated by block 48
+
+root:@ ( set_num ( num ) int ) 
+
+body:{ .num = num .text = ( num ) string } 
+
+
+BLOCK50 This block is dominated by block 48
+
+root:@ ( click ) 
+
+body:{  文字を後ろにくっつける view.text = ( concat view.text ( .num ) string ) mode = 1 } 
+
+
+BLOCK51 This block is dominated by block 
+
+root:@ ( plus_btn.click ) 
+
+body:{ ( eq mode 1 ) ? { view.text = ( concat view.text + ) mode = 0 using_operation = + } } 
+
+
+BLOCK52 This block is dominated by block 51
+
+root:( eq mode 1 ) ? 
+
+body:{ view.text = ( concat view.text + ) mode = 0 using_operation = + } 
+
+
+BLOCK53 This block is dominated by block 
+
+root:@ ( product_btn.click ) 
+
+body:{ ( eq mode 1 ) ? { view.text = ( concat view.text * ) mode = 0 using_operation = * } } 
+
+
+BLOCK54 This block is dominated by block 53
+
+root:( eq mode 1 ) ? 
+
+body:{ view.text = ( concat view.text * ) mode = 0 using_operation = * } 
+
+
+BLOCK55 This block is dominated by block 
+
+root:@ ( mi_btn.click ) 
+
+body:{ ( eq mode 1 ) ? { view.text = ( concat view.text - ) mode = 0 using_operation = - } } 
+
+
+BLOCK56 This block is dominated by block 55
+
+root:( eq mode 1 ) ? 
+
+body:{ view.text = ( concat view.text - ) mode = 0 using_operation = - } 
+
+
+BLOCK57 This block is dominated by block 
+
+root:@ ( divid_btn.click ) 
+
+body:{ ( eq mode 1 ) ? { view.text = ( concat view.text / ) mode = 0 using_operation = / } } 
+
+
+BLOCK58 This block is dominated by block 57
+
+root:( eq mode 1 ) ? 
+
+body:{ view.text = ( concat view.text / ) mode = 0 using_operation = / } 
+
+
+BLOCK59 This block is dominated by block 
+
+root:@ ( eq_btn.click ) 
+
+body:{ ( eq mode 1 ) ? { ( ans ) int  view.text = '62+41' ( a ) int ( b ) int a = ( substr view.text 0 ( stridx view.text using_operation ) ) int b = ( substr view.text ( + 1 ( stridx view.text using_operation ) ) ( negative 1 ) ) int cond ( eq using_operation + ) ? { ans = ( + a b ) } branch ( eq using_operation - ) ? { ans = ( - a b ) } branch ( eq using_operation * ) ? { ans = ( * a b ) } branch ( eq using_operation / ) ? { ans = ( / a b ) } view.text = ( concat view.text = ( ans ) string ) mode = 0 } } 
+
+
+BLOCK60 This block is dominated by block 59
+
+root:( eq mode 1 ) ? 
+
+body:{ ( ans ) int  view.text = '62+41' ( a ) int ( b ) int a = ( substr view.text 0 ( stridx view.text using_operation ) ) int b = ( substr view.text ( + 1 ( stridx view.text using_operation ) ) ( negative 1 ) ) int cond ( eq using_operation + ) ? { ans = ( + a b ) } branch ( eq using_operation - ) ? { ans = ( - a b ) } branch ( eq using_operation * ) ? { ans = ( * a b ) } branch ( eq using_operation / ) ? { ans = ( / a b ) } view.text = ( concat view.text = ( ans ) string ) mode = 0 } 
+
+
+BLOCK61 This block is dominated by block 5960
+
+root:cond ( eq using_operation + ) ? 
+
+body:{ ans = ( + a b ) } 
+
+
+BLOCK62 This block is dominated by block 5960
+
+root:branch ( eq using_operation - ) ? 
+
+body:{ ans = ( - a b ) } 
+
+
+BLOCK63 This block is dominated by block 5960
+
+root:branch ( eq using_operation * ) ? 
+
+body:{ ans = ( * a b ) } 
+
+
+BLOCK64 This block is dominated by block 5960
+
+root:branch ( eq using_operation / ) ? 
+
+body:{ ans = ( / a b ) } 
+
+
+VARIABLES 24
+Integer:int mode=0
+String:string using_operation=
+Dirty:Div main=main
+String:string main._web=Div
+String:string main.accesskey=
+String:string main.class=
+String:string main.contextmenu=
+String:string main.dir=
+String:string main.dropzone=
+String:string main.id=
+String:string main.itemid=
+String:string main.itemprop=
+String:string main.itemref=
+String:string main.itemscope=
+String:string main.itemtype=
+String:string main.lang=
+String:string main.style=
+String:string main.title=
+String:string main.translate=
+Boolean:bool main.contenteditable=false
+Boolean:bool main.draggable=false
+Boolean:bool main.hidden=false
+Boolean:bool main.spellcheck=false
+Integer:int main.tabindex=0
+
+FUNCTIONS 2
+negative BLKIDX:46 ID:0
+main.__init BLKIDX:5 ID:1
+
+VALUE TYPES: 28
+Integer:int
+String:string
+Boolean:bool
+Dirty:Web_Object
+String:HTML
+Dirty:Button
+Dirty:Div
+Dirty:Image
+Dirty:Textbox
+Dirty:Input
+Dirty:Checkbox
+Dirty:Color_Selector
+Dirty:Date_Selector
+Dirty:Email_Input
+Dirty:File_Selector
+Dirty:Month_Selector
+Dirty:Number_Selector
+Dirty:Password
+Dirty:Radio_Button
+Dirty:Range_Selector
+Dirty:Reset_Button
+Dirty:Search_Input
+Dirty:Submit_Button
+Dirty:TEL_Input
+Dirty:URL_Input
+Dirty:Time_Input
+Dirty:Week_Selector
+Dirty:numbtn

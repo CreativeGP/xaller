@@ -262,10 +262,8 @@ $(function() {
 		$('#button9').html(button9$text);
 	}
 	$('#button9').click(function () {
-		if ((mode == 0)) {
-			view$text = ($('#view').html() + String((button9$num)));
-			$('#view').html(view$text);
-		}
+		view$text = ($('#view').html() + String((button9$num)));
+		$('#view').html(view$text);
 		mode = 1;
 	});
 	button9$set_num(9);
@@ -316,10 +314,8 @@ $(function() {
 		$('#button8').html(button8$text);
 	}
 	$('#button8').click(function () {
-		if ((mode == 0)) {
-			view$text = ($('#view').html() + String((button8$num)));
-			$('#view').html(view$text);
-		}
+		view$text = ($('#view').html() + String((button8$num)));
+		$('#view').html(view$text);
 		mode = 1;
 	});
 	button8$set_num(8);
@@ -370,10 +366,8 @@ $(function() {
 		$('#button7').html(button7$text);
 	}
 	$('#button7').click(function () {
-		if ((mode == 0)) {
-			view$text = ($('#view').html() + String((button7$num)));
-			$('#view').html(view$text);
-		}
+		view$text = ($('#view').html() + String((button7$num)));
+		$('#view').html(view$text);
 		mode = 1;
 	});
 	button7$set_num(7);
@@ -424,10 +418,8 @@ $(function() {
 		$('#button6').html(button6$text);
 	}
 	$('#button6').click(function () {
-		if ((mode == 0)) {
-			view$text = ($('#view').html() + String((button6$num)));
-			$('#view').html(view$text);
-		}
+		view$text = ($('#view').html() + String((button6$num)));
+		$('#view').html(view$text);
 		mode = 1;
 	});
 	button6$set_num(6);
@@ -478,10 +470,8 @@ $(function() {
 		$('#button5').html(button5$text);
 	}
 	$('#button5').click(function () {
-		if ((mode == 0)) {
-			view$text = ($('#view').html() + String((button5$num)));
-			$('#view').html(view$text);
-		}
+		view$text = ($('#view').html() + String((button5$num)));
+		$('#view').html(view$text);
 		mode = 1;
 	});
 	button5$set_num(5);
@@ -532,10 +522,8 @@ $(function() {
 		$('#button4').html(button4$text);
 	}
 	$('#button4').click(function () {
-		if ((mode == 0)) {
-			view$text = ($('#view').html() + String((button4$num)));
-			$('#view').html(view$text);
-		}
+		view$text = ($('#view').html() + String((button4$num)));
+		$('#view').html(view$text);
 		mode = 1;
 	});
 	button4$set_num(4);
@@ -586,10 +574,8 @@ $(function() {
 		$('#button3').html(button3$text);
 	}
 	$('#button3').click(function () {
-		if ((mode == 0)) {
-			view$text = ($('#view').html() + String((button3$num)));
-			$('#view').html(view$text);
-		}
+		view$text = ($('#view').html() + String((button3$num)));
+		$('#view').html(view$text);
 		mode = 1;
 	});
 	button3$set_num(3);
@@ -640,10 +626,8 @@ $(function() {
 		$('#button2').html(button2$text);
 	}
 	$('#button2').click(function () {
-		if ((mode == 0)) {
-			view$text = ($('#view').html() + String((button2$num)));
-			$('#view').html(view$text);
-		}
+		view$text = ($('#view').html() + String((button2$num)));
+		$('#view').html(view$text);
 		mode = 1;
 	});
 	button2$set_num(2);
@@ -694,10 +678,8 @@ $(function() {
 		$('#button1').html(button1$text);
 	}
 	$('#button1').click(function () {
-		if ((mode == 0)) {
-			view$text = ($('#view').html() + String((button1$num)));
-			$('#view').html(view$text);
-		}
+		view$text = ($('#view').html() + String((button1$num)));
+		$('#view').html(view$text);
 		mode = 1;
 	});
 	button1$set_num(1);
@@ -748,10 +730,8 @@ $(function() {
 		$('#button0').html(button0$text);
 	}
 	$('#button0').click(function () {
-		if ((mode == 0)) {
-			view$text = ($('#view').html() + String((button0$num)));
-			$('#view').html(view$text);
-		}
+		view$text = ($('#view').html() + String((button0$num)));
+		$('#view').html(view$text);
 		mode = 1;
 	});
 	button0$set_num(0);
@@ -846,7 +826,7 @@ $(function() {
 	product_btn$text = '*';
 	$('#product_btn').html(product_btn$text);
 	$('#product_btn').click(function () {
-		if (p,(mode == 1)) {
+		if ((mode == 1)) {
 			view$text = ($('#view').html() + '*');
 			$('#view').html(view$text);
 			mode = 0;
@@ -998,7 +978,7 @@ $(function() {
 			var a = 0;
 			var b = 0;
 			a = Number(substr$($('#view').html(),0,stridx$($('#view').html(),using_operation)));
-			b = Number(substr$($('#view').html(),(2 + stridx$($('#view').html(),using_operation)) ,  negative(1)));
+			b = Number(substr$($('#view').html(),(1 + stridx$($('#view').html(),using_operation)) ,  negative(1)));
 			if ((using_operation == '+')) {
 				ans = (a + b);
 			}
