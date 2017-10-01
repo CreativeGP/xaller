@@ -6,6 +6,7 @@ programmer: CreativeGP
 """
 import genfunc
 import re
+import os
 import Global
 
 class TokenType(object):
@@ -114,6 +115,14 @@ class Token(object):
         bufferstr = ''
         line_count = 0
         tokens = []
+
+        # NOTE(cgp) Check the existance of the path of importing file.
+        if os.path.exists(filename):
+            # NOTE(cgp) Tell console a name of importing file.
+            genfunc.dbgprint("Imported file name: " + filename)
+
+            
+
         for line in open(filename, 'r'):
             new_line = False
             line_count += 1
