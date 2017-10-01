@@ -36,13 +36,16 @@ def deal_with_cmdargs():
     """Deal with command line arguments."""
     # -hを発見した時点でヘルプ文字列を出力して終了する
     args = sys.argv
-    if '-h' in args:
-        genfunc.dbgprint("-----CGP Xaller Interpreter (v1.0)-----")
-        genfunc.dbgprint("cxi -ioh")
-        genfunc.dbgprint("Usage")
-        genfunc.dbgprint("-h /to show help.")
-        genfunc.dbgprint("-i  ilename /to tell cxi  iles to interpret.")
-        genfunc.dbgprint("-o name /to tell cxi a name to name output  iles.")
+    if len(args) < 3:
+        if '-h' in args:
+            print("-----CGP Xaller Interpreter (v1.0)-----")
+            print("cxi -ioh")
+            print("Usage")
+            print("-h /to show help.")
+            print("-i  ilename /to tell cxi  iles to interpret.")
+            print("-o name /to tell cxi a name to name output  iles.\n")
+            sys.exit(0)
+        print("Missing operations.\n")
         sys.exit(0)
 
     # -dを見つけた際にはデバッグモード
@@ -58,6 +61,15 @@ def deal_with_cmdargs():
     # 出力名が指定されていなかったときは自動で決める
     if Global.output == '':
         Global.output = Global.input[:Global.input.rfind(".")]
+
+    # NOTE(cgp) Make the paths of input and output file absolute.
+    # TODO(cgp) Support user and environment variables.
+    Global.input = os.path.abspath(Global.input)
+    Global.output = os.path.abspath(Global.output)
+
+    # NOTE(cgp) Change the current directory into the input file directory.
+    # For os.path.abspath().
+    os.chdir(os.path.dirname(Global.input))
 
     genfunc.dbgprint('Input file name: ' + Global.input)
 
@@ -89,35 +101,38 @@ def deal_with_import():
     # このままだとコメントが反映されないので一回トークン解析してからもとのファイルに戻す
     raw_tokens = TokenClass.Token.tokenize(Global.input)
     inputd = Global.input[:Global.input.rfind('/')] + '/'
-    for i in range(len(raw_tokens)):
-        if ((genfunc.is_plain(raw_tokens[i-1]) and
-             raw_tokens[i-1].string is '<' and
-             genfunc.is_plain(raw_tokens[i]) and
-             genfunc.is_plain(raw_tokens[i+1]) and
-             raw_tokens[i+1].string is '>')):
+    with open(Global.input) as raw_file:
+        raw = raw_file.read().splitlines()
+        for i in range(len(raw_tokens)):
+            if ((genfunc.is_plain(raw_tokens[i-1]) and
+                 raw_tokens[i-1].string is '<')):
+                # NOTE(cgp) If there is a plain angle bracket, get a file name
+                # to import from raw file to contain spaces.
+                # TODO(cgp) Support user and environment variables.
+                raw_line = raw[raw_tokens[i].real_line - 1]
+                filename = raw_line[raw_line.find('<')+1:raw_line.find('>')]
 
-            filename = raw_tokens[i].string
-            try:
-                # インポートファイル名は入力ファイルがあるディレクトリからの
-                # 相対パスを想定しているので、インポートファイル名にディレクトリを指定する
-                new_tokens = TokenClass.Token.tokenize(inputd + filename)
+                if os.path.isabs(filename):
+                    # NOTE(cgp) If the path is absolute, import the file as it is.
+                    pass
+                else:
+                    # NOTE(cgp) Change relative path into absolute.
+                    # Here note that the working directory has already been
+                    # changed into the source file directory.
+                    filename = os.path.abspath(filename)
 
-            except FileNotFoundError:
                 try:
-                    # 相対パスで記述していなかった場合、最後の手段として
-                    # そのまま実行してみる
                     new_tokens = TokenClass.Token.tokenize(filename)
-                except FileNotFoundError:
-                    # ファイルが見つからないのでエラー出力
+                except Exception:
                     genfunc.err("File not found. '%s'" % filename)
 
-            # 新しいファイルのトークンの行番号をずらす
-            # TokenClass.Token.shift_line(new_tokens, i - 1)
+                # 新しいファイルのトークンの行番号をずらす
+                # TokenClass.Token.shift_line(new_tokens, i - 1)
 
-            # 新しいファイル名もトークン化して、もとのトークンに埋め込む
-            # i-1 ~ i+2 <...>
-            del raw_tokens[i-1:i+2]
-            raw_tokens = genfunc.insert(raw_tokens, i - 1, new_tokens)
+                # 新しいファイル名もトークン化して、もとのトークンに埋め込む
+                # i-1 ~ i+2 <...>
+                del raw_tokens[i-1:i+2]
+                raw_tokens = genfunc.insert(raw_tokens, i - 1, new_tokens)
 
     Global.tokens = raw_tokens
 

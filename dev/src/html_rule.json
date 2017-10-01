@@ -192,7 +192,6 @@
 	    }
 	}
     },
-
     
     "div": {
 	"content_categories": ["flow", "palpable", "interactive", "listed", "labelable", "resettable", "submittable_form_associated", "palpable"],
