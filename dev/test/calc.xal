@@ -15,9 +15,7 @@
     }
     @ (click) {
         # 文字を後ろにくっつける
-        (eq mode 0) ? {
-            view.text = (concat view.text (.num)string)
-        }
+        view.text = (concat view.text (.num)string)
         mode = 1
     }
 }
@@ -63,7 +61,7 @@ plus_btn.text = '+'
 +(product_btn)Button in operators
 product_btn.text = '*'
 @ (product_btn.click) {
-p    (eq mode 1) ? {
+    (eq mode 1) ? {
         view.text = (concat view.text '*')
         mode = 0
         using_operation = '*'
@@ -99,7 +97,7 @@ eq_btn.text = '='
         (a)int
         (b)int
         a = (substr view.text 0 (stridx view.text using_operation))int
-        b = (substr view.text (+ 2 (stridx view.text using_operation)) (negative 1))int
+        b = (substr view.text (+ 1 (stridx view.text using_operation)) (negative 1))int
         cond (eq using_operation '+') ? {
             ans = (+ a b)
         }
@@ -116,6 +114,5 @@ eq_btn.text = '='
         mode = 0
     }
 }
-
 
 end
