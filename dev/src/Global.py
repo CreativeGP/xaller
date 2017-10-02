@@ -5,7 +5,7 @@ exel = 1  # Line to excute next.
 retl = [] # Lineto return from func.
 fs = [-1] # Running function index (default -1).
 # HACK(cgp) Why does both lists need dammy element?
-tfs = [None] # Translating function index (default -1).
+tfs = [] # Translating function index (default -1).
 brace_requests = [1] # Remember request of brace.
 outjs = '' # JS File to output
 bDbg = False # Flag output for debug.
