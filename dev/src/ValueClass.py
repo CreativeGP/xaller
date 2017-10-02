@@ -70,7 +70,8 @@ class Variable(object):
         """Substitute the value for this variable."""
         # NOTE: JS出力用バッファを使うときは関数の処理のときに限る
         if js_out: genfunc.outnoln(genfunc.expname(self.name) + " = ")
-        if str(type(new)) == "<class 'list'>":
+        if ((str(type(new)) == "<class 'list'>"
+             or str(type(new)) == "<type 'list'>")):
             # TODO: 静的な変数だった場合は内容を更新するようにする
             genfunc.out_expression(new)
         elif str(type(new)) == "<class 'ValueClass.Variable'>":
