@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+import os
 # Global Variables
 exel = 1  # Line to excute next.
 retl = [] # Lineto return from func.
@@ -20,11 +22,13 @@ lines = []
 wobs = []
 
 html_rules = None
+html_rule_file_path = os.path.dirname(os.path.abspath(__file__)) + '/html_rules.json'
 
-import_paths = [
-    "./",
-    "../test/",
-    ]
+# ファイルのインポートは相対パスで記述できるようになったのでとりまカット
+# import_paths = [
+#     "./",
+#     "../test/",
+#     ]
 
 buildin_func_names = [
 '+', '-', '*', '/',

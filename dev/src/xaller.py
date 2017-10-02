@@ -60,10 +60,11 @@ def deal_with_cmdargs():
 
     # 出力名が指定されていなかったときは自動で決める
     if Global.output == '':
-        Global.output = Global.input[:Global.input.rfind(".")]
+        Global.output = os.path.basename(Global.input)
 
     # NOTE(cgp) Make the paths of input and output file absolute.
     # TODO(cgp) Support user and environment variables.
+    # TODO(cgp) May suupport expanding symbolic link?
     Global.input = os.path.abspath(Global.input)
     Global.output = os.path.abspath(Global.output)
 
@@ -76,6 +77,7 @@ def deal_with_cmdargs():
 
 def out_html():
     """Output the HTML file which just loads JS file."""
+    # TODO(cgp) calc.xal -> (calc.xal.html => calc.html)
     html = open('%s.html' % Global.output, 'w')
     html.write("""
     <html>
@@ -89,7 +91,9 @@ def out_html():
     </script>
     </body>
     </html>
-   """ % Global.output)
+   """
+    # TODO(cgp) calc.xal -> (calc.xal.html => calc.html)
+               % Global.output)
     html.close()
 
 
@@ -122,6 +126,7 @@ def deal_with_import():
                     filename = os.path.abspath(filename)
 
                 try:
+                    # TODO(cgp) May suupport expanding symbolic link?
                     new_tokens = TokenClass.Token.tokenize(filename)
                 except Exception:
                     genfunc.err("File not found. '%s'" % filename)
@@ -142,8 +147,8 @@ def deal_with_import():
 
 def prepare_js():
     """Prepare JS file, running xaller programs."""
-    json_file = open(os.path.dirname(
-        os.path.abspath(__file__)) + "/html_rule.json", 'r')
+    json_file = open((os.path.dirname(os.path.abspath(__file__))
+                     + "/html_rule.json"), 'r')
     Global.html_rules = json.load(json_file)
 
     # 'strtrimr':'',
@@ -240,6 +245,7 @@ return src.replace(regExp, replacement); }""")
 
 def out_js():
     """Output JS file."""
+    # TODO(cgp) calc.xal -> (calc.xal.js => calc.js)
     js_file = open(Global.output + ".js", 'w')
     js_file.write(Global.outjs)
     js_file.close()
