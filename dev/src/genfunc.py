@@ -843,7 +843,9 @@ def translate(token_list, static_default=None):
             out('}')
             Global.brace_requests.pop()
             return 1
-        if Global.tfs[-1].event:
+        if Global.tfs[-1] is None:
+            out("}")
+        elif Global.tfs[-1].event:
             out("});")
         else:
             out("}")
