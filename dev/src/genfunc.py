@@ -254,7 +254,9 @@ def get_block_idx(line):
 
 def get_var(string, care=True):
     """Retrieve a variable that matches the string."""
-    if care and Global.tfs[-1] is not None:
+    if ((care
+         and len(Global.tfs) > 0
+         and Global.tfs[-1] is not None)):
         runf = Global.tfs[-1]
         tmp = ''
         if string[0] == '.': tmp = runf.name[:runf.name.rfind(".")]
@@ -843,9 +845,7 @@ def translate(token_list, static_default=None):
             out('}')
             Global.brace_requests.pop()
             return 1
-        if Global.tfs[-1] is None:
-            out("}")
-        elif Global.tfs[-1].event:
+        if Global.tfs[-1].event:
             out("});")
         else:
             out("}")
