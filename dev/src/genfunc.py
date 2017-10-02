@@ -80,11 +80,11 @@ def err(string):
     # 便利なように自動的に実行行を見つけるようにする
     for tkn in Global.tokens:
         if Global.exel == tkn.line:
-            dbgprint("%s:%d: %s"
-                     % (Global.input, tkn.real_line, string))
+            print("%s:%d: %s"
+                  % (Global.input, tkn.real_line, string))
             sys.exit(1)
     # もし実行業がみつからなかったときには、適当に出力しておく
-    dbgprint(Global.input+":"+"0: "+string)
+    print(Global.input+":"+"0: "+string)
     sys.exit(1)
 
 

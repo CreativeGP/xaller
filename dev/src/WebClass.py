@@ -77,6 +77,7 @@ class WebObject:
             genfunc.out('");')
 
 
+    @staticmethod
     def find_by_name(name):
         """Find the web object by its name."""
         for wob in Global.wobs:
