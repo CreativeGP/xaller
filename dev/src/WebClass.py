@@ -16,7 +16,7 @@ class WebObject:
         "Number_Selector":"input", "Password":"input", "Radio_Button":"input",
         "Range_Selector":"input", "Reset_Button":"input", "Search_Input":"input",
         "Submit_Button":"input", "TEL_Input":"input", "URL_Input":"input",
-        "Time_Input":"input", "Week_Selector":"input", "Div":"div",
+        "Time_Input":"input", "Week_Selector":"input", "Div":"div", "Letter","span"
         
     }
 

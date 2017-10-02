@@ -26,7 +26,36 @@
     (tabindex)int
 }
 
--(HTML):string {}
+# NOTE(cgp) This object is too danger.
+# -(HTML):string {}
+
+# TODO
+# -(Color) {
+#     (red)int
+#     (green)int
+#     (blue)int
+#     (alpha)int
+#     @ (__init) {
+#         # NOTE(cgp) Set this opaque color as default.
+#         .alpha = 255
+#     }
+# }
+# @ (__color_string (c)color) {
+#     return (concat '#' (hexstr c.red) (hexstr c.green) (hexstr c.blue))
+# }
+
+-(Letter):Web_Object {
+    (text)string
+
+    # TODO(cgp) Apply the Color type to these members.
+    # TODO(cgp) Imprement setter.
+    (color)string
+    (backcolor)string
+
+    @ (__init) {
+	._web = 'Button'
+    }
+}
 
 # -(Color) {
 #     (r)int
