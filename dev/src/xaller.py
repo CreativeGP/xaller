@@ -87,13 +87,14 @@ def out_html():
     </head>
     <body>
 
-    <script src="%s.js">
+    <script src="%s">
     </script>
     </body>
     </html>
    """
-    # TODO(cgp) calc.xal -> (calc.xal.html => calc.html)
-               % Global.output)
+               # TODO(cgp) calc.xal -> (calc.xal.html => calc.html)
+               # NOTE(cgp) Use relative path to behave well online.
+               % os.path.relpath(Global.output + ".js"))
     html.close()
 
 
