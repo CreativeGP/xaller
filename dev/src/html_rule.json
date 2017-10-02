@@ -202,6 +202,17 @@
 	"dom_interface": "HTMLDivElement",
 	"attr": {
 	}
+    },
+
+    "span": {
+	"content_categories": ["flow", "phrasing"],
+	"allowed_contents": ["phrasing"],
+	"ommision": ["req_beg", "req_end"],
+	"permitted_parents": ["phrasing", "flow"],
+	"permitted_ARIA_roles": "any",
+	"dom_interface": "HTMLSpanElement",
+	"attr": {
+	}
     }
 
 }
