@@ -782,6 +782,8 @@ def add_type(block_ind):
                     if block.root[0].line == token.line:
                         new_type.functions.append(FunctionClass.Function(i))
                         Global.exel = block.body[-1].line
+                        out("%s: function () {" % block.root[2].string)
+                        out("}")
                         break
 
             elif len(token_list) >= 4 and \
