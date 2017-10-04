@@ -763,9 +763,13 @@ def add_type(block_ind):
         new_type.functions.extend(tmp.functions)
     dbgprint("")
 
-    out("var %s = class %s {" % (new_type.name, new_type.name))
+    out("var %s = {" % new_type.name)
 
     token_list = []
+    out_varcreation = lambda name, type: (
+        out("%s: %s,"
+            % (name, expvalue(get_default_value(type)))))
+
     for token in Global.blocks[block_ind].body:
         token_list.append(token)
         if token.ttype.Return:
@@ -805,6 +809,13 @@ def add_type(block_ind):
                                            new_type.variables, True)
             del token_list[:]
     Global.vtypes.append(new_type)
+
+    for var in new_type.variables:
+        # NOTE(cgp): We can't call ValueClass.Variable.create() to ouput
+        # JS code creating variable. Instead, call out_varcreation(), the local
+        # function defined in this function.
+        out_varcreation(var.name, var.value.type)
+
 
     # NOTE(cgp) Output of type definition is processed in this function.
     # Here is the end of output of type definition.
