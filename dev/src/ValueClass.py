@@ -162,6 +162,7 @@ class Variable(object):
 
         # 型にメンバがある場合はそれも実際に作成
         for member in var.value.type.variables:
+            # TODO(cgp) Replace
             ValueClass.Variable.create(
                 ValueClass.Variable(var.name + "." + member.name,
                                     genfunc.get_default_value(member.value.type)), variables, external)
