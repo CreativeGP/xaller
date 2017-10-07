@@ -317,8 +317,9 @@ def is_adding_type():
              and 'add_type' in Global.translate_seq[-1]))
 
 
-def get_adding_type():
-
+def get_adding_type_name():
+    if is_adding_type():
+        return Global.translate_seq[-1].replace("add_type:", "")
 
 def is_var_exists(string):
     """Returns true if the variable that matches a string exists."""
@@ -329,9 +330,25 @@ def is_func_exists(string):
     """Returns true if the function that matches a string exists."""
     for func in Global.Funcs:
         if func.name == string:
+            return True
+    if is_adding_type():
+        for func in get_value_type(get_adding_type_name()).functions:
+            # NOTE(cgp) .が邪魔なのでそれを取り除いてもじれつを比較
+            if func.name == string[1:]:
+                return True
+    return None
+
+def get_func(string):
+    """Returns true if the function that matches a string exists."""
+    for func in Global.Funcs:
+        if func.name == string:
             return func
     if is_adding_type():
-        
+        for func in get_value_type(get_adding_type_name()).functions:
+            # NOTE(cgp) .が邪魔なのでそれを取り除いてもじれつを比較
+            if func.name == string[1:]:
+                return func
+    return None
 
 
 # 親の名前からそのスコープから見える変数すべてのそのメンバを返す(ValueClass.Variable[])
@@ -507,7 +524,10 @@ def out_expression(token_list, get_string=False):
     # NOTE(cgp) 関数ではない呼び出し
     if ((len(token_list) == 3 or len(token_list) == 4
          and token_list[0].string == '('
-         and token_list[2].string == ')')):
+         and token_list[2].string == ')'
+         and not is_func_exists(token_list[1].string))):
+        # TODO(cgp) is_var_exists関数とかぶっているので、下を消す方向で
+        print (token_list[1].string + str(is_func_exists(token_list[1].string)))
         if FunctionClass.Function.n2i(token_list[1].string) == -1:
             cast = ''
             if len(token_list) == 4:
