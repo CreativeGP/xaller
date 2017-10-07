@@ -141,7 +141,9 @@ def expname(string):
     string = string.replace('.', '.')
     if ((len(Global.translate_seq) > 0
          and 'add_type' in Global.translate_seq[-1])):
-        string = "this." + string
+        # NOTE(cgp) ドットが２個続けて出力されることがあったのでそのようなことがないように
+        # こっちで調整する
+        string = "this" + ('' if string[0] == '.' else '.') + string
     return string
 
 def expvalue(val):
@@ -333,10 +335,11 @@ def is_func_exists(string):
             return True
     if is_adding_type():
         for func in get_value_type(get_adding_type_name()).functions:
+            print(func.name)
             # NOTE(cgp) .が邪魔なのでそれを取り除いてもじれつを比較
             if func.name == string[1:]:
                 return True
-    return None
+    return False
 
 def get_func(string):
     """Returns true if the function that matches a string exists."""
@@ -522,12 +525,11 @@ def out_expression(token_list, get_string=False):
         return
 
     # NOTE(cgp) 関数ではない呼び出し
-    if ((len(token_list) == 3 or len(token_list) == 4
+    if (((len(token_list) == 3 or len(token_list) == 4)
          and token_list[0].string == '('
          and token_list[2].string == ')'
          and not is_func_exists(token_list[1].string))):
         # TODO(cgp) is_var_exists関数とかぶっているので、下を消す方向で
-        print (token_list[1].string + str(is_func_exists(token_list[1].string)))
         if FunctionClass.Function.n2i(token_list[1].string) == -1:
             cast = ''
             if len(token_list) == 4:
@@ -908,6 +910,9 @@ def add_type(block_ind):
                     if block.root[0].line == token.line:
                         outnoln(new_type.name + ".prototype.%s = " % block.root[2].string)
                         func = FunctionClass.Function(i)
+                        # NOTE(cgp) 方の関数リストにも入れておく
+                        new_type.functions.append(copy.deepcopy(func))
+                        # HACK(cgp) Global.Varsに無名関数を追加することになるコード
                         func.name = ''
                         func.add()
                         out("")
