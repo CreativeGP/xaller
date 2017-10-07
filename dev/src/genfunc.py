@@ -131,9 +131,11 @@ def outbuf(string):
     """Add a text behind Global.jsbuf."""
     Global.jsbuf += string
 
+
 def expid(string):
     """Convert a xaller string into an valid string for HTML."""
     return string.replace('.', '-')
+
 
 def expname(string):
     """Convert a xaller variable name into an valid string for JS."""
@@ -146,11 +148,13 @@ def expname(string):
         string = "this" + ('' if string[0] == '.' else '.') + string
     return string
 
+
 def expvalue(val):
     """Convert a xaller value into an valid string for JS."""
     return (S(val.string)
             if val.type.race == 'String' else
             val.string)
+
 
 def create_external(name, pos):
     """Output a JS code creating a DOM variable."""
@@ -908,30 +912,33 @@ def add_type(block_ind):
                is_plain(token_list[-1]) and token_list[-1].string == ")":
                 for i, block in enumerate(Global.blocks):
                     if block.root[0].line == token.line:
-                        outnoln(new_type.name + ".prototype.%s = " % block.root[2].string)
                         func = FunctionClass.Function(i)
-                        # NOTE(cgp) 方の関数リストにも入れておく
-                        new_type.functions.append(copy.deepcopy(func))
-                        # HACK(cgp) Global.Varsに無名関数を追加することになるコード
-                        func.name = ''
-                        func.add()
-                        out("")
-                        exel = Global.blocks[func.block_ind].body[0].line
-                        # 関数内容を出力
-                        while True:
-                            translate(Global.lines[exel].tokens)
-
-                            # NOTE(cgp) 最後の閉じ括弧まで読み込む
-                            if exel == Global.blocks[func.block_ind].body[-1].line - 1:
-                                break
-                            exel += 1
-                        # new_func = FunctionClass.Function(i)
-                        # # NOTE(cgp) For js output.
-                        # new_type.functions.append(new_func)
-                        Global.exel = block.body[-1].line
-                        break
-
+                        # NOTE(cgp) 型の関数リストに入れておく
+                        new_type.functions.append(func)
             del token_list[:]
+
+    for func in new_type.functions:
+        outnoln(new_type.name + ".prototype.%s = " % func.name)
+        # HACK(cgp) Global.Varsに無名関数を追加することになるコード
+        tmp_func = copy.deepcopy(func)
+        tmp_func.name = ''
+        tmp_func.add()
+        out("")
+        exel = Global.blocks[func.block_ind].body[0].line
+        # 関数内容を出力
+        while True:
+            translate(Global.lines[exel].tokens)
+
+            # NOTE(cgp) 最後の閉じ括弧まで読み込む
+            if exel == Global.blocks[func.block_ind].body[-1].line - 1:
+                break
+            exel += 1
+        # new_func = FunctionClass.Function(i)
+        # # NOTE(cgp) For js output.
+        # new_type.functions.append(new_func)
+        Global.exel = Global.blocks[func.block_ind].body[-1].line
+        
+
     out("")
 
     Global.translate_seq.pop()

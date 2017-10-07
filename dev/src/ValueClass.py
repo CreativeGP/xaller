@@ -167,29 +167,10 @@ class Variable(object):
                                     genfunc.get_default_value(member.value.type)),
                 variables, external, jsout=False)
 
-        # 作成予定関数を実際に作成
+        # TODO(cgp) 変数のメンバ関数が作られない
         for func in var.value.type.functions:
-            new = copy.deepcopy(func)
-            func = FunctionClass.Function(new.block_ind)
-            func.name = var.name+"."+new.name
-            func.add()
-            # exel = GET_DEFAULT_VALUElobal.blocks[func.block_ind].body[0].line
-            # genfunc.out("")
-            # # 関数内容を出力
-            # while True:
-            #     genfunc.translate(Global.lines[exel].tokens)
-
-            #     # NOTE(cgp) 最後の閉じ括弧まで読み込む
-            #     if exel == Global.blocks[func.block_ind].body[-1].line - 1:
-            #         if func.name[func.name.rfind('.'):] != '.__init':
-            #             pass
-            #         else:
-            #             if external:
-            #                 variables[-1].external = True
-            #                 Global.wobs.append(WebClass.WebObject(var, pos))
-            #                 Global.wobs[-1].create()
-            #         break
-            #     exel += 1
+            if func.name == '__init':
+                genfunc.out(var.name + '.' + func.name + '();')
 
         # TODO: コンストラクタを呼び出す
         # NOTE: コンストラクタの静的な呼び出しは上のコードで終わっている
