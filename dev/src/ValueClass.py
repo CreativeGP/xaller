@@ -111,7 +111,7 @@ class Variable(object):
             #     else:
             #         Global.jsbuf += genfunc.expname(self.name)
             # else:
-            if '.' in self.name:
+            if '.' in self.name and not self.name[0] == '.':
                 parent_name = self.name[:self.name.find('.')]
                 member_name = self.name[self.name.find('.')+1:]
                 wob = WebClass.WebObject.find_by_name(parent_name)
@@ -162,7 +162,6 @@ class Variable(object):
         # 型にメンバがある場合はそれも実際に作成
         for member in var.value.type.variables:
             # NOTE(cgp) Don't output member variable definition.
-            print(var.name + "." + member.name)
             ValueClass.Variable.create(
                 ValueClass.Variable(var.name + "." + member.name,
                                     genfunc.get_default_value(member.value.type)),

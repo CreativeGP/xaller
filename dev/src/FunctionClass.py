@@ -116,6 +116,20 @@ class Function(object):
         
 
     # functionsに追加
+    # def add(self):
+    #     """Add a function TO GLOBAL.FUNCS."""
+    #     genfunc.dbgprint("Creating function " + self.name)
+    #     Function._static_id += 1
+    #     # すでに同名の関数がある場合は古い方を上書き
+    #     idx = Function.n2i(self.name)
+    #     if idx < -1:
+    #         genfunc. err("Function '%s' is build-in function name." % self.name)
+    #     else:
+    #         Global.Funcs.append(self)
+    #         Global.tfs.append(self)
+
+
+    # functionsに追加
     def add(self):
         """Add a function TO GLOBAL.FUNCS."""
         genfunc.dbgprint("Creating function " + self.name)
@@ -124,9 +138,56 @@ class Function(object):
         idx = Function.n2i(self.name)
         if idx < -1:
             genfunc. err("Function '%s' is build-in function name." % self.name)
+        # elif idx != -1:
+        #     idx = Function.n2i(self.name)
+        #     Global.Funcs[idx] = self
+        #     # JS Output
+        #     # $name = (function $name(arg1, arg2 ...) {});
+        #     try:
+        #         genfunc.outnoln(
+        #                        "%s = function %s ("
+        #                         % (genfunc.expname(self.name), genfunc.expname(self.name)))
+        #         for v in self.args[-1][:-1]:
+        #             genfunc.outnoln("%s, " % v.name)
+        #         genfunc.outnoln("%s" % self.args[-1][-1].name)
+        #     except IndexError:
+        #         pass
+        #     genfunc.out(") {")
+        #     genfunc.out("});")
+        # # そうでない場合は新規作成する
         else:
+            var = genfunc.get_var(self.name[:self.name.rfind('.')])
             Global.Funcs.append(self)
             Global.tfs.append(self)
+            if genfunc.is_var_web(var):
+                eventlist = ['.blur', '.click', '.change', '.ctxmenu',
+                             '.dbclick', '.error', '.focus', '.focusin',
+                             '.focusout', '.hover', '.load', '.ready',
+                             '.scroll', '.resize', '.select', '.submit',
+                             '.unload']
+                if self.name[self.name.rfind('.'):] in eventlist:
+                    self.event = True
+                    idx = eventlist.index(self.name[self.name.rfind('.'):])
+                    genfunc.outnoln("$('#%s')%s" % (genfunc.expid(var.name), eventlist[idx])
+                                    + "(function () {")
+                    return
+        # コンストラクタは内容は出力するが、関数は出力しない
+#            elif ((not self.name[self.name.rfind('.'):] == ".__init"
+#                  and not self.name == "__init")):
+            # JS Output
+            # function $name (arg1, arg2 ...)
+            if ((self.name[self.name.rfind('.'):] != ".__init"
+                 and self.name != "__init")):
+                try:
+                    genfunc.outnoln("function %s(" % genfunc.expname(self.name))
+                    for arg_var in self.args[-1][:-1]:
+                        genfunc.outnoln("%s, " % arg_var.name)
+                    genfunc.outnoln("%s" % self.args[-1][-1].name)
+                except IndexError:
+                    pass
+                genfunc.outnoln(") {")
+            else:
+                genfunc.outnoln("{")
 
 
     @staticmethod
@@ -136,6 +197,7 @@ class Function(object):
             if not genfunc.RUN(Global.lines[Global.exel-1].tokens): break
             if Global.exel-1 >= len(Global.lines)-1: break
             Global.exel += 1
+
 
     # 関数の処理の実行、戻り値はこの関数の戻り値としてValue型で返される
     def run(self, args):

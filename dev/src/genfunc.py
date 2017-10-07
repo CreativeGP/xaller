@@ -137,7 +137,12 @@ def expid(string):
 
 def expname(string):
     """Convert a xaller variable name into an valid string for JS."""
-    return string.replace('.', '.')
+    # NOTE(cgp) this.をつけて返すようにする
+    string = string.replace('.', '.')
+    if ((len(Global.translate_seq) > 0
+         and 'add_type' in Global.translate_seq[-1])):
+        string = "this." + string
+    return string
 
 def expvalue(val):
     """Convert a xaller value into an valid string for JS."""
@@ -258,20 +263,27 @@ def get_var(string, care=True):
          and len(Global.tfs) > 0
          and Global.tfs[-1] is not None
          and len(Global.translate_seq) > 0
-         and Global.translate_seq[-1] == 'add_type')):
+         and 'add_type' in Global.translate_seq[-1])):
         # NOTE(cpg) 型定義の時で関数翻訳時にドットをthis.に変える。
-        runf = Global.tfs[-1]
-        print(runf.name)
-#        tmp = 'this'
-        if string[0] == '.': tmp = runf.name[:runf.name.rfind(".")]
-        string = tmp + string
-        print(string)
-        for var in runf.args[-1]:
-            if string == var.name:
+        defining_type_name = Global.translate_seq[-1].replace("add_type:", '')
+        # TODO(cgp) this.を出力
+        # if string[0] == '.':
+        #     string = 'this' + string
+        for var in get_value_type(defining_type_name).variables:
+            print(var.name)
+            if string[1:] == var.name:
                 return var
-        for var in runf.vars[-1]:
-            if string == var.name:
-                return var
+
+#         runf = Global.tfs[-1]
+# #        tmp = 'this'
+#         if string[0] == '.': tmp = runf.name[:runf.name.rfind(".")]
+#         string = tmp + string
+#         for var in runf.args[-1]:
+#             if string == var.name:
+#                 return var
+#         for var in runf.vars[-1]:
+#             if string == var.name:
+#                 return var
     elif Global.fs[-1] != -1:
         runf = Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])]
         if string[0] == '.':
@@ -738,11 +750,14 @@ def prepro(string):
 
 def add_type(block_ind):
     """Create new type."""
-    dbgprint("SEQENCE >>> add_type")
-    Global.translate_seq.append('add_type')
-
     inh_count = int((len(Global.blocks[block_ind].root) - 4) / 2)
     new_type = ValueClass.Type(Global.blocks[block_ind].root[2].string, 'Dirty')
+    # NOTE(cgp) この関数内でドットを変更するので、先に追加しておく
+    Global.vtypes.append(new_type)
+
+    dbgprint("SEQENCE >>> add_type")
+    Global.translate_seq.append('add_type:' + new_type.name)
+
     if new_type.race != 'Dirty':
         err("Pure type couldn't have members.")
     dbgprintnoln(("New type '%s' inheritanced by type"
@@ -766,11 +781,13 @@ def add_type(block_ind):
                 if new_type_member.name == var.name:
                     del new_type_member
         new_type.variables.extend(tmp.variables)
+
         for func in tmp.functions:
             for new_type_member_func in new_type.functions:
                 if new_type_member_func.name == func.name:
                     del new_type_member_func
         new_type.functions.extend(tmp.functions)
+
     dbgprint("")
 
     # function Letter (name) {
@@ -812,7 +829,8 @@ def add_type(block_ind):
                 if value_type is None:
                     err("Undefined type '%s'." % token_list[3].string)
                 new_type.variables.append(ValueClass.Variable(
-                    token_list[1].string,  get_default_value(value_type)))
+                    token_list[1].string,
+                    get_default_value(value_type)))
 
             elif len(token_list) >= 5 and \
                  is_plain(token_list[0]) and token_list[0].string == '+' and \
@@ -824,7 +842,8 @@ def add_type(block_ind):
                 if value_type is None:
                     err("Undefined type '%s'." % token_list[4].string)
                 new_type.variables.append(ValueClass.Variable(
-                    token_list[2].string,  get_default_value(value_type)))
+                    token_list[2].string,
+                    get_default_value(value_type)))
                 # ValueClass.Variable.create(ValueClass.Variable(
                 #     token_list[2].string, get_default_value(value_type)),
                 #                            new_type.variables, True)
@@ -850,19 +869,34 @@ def add_type(block_ind):
                is_plain(token_list[-1]) and token_list[-1].string == ")":
                 for i, block in enumerate(Global.blocks):
                     if block.root[0].line == token.line:
-                        print(block.root[2].string)
-                        out(new_type.name + ".prototype.%s = function ()" % block.root[2].string)
-                        new_func = FunctionClass.Function(i)
-                        # NOTE(cgp) For js output.
-                        new_func.outjs()
-                        new_type.functions.append(new_func)
+                        out("")
+                        out(new_type.name + ".prototype.%s = function () {" % block.root[2].string)
+                        func = FunctionClass.Function(i)
+                        func.name = new_type.name + "." + block.root[2].string
+                        func.add()
+                        exel = Global.blocks[func.block_ind].body[0].line
+                        # 関数内容を出力
+                        while True:
+                            translate(Global.lines[exel].tokens)
+
+                            # NOTE(cgp) 最後の閉じ括弧まで読み込む
+                            if exel == Global.blocks[func.block_ind].body[-1].line - 1:
+                                # if func.name[func.name.rfind('.'):] != '.__init':
+                                #     pass
+                                # else:
+                                #     if external:
+                                #         variables[-1].external = True
+                                #         Global.wobs.append(WebClass.WebObject(var, pos))
+                                #         Global.wobs[-1].create()
+                                break
+                            exel += 1
+                        # new_func = FunctionClass.Function(i)
+                        # # NOTE(cgp) For js output.
+                        # new_type.functions.append(new_func)
                         Global.exel = block.body[-1].line
-                        out("}")
                         break
+
             del token_list[:]
-    Global.vtypes.append(new_type)
-
-
 
     Global.translate_seq.pop()
     dbgprint("SEQENCE <<<")
@@ -980,7 +1014,9 @@ def translate(token_list, static_default=None):
        is_plain(run_tokens[-1]) and run_tokens[-1].string == ")":
         for i, block in enumerate(Global.blocks):
             if block.root[0].line == run_tokens[0].line:
-                FunctionClass.Function(i).add()
+                new_func = FunctionClass.Function(i)
+                new_func.add()
+#                new_func.outjs()
                 Global.exel += 1
                 break
         out("")
