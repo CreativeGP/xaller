@@ -179,7 +179,11 @@ class Function(object):
             if ((self.name[self.name.rfind('.'):] != ".__init"
                  and self.name != "__init")):
                 try:
-                    genfunc.outnoln("function %s(" % genfunc.expname(self.name))
+                    genfunc.outnoln("function %s("
+                                    % (''
+                                       if ((len(Global.translate_seq) > 0
+                                            and 'add_type' in Global.translate_seq[-1]))
+                                       else genfunc.expname(self.name)))
                     for arg_var in self.args[-1][:-1]:
                         genfunc.outnoln("%s, " % arg_var.name)
                     genfunc.outnoln("%s" % self.args[-1][-1].name)

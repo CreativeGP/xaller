@@ -312,9 +312,26 @@ def get_var(string, care=True):
     return None
 
 
+def is_adding_type():
+    return ((len(Global.translate_seq) > 0
+             and 'add_type' in Global.translate_seq[-1]))
+
+
+def get_adding_type():
+
+
 def is_var_exists(string):
     """Returns true if the variable that matches a string exists."""
     return get_var(string) is not None
+
+
+def is_func_exists(string):
+    """Returns true if the function that matches a string exists."""
+    for func in Global.Funcs:
+        if func.name == string:
+            return func
+    if is_adding_type():
+        
 
 
 # 親の名前からそのスコープから見える変数すべてのそのメンバを返す(ValueClass.Variable[])
@@ -496,7 +513,7 @@ def out_expression(token_list, get_string=False):
             if len(token_list) == 4:
                 cast = get_value_type(token_list[3].string).race
 
-            outnoln((GLobal.jstypes[get_var(token_list[1].string).value.type.race]
+            outnoln((Global.jstypes[get_var(token_list[1].string).value.type.race]
                      if cast == '' else
                      Global.jstypes[cast]) + "(")
 
@@ -869,11 +886,11 @@ def add_type(block_ind):
                is_plain(token_list[-1]) and token_list[-1].string == ")":
                 for i, block in enumerate(Global.blocks):
                     if block.root[0].line == token.line:
-                        out("")
-                        out(new_type.name + ".prototype.%s = function () {" % block.root[2].string)
+                        outnoln(new_type.name + ".prototype.%s = " % block.root[2].string)
                         func = FunctionClass.Function(i)
-                        func.name = new_type.name + "." + block.root[2].string
+                        func.name = ''
                         func.add()
+                        out("")
                         exel = Global.blocks[func.block_ind].body[0].line
                         # 関数内容を出力
                         while True:
@@ -881,13 +898,6 @@ def add_type(block_ind):
 
                             # NOTE(cgp) 最後の閉じ括弧まで読み込む
                             if exel == Global.blocks[func.block_ind].body[-1].line - 1:
-                                # if func.name[func.name.rfind('.'):] != '.__init':
-                                #     pass
-                                # else:
-                                #     if external:
-                                #         variables[-1].external = True
-                                #         Global.wobs.append(WebClass.WebObject(var, pos))
-                                #         Global.wobs[-1].create()
                                 break
                             exel += 1
                         # new_func = FunctionClass.Function(i)
@@ -897,6 +907,7 @@ def add_type(block_ind):
                         break
 
             del token_list[:]
+    out("")
 
     Global.translate_seq.pop()
     dbgprint("SEQENCE <<<")
