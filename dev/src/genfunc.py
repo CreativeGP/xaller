@@ -137,12 +137,12 @@ def expid(string):
 
 def expname(string):
     """Convert a xaller variable name into an valid string for JS."""
-    return string.replace('.', '$')
+    return string.replace('.', '.')
 
 def expvalue(val):
     """Convert a xaller value into an valid string for JS."""
     return (S(val.string)
-            if val.type.race == 'String' or val.type.race == 'Dirty' else
+            if val.type.race == 'String' else
             val.string)
 
 def create_external(name, pos):
@@ -256,11 +256,16 @@ def get_var(string, care=True):
     """Retrieve a variable that matches the string."""
     if ((care
          and len(Global.tfs) > 0
-         and Global.tfs[-1] is not None)):
+         and Global.tfs[-1] is not None
+         and len(Global.translate_seq) > 0
+         and Global.translate_seq[-1] == 'add_type')):
+        # NOTE(cpg) 型定義の時で関数翻訳時にドットをthis.に変える。
         runf = Global.tfs[-1]
-        tmp = ''
+        print(runf.name)
+#        tmp = 'this'
         if string[0] == '.': tmp = runf.name[:runf.name.rfind(".")]
         string = tmp + string
+        print(string)
         for var in runf.args[-1]:
             if string == var.name:
                 return var
@@ -319,12 +324,14 @@ def get_members(parent_name):
     return res
 
 
-def get_default_value(value_type):
+def get_default_value(value_type, if_dirty_name=''):
     """Retrieve the default value of the type."""
     value_race = value_type.race
     if value_race == 'Integer': return ValueClass.Value('0', value_type)
     if value_race == 'String': return ValueClass.Value('', value_type)
     if value_race == 'Boolean': return ValueClass.Value('false', value_type)
+    if value_race == 'Dirty': return ValueClass.Value(
+            'new ' + value_type.name + '("' + if_dirty_name + '")', value_type)
     return ValueClass.Value('', value_type)
 
 
@@ -731,6 +738,9 @@ def prepro(string):
 
 def add_type(block_ind):
     """Create new type."""
+    dbgprint("SEQENCE >>> add_type")
+    Global.translate_seq.append('add_type')
+
     inh_count = int((len(Global.blocks[block_ind].root) - 4) / 2)
     new_type = ValueClass.Type(Global.blocks[block_ind].root[2].string, 'Dirty')
     if new_type.race != 'Dirty':
@@ -763,12 +773,72 @@ def add_type(block_ind):
         new_type.functions.extend(tmp.functions)
     dbgprint("")
 
-    out("var %s = {" % new_type.name)
+    # function Letter (name) {
+    #     var me = this;
+    #     me.__name = name;
+    #     $("body").append("<span id='"+me.__name+"'>a</span>");
+    #     me.__element = $("#"+me.__name);
+    #     me._onclick = function(e) {
+    #         me.onclick(this, e);
+    #     }
+    # }
 
+    # Letter.prototype = {
+    #     bind: function($target) {
+    #         $target.click(this._onclick);
+    #     },
+    #     onclick: function(sender, evt) {
+    #         this.__element.html("c");
+    #     }
+    # };
+    out("function %s (name) {" % new_type.name)
+    out("var me = this;")
+    out("me.__name = name;")
+    
     token_list = []
     out_varcreation = lambda name, type: (
-        out("%s: %s,"
+        out("me.%s = %s;"
             % (name, expvalue(get_default_value(type)))))
+
+    for token in Global.blocks[block_ind].body:
+        token_list.append(token)
+        if token.ttype.Return:
+            if len(token_list) >= 4 and \
+                 is_plain(token_list[0]) and token_list[0].string == '(' and \
+                 is_plain(token_list[1]) and \
+                 is_plain(token_list[2]) and token_list[2].string == ')' and \
+                 is_plain(token_list[3]):
+                value_type = get_value_type(token_list[3].string)
+                if value_type is None:
+                    err("Undefined type '%s'." % token_list[3].string)
+                new_type.variables.append(ValueClass.Variable(
+                    token_list[1].string,  get_default_value(value_type)))
+
+            elif len(token_list) >= 5 and \
+                 is_plain(token_list[0]) and token_list[0].string == '+' and \
+                 is_plain(token_list[1]) and token_list[1].string == '(' and \
+                 is_plain(token_list[2]) and \
+                 is_plain(token_list[3]) and token_list[3].string == ')' and \
+                 is_plain(token_list[4]):
+                value_type = get_value_type(token_list[4].string)
+                if value_type is None:
+                    err("Undefined type '%s'." % token_list[4].string)
+                new_type.variables.append(ValueClass.Variable(
+                    token_list[2].string,  get_default_value(value_type)))
+                # ValueClass.Variable.create(ValueClass.Variable(
+                #     token_list[2].string, get_default_value(value_type)),
+                #                            new_type.variables, True)
+            del token_list[:]
+
+    for var in new_type.variables:
+        # NOTE(cgp): We can't call ValueClass.Variable.create() to ouput
+        # JS code creating variable. Instead, call out_varcreation(), the local
+        # function defined in this function.
+        out_varcreation(var.name, var.value.type)
+
+    # NOTE(cgp) Output of type definition is processed in this function.
+    # Here is the end of output of type definition.
+    out("}")
 
     for token in Global.blocks[block_ind].body:
         token_list.append(token)
@@ -780,48 +850,22 @@ def add_type(block_ind):
                is_plain(token_list[-1]) and token_list[-1].string == ")":
                 for i, block in enumerate(Global.blocks):
                     if block.root[0].line == token.line:
-                        new_type.functions.append(FunctionClass.Function(i))
+                        print(block.root[2].string)
+                        out(new_type.name + ".prototype.%s = function ()" % block.root[2].string)
+                        new_func = FunctionClass.Function(i)
+                        # NOTE(cgp) For js output.
+                        new_func.outjs()
+                        new_type.functions.append(new_func)
                         Global.exel = block.body[-1].line
-                        out("%s: function () {" % block.root[2].string)
                         out("}")
                         break
-
-            elif len(token_list) >= 4 and \
-                 is_plain(token_list[0]) and token_list[0].string == '(' and \
-                 is_plain(token_list[1]) and \
-                 is_plain(token_list[2]) and token_list[2].string == ')' and \
-                 is_plain(token_list[3]):
-                value_type = get_value_type(token_list[3].string)
-                if value_type is None:
-                    err("Undefined type '%s'." % token_list[3].string)
-                new_type.variables.append(ValueClass.Variable(
-                    token_list[1].string, get_default_value(value_type)))
-
-            elif len(token_list) >= 5 and \
-                 is_plain(token_list[0]) and token_list[0].string == '+' and \
-                 is_plain(token_list[1]) and token_list[1].string == '(' and \
-                 is_plain(token_list[2]) and \
-                 is_plain(token_list[3]) and token_list[3].string == ')' and \
-                 is_plain(token_list[4]):
-                value_type = get_value_type(token_list[4].string)
-                if value_type is None:
-                    err("Undefined type '%s'." % token_list[4].string)
-                ValueClass.Variable.create(ValueClass.Variable(
-                    token_list[2].string, get_default_value(value_type)),
-                                           new_type.variables, True)
             del token_list[:]
     Global.vtypes.append(new_type)
 
-    for var in new_type.variables:
-        # NOTE(cgp): We can't call ValueClass.Variable.create() to ouput
-        # JS code creating variable. Instead, call out_varcreation(), the local
-        # function defined in this function.
-        out_varcreation(var.name, var.value.type)
 
 
-    # NOTE(cgp) Output of type definition is processed in this function.
-    # Here is the end of output of type definition.
-    out("}")
+    Global.translate_seq.pop()
+    dbgprint("SEQENCE <<<")
 
 
 def get_js_indent_level():
@@ -870,7 +914,7 @@ def translate(token_list, static_default=None):
             out("}")
         Global.tfs.pop()
         return 1
-    # NOTE: この先具体的な構文処理：returnしているところはJSへのセミコロン出力を防ぐため
+    # NOTE: nnこの先具体的な構文処理：returnしているところはJSへのセミコロン出力を防ぐため
     if ((len(run_tokens) > 0
          and is_plain(run_tokens[0])
          and run_tokens[0].string == 'return')):

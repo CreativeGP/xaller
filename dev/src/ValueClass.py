@@ -47,8 +47,6 @@ class Value(object):
         if self.type.race == 'String':
             res += '"'
         res += self.string
-        if self.type.race == 'String':
-            res += '"'
         return res
 
 class Variable(object):
@@ -130,7 +128,7 @@ class Variable(object):
 
     # 変数の作成を型どおりにやる
     @staticmethod
-    def create(var, variables=None, external=False, pos='at end'):
+    def create(var, variables=None, external=False, pos='at end', jsout=True):
         """Create a variable.
 
         Append a new variable to a list and create Dirty members.
@@ -150,9 +148,10 @@ class Variable(object):
         if var.value.type.race == 'Dirty':
             var.value.string = var.name
         value_type = genfunc.get_value_type(var.value.type.name)
-        genfunc.out("var %s = %s;"
-                    % (var.name.replace('.', '$'),
-                       genfunc.expvalue(genfunc.get_default_value(value_type))))
+        if jsout:
+            genfunc.out("var %s = %s;"
+                        % (var.name.replace('.', '$'),
+                           genfunc.expvalue(genfunc.get_default_value(value_type, var.name))))
         if Global.fs[-1] != -1:
             Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])].vars[-1].append(var)
         else:
@@ -162,10 +161,12 @@ class Variable(object):
 
         # 型にメンバがある場合はそれも実際に作成
         for member in var.value.type.variables:
-            # TODO(cgp) Replace
+            # NOTE(cgp) Don't output member variable definition.
+            print(var.name + "." + member.name)
             ValueClass.Variable.create(
                 ValueClass.Variable(var.name + "." + member.name,
-                                    genfunc.get_default_value(member.value.type)), variables, external)
+                                    genfunc.get_default_value(member.value.type)),
+                variables, external, jsout=False)
 
         # 作成予定関数を実際に作成
         for func in var.value.type.functions:
@@ -173,23 +174,23 @@ class Variable(object):
             func = FunctionClass.Function(new.block_ind)
             func.name = var.name+"."+new.name
             func.add()
-            exel = Global.blocks[func.block_ind].body[0].line
-            genfunc.out("")
-            # 関数内容を出力
-            while True:
-                genfunc.translate(Global.lines[exel].tokens)
+            # exel = GET_DEFAULT_VALUElobal.blocks[func.block_ind].body[0].line
+            # genfunc.out("")
+            # # 関数内容を出力
+            # while True:
+            #     genfunc.translate(Global.lines[exel].tokens)
 
-                # NOTE(cgp) 最後の閉じ括弧まで読み込む
-                if exel == Global.blocks[func.block_ind].body[-1].line - 1:
-                    if func.name[func.name.rfind('.'):] != '.__init':
-                        pass
-                    else:
-                        if external:
-                            variables[-1].external = True
-                            Global.wobs.append(WebClass.WebObject(var, pos))
-                            Global.wobs[-1].create()
-                    break
-                exel += 1
+            #     # NOTE(cgp) 最後の閉じ括弧まで読み込む
+            #     if exel == Global.blocks[func.block_ind].body[-1].line - 1:
+            #         if func.name[func.name.rfind('.'):] != '.__init':
+            #             pass
+            #         else:
+            #             if external:
+            #                 variables[-1].external = True
+            #                 Global.wobs.append(WebClass.WebObject(var, pos))
+            #                 Global.wobs[-1].create()
+            #         break
+            #     exel += 1
 
         # TODO: コンストラクタを呼び出す
         # NOTE: コンストラクタの静的な呼び出しは上のコードで終わっている
