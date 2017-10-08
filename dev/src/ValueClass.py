@@ -171,6 +171,8 @@ class Variable(object):
         for func in var.value.type.functions:
             if func.name == '__init':
                 genfunc.out(var.name + '.' + func.name + '();')
+                # NOTE(cgp) __init関数は一つにまとめられているので１回しか出力しないようにする
+                break
 
         # TODO: コンストラクタを呼び出す
         # NOTE: コンストラクタの静的な呼び出しは上のコードで終わっている
