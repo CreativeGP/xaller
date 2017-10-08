@@ -167,6 +167,11 @@ class Variable(object):
                                     genfunc.get_default_value(member.value.type)),
                 variables, external, jsout=False)
 
+        if external:
+            variables[-1].external = True
+            Global.wobs.append(WebClass.WebObject(var.name, pos))
+            Global.wobs[-1].create()
+
         # TODO(cgp) 変数のメンバ関数が作られない
         for func in var.value.type.functions:
             if func.name == '__init':
