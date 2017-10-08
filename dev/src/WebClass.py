@@ -98,6 +98,7 @@ class WebObject:
                 return wob
         return None
 
+
     def is_attr_name(self, name):
         if name in Global.html_rules['global']['attr']:
             return 'global'

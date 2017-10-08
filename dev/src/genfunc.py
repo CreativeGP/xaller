@@ -276,7 +276,6 @@ def get_var(string, care=True):
         # if string[0] == '.':
         #     string = 'this' + string
         for var in get_value_type(defining_type_name).variables:
-            print(var.name)
             if string[1:] == var.name:
                 return var
 
@@ -897,6 +896,8 @@ def add_type(block_ind):
         # JS code creating variable. Instead, call out_varcreation(), the local
         # function defined in this function.
         out_varcreation(var.name, var.value.type)
+        if var.name == '_web':
+            out('me.__element = $("#"+me.__name);')
 
     # NOTE(cgp) Output of type definition is processed in this function.
     # Here is the end of output of type definition.
