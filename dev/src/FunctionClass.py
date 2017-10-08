@@ -134,7 +134,7 @@ class Function(object):
         """Add a function TO GLOBAL.FUNCS."""
         genfunc.dbgprint("Creating function " + self.name)
         Function._static_id += 1
-        # すでに同名の関数がある場合は古い方を上書き
+        # すでに同p名の関数がある場合は古い方を上書き
         idx = Function.n2i(self.name)
         if idx < -1:
             genfunc. err("Function '%s' is build-in function name." % self.name)
@@ -184,9 +184,14 @@ class Function(object):
                                        if ((len(Global.translate_seq) > 0
                                             and 'add_type' in Global.translate_seq[-1]))
                                        else genfunc.expname(self.name)))
-                    for arg_var in self.args[-1][:-1]:
+                    without_member_args = [ ]
+                    for arg in self.args[-1]:
+                        # NOTE(cgp) JS出力の際にdirty型のメンバは出力しないようにする。
+                        if not '.' in arg.name:
+                            without_member_args.append(arg)
+                    for arg_var in without_member_args[:-1]:
                         genfunc.outnoln("%s, " % arg_var.name)
-                    genfunc.outnoln("%s" % self.args[-1][-1].name)
+                    genfunc.outnoln("%s" % without_member_args[-1].name)
                 except IndexError:
                     pass
                 genfunc.outnoln(") {")
