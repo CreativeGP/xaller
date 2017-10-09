@@ -28,6 +28,7 @@ class Type(object):
         self.race = race
         self.variables = []
         self.functions = []
+        self.blocks_for_init = []
 
 
 class Value(object):
@@ -47,8 +48,6 @@ class Value(object):
         if self.type.race == 'String':
             res += '"'
         res += self.string
-        if self.type.race == 'String':
-            res += '"'
         return res
 
 class Variable(object):
@@ -113,7 +112,7 @@ class Variable(object):
             #     else:
             #         Global.jsbuf += genfunc.expname(self.name)
             # else:
-            if '.' in self.name:
+            if '.' in self.name and not self.name[0] == '.':
                 parent_name = self.name[:self.name.find('.')]
                 member_name = self.name[self.name.find('.')+1:]
                 wob = WebClass.WebObject.find_by_name(parent_name)
@@ -130,7 +129,7 @@ class Variable(object):
 
     # 変数の作成を型どおりにやる
     @staticmethod
-    def create(var, variables=None, external=False, pos='at end'):
+    def create(var, variables=None, external=False, pos='at end', jsout=True):
         """Create a variable.
 
         Append a new variable to a list and create Dirty members.
@@ -150,9 +149,11 @@ class Variable(object):
         if var.value.type.race == 'Dirty':
             var.value.string = var.name
         value_type = genfunc.get_value_type(var.value.type.name)
-        genfunc.out("var %s = %s;"
-                    % (var.name.replace('.', '$'),
-                       genfunc.expvalue(genfunc.get_default_value(value_type))))
+        if jsout:
+            print(var.name)
+            genfunc.out("var %s = %s;"
+                        % (var.name.replace('.', '$'),
+                           genfunc.expvalue(genfunc.get_default_value(value_type, var.name))))
         if Global.fs[-1] != -1:
             Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])].vars[-1].append(var)
         else:
@@ -162,33 +163,35 @@ class Variable(object):
 
         # 型にメンバがある場合はそれも実際に作成
         for member in var.value.type.variables:
+            # NOTE(cgp) Don't output member variable definition.
             ValueClass.Variable.create(
                 ValueClass.Variable(var.name + "." + member.name,
-                                    genfunc.get_default_value(member.value.type)), variables, external)
+                                    genfunc.get_default_value(member.value.type)),
+                variables, external, jsout=False)
 
-        # 作成予定関数を実際に作成
         for func in var.value.type.functions:
-            new = copy.deepcopy(func)
-            func = FunctionClass.Function(new.block_ind)
-            func.name = var.name+"."+new.name
-            func.add()
-            exel = Global.blocks[func.block_ind].body[0].line
-            genfunc.out("")
-            # 関数内容を出力
-            while True:
-                genfunc.translate(Global.lines[exel].tokens)
+            if func.name == '__init':
+                # NOTE(cgp) __init関数は呼ばないで直接書かなければならない。
+                # なぜなら、その中で行われる_web変数の変更をXallerが動的に読み込まなければ
+                # DOM出力ができないから。
+                # genfunc.out(var.name + '.' + func.name + '();')
+                tmp = []
+                func.name = var.name + "." + func.name
+                Global.tfs.append(func)
+                for init_block in var.value.type.blocks_for_init:
+                    for tkn in init_block.body[1:-1]:
+                        tmp.append(tkn)
+                        if tkn.ttype.Return:
+                            genfunc.log_ts("tmp", tmp)
+                            if jsout: genfunc.translate(tmp)
+                            del tmp[:]
+                Global.tfs.pop()
+                break
 
-                # NOTE(cgp) 最後の閉じ括弧まで読み込む
-                if exel == Global.blocks[func.block_ind].body[-1].line - 1:
-                    if func.name[func.name.rfind('.'):] != '.__init':
-                        pass
-                    else:
-                        if external:
-                            variables[-1].external = True
-                            Global.wobs.append(WebClass.WebObject(var, pos))
-                            Global.wobs[-1].create()
-                    break
-                exel += 1
+        if external:
+            variables[-1].external = True
+            Global.wobs.append(WebClass.WebObject(var.name, pos))
+            Global.wobs[-1].create()
 
         # TODO: コンストラクタを呼び出す
         # NOTE: コンストラクタの静的な呼び出しは上のコードで終わっている

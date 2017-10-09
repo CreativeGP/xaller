@@ -12,6 +12,8 @@ bDbg = False # Flag output for debug.
 jsbuf = ''
 lock = False
 
+translate_seq = []
+
 indent = 0
 
 blocks = []

@@ -16,26 +16,28 @@ class WebObject:
         "Number_Selector":"input", "Password":"input", "Radio_Button":"input",
         "Range_Selector":"input", "Reset_Button":"input", "Search_Input":"input",
         "Submit_Button":"input", "TEL_Input":"input", "URL_Input":"input",
-        "Time_Input":"input", "Week_Selector":"input", "Div":"div", "Letter","span"
+        "Time_Input":"input", "Week_Selector":"input", "Div":"div", "Letter":"span"
         
     }
 
-    def __init__(self, variable, pos):
-        self.var = variable
+    def __init__(self, name, pos):
+#        self.var = variable
+        self.name = name
         self.pos = pos
 
 
     def get_web_type_name(self):
-        name_to_find = self.var.name + "._web"
+        name_to_find = self.name + "._web"
         return genfunc.get_var(name_to_find).value.string
 
 
     def create(self):
         """Output a JS code creating a DOM variable."""
         # HACK: ここのコードだけ継承されても型を識別できるように特別な変数だけ動的に参照するようにしている
-        typename = ''
-        if genfunc.is_var_exists(self.var.name + "._web"):
-            typename = genfunc.get_var(self.var.name + "._web").value.string
+        type_name = ""
+        if genfunc.is_var_exists(self.name + "._web"):
+            type_name = genfunc.get_var(self.name + "._web").value.string
+        print(type_name)
 
         selector = ""
         func = ""
@@ -55,8 +57,8 @@ class WebObject:
         else:
             selector = "#" + self.pos[self.pos.find(" ")+1:]
 
-        if typename in WebObject.html_tag_names:
-            tagname = WebObject.html_tag_names[typename]
+        if type_name in WebObject.html_tag_names:
+            tagname = WebObject.html_tag_names[type_name]
             opentag = True
             closetag = True
 
@@ -71,7 +73,7 @@ class WebObject:
             if opentag:
                 genfunc.outnoln('<%s id=%s>'
                                % (tagname,
-                                   genfunc.S(genfunc.expname(self.var.name))))
+                                  genfunc.S(genfunc.expname(self.name))))
             if closetag:
                 genfunc.outnoln('</%s>' % tagname)
             genfunc.out('");')
@@ -81,7 +83,7 @@ class WebObject:
     def find_by_name(name):
         """Find the web object by its name."""
         for wob in Global.wobs:
-            if wob.var.name == name:
+            if wob.name == name:
                 return wob
         return None
 
@@ -97,6 +99,7 @@ class WebObject:
             if wob.var is var:
                 return wob
         return None
+
 
     def is_attr_name(self, name):
         if name in Global.html_rules['global']['attr']:
@@ -118,19 +121,19 @@ class WebObject:
 
         if mem_name == 'text':
             return ("$(%s).html()"
-                    % (genfunc.S("#" + genfunc.expid(self.var.name))))
+                    % (genfunc.S("#" + genfunc.expid(self.name))))
         elif attr_kind != 'no':
             if mem_name == 'type':
                 return ("$('%s').get(0).%s" %
-                        ("#" + genfunc.expid(self.var.name),
+                        ("#" + genfunc.expid(self.name),
                          mem_name))
             elif attr_kind == 'boolean_attr':
                 return ("$('%s').prop('%s')" %
-                        ("#" + genfunc.expid(self.var.name),
+                        ("#" + genfunc.expid(self.name),
                          mem_name))
             else:
                 return ("$('%s').attr('%s')" %
-                        ("#" + genfunc.expid(self.var.name),
+                        ("#" + genfunc.expid(self.name),
                          mem_name))
         return ''
 
@@ -141,18 +144,18 @@ class WebObject:
 
         if mem_name == 'text':
             genfunc.out("$(%s).html(%s);"
-                        % (genfunc.S("#" + genfunc.expid(self.var.name)),
+                        % (genfunc.S("#" + genfunc.expid(self.name)),
                            dst_string))
         elif attr_kind != 'no':
             if mem_name == 'type':
                 genfunc.out("$('%s').get(0).%s = %s;" %
-                            ("#" + genfunc.expid(self.var.name),
+                            ("#" + genfunc.expid(self.name),
                              mem_name, dst_string))
             elif attr_kind == 'boolean_attr':
                 genfunc.out("$('%s').prop('%s', %s);" %
-                            ("#" + genfunc.expid(self.var.name),
+                            ("#" + genfunc.expid(self.name),
                              mem_name, dst_string))
             else:
                 genfunc.out("$('%s').attr('%s', %s);" %
-                            ("#" + genfunc.expid(self.var.name),
+                            ("#" + genfunc.expid(self.name),
                              mem_name, dst_string))

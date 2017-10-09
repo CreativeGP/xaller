@@ -34,14 +34,10 @@ class Function(object):
         for i in range(arg_count):
             new_arg_value_type = genfunc.get_value_type(block.root[i*4+6].string)
             new_arg_name = block.root[i*4+4].string
-            ValueClass.Variable.create(ValueClass.Variable(
+            # NOTE(cgp) 初期化関数を通したり面倒なことをしたくないので直接追加
+            arglist.append(ValueClass.Variable(
                 new_arg_name,
-                ValueClass.Value('', new_arg_value_type)), arglist)
-
-            # if new_arg_value_type.race == 'Dirty':
-            #     print('a')
-            #     members_list = genfunc.get_members(block.root[i*4+4].string)
-            #     arglist.extend(members_list)
+                ValueClass.Value('', new_arg_value_type)))
 
         self.name = block.root[2].string
         self.block_ind = block_ind
@@ -51,6 +47,7 @@ class Function(object):
         self.buildin = buildin
         self.fid = Function._static_id
         self.event = False
+
 
     @staticmethod
     def n2i(name):
@@ -75,6 +72,7 @@ class Function(object):
                 return idx
         return -1
 
+
     @staticmethod
     def id2i(fid):
         """Acquire a contistent function id that matches the index of Global.Funcs."""
@@ -83,32 +81,20 @@ class Function(object):
                 return i
         return -1
 
+
     # functionsに追加
     def add(self):
         """Add a function TO GLOBAL.FUNCS."""
         genfunc.dbgprint("Creating function " + self.name)
         Function._static_id += 1
-        # すでに同名の関数がある場合は古い方を上書き
+        # すでに同p名の関数がある場合は古い方を上書き
         idx = Function.n2i(self.name)
         if idx < -1:
             genfunc. err("Function '%s' is build-in function name." % self.name)
-        # elif idx != -1:
-        #     idx = Function.n2i(self.name)
-        #     Global.Funcs[idx] = self
-        #     # JS Output
-        #     # $name = (function $name(arg1, arg2 ...) {});
-        #     try:
-        #         genfunc.outnoln(
-        #                        "%s = function %s ("
-        #                         % (genfunc.expname(self.name), genfunc.expname(self.name)))
-        #         for v in self.args[-1][:-1]:
-        #             genfunc.outnoln("%s, " % v.name)
-        #         genfunc.outnoln("%s" % self.args[-1][-1].name)
-        #     except IndexError:
-        #         pass
-        #     genfunc.out(") {")
-        #     genfunc.out("});")
-        # # そうでない場合は新規作成する
+        elif idx > 0:
+            # 関数がもともとあった場合
+            genfunc.err("関数は定義されています!!")
+        # そうでない場合は新規作成する
         else:
             var = genfunc.get_var(self.name[:self.name.rfind('.')])
             Global.Funcs.append(self)
@@ -125,18 +111,23 @@ class Function(object):
                     genfunc.outnoln("$('#%s')%s" % (genfunc.expid(var.name), eventlist[idx])
                                     + "(function () {")
                     return
-        # コンストラクタは内容は出力するが、関数は出力しない
-#            elif ((not self.name[self.name.rfind('.'):] == ".__init"
-#                  and not self.name == "__init")):
-            # JS Output
-            # function $name (arg1, arg2 ...)
+
             if ((self.name[self.name.rfind('.'):] != ".__init"
                  and self.name != "__init")):
                 try:
-                    genfunc.outnoln("function %s(" % genfunc.expname(self.name))
-                    for arg_var in self.args[-1][:-1]:
+                    genfunc.outnoln("function %s("
+                                    % (''
+                                       if ((len(Global.translate_seq) > 0
+                                            and 'add_type' in Global.translate_seq[-1]))
+                                       else genfunc.expname(self.name)))
+                    without_member_args = []
+                    for arg in self.args[-1]:
+                        # NOTE(cgp) JS出力の際にdirty型のメンバは出力しないようにする。
+                        if not '.' in arg.name:
+                            without_member_args.append(arg)
+                    for arg_var in without_member_args[:-1]:
                         genfunc.outnoln("%s, " % arg_var.name)
-                    genfunc.outnoln("%s" % self.args[-1][-1].name)
+                    genfunc.outnoln("%s" % without_member_args[-1].name)
                 except IndexError:
                     pass
                 genfunc.outnoln(") {")
@@ -151,6 +142,7 @@ class Function(object):
             if not genfunc.RUN(Global.lines[Global.exel-1].tokens): break
             if Global.exel-1 >= len(Global.lines)-1: break
             Global.exel += 1
+
 
     # 関数の処理の実行、戻り値はこの関数の戻り値としてValue型で返される
     def run(self, args):

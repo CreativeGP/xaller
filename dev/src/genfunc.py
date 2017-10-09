@@ -11,6 +11,7 @@ from terminaltables import AsciiTable
 
 import TokenClass
 import ValueClass
+import WebClass
 import FunctionClass
 import Global
 import buildinfunc
@@ -131,19 +132,30 @@ def outbuf(string):
     """Add a text behind Global.jsbuf."""
     Global.jsbuf += string
 
+
 def expid(string):
     """Convert a xaller string into an valid string for HTML."""
     return string.replace('.', '-')
 
+
 def expname(string):
     """Convert a xaller variable name into an valid string for JS."""
-    return string.replace('.', '$')
+    # NOTE(cgp) this.をつけて返すようにする
+    string = string.replace('.', '.')
+    if ((len(Global.translate_seq) > 0
+         and 'add_type' in Global.translate_seq[-1])):
+        # NOTE(cgp) ドットが２個続けて出力されることがあったのでそのようなことがないように
+        # こっちで調整する
+        string = "this" + ('' if string[0] == '.' else '.') + string
+    return string
+
 
 def expvalue(val):
     """Convert a xaller value into an valid string for JS."""
     return (S(val.string)
-            if val.type.race == 'String' or val.type.race == 'Dirty' else
+            if val.type.race == 'String' else
             val.string)
+
 
 def create_external(name, pos):
     """Output a JS code creating a DOM variable."""
@@ -243,6 +255,12 @@ def log_ts(string, tknlst):
     dbgprintnoln("\n")
 
 
+def get_end(ilist):
+    if len(ilist) > 0:
+        return ilist[-1]
+    return None
+
+
 def get_block_idx(line):
     """Retrieve an index of block that matches the line."""
     for i, block in enumerate(Global.blocks):
@@ -256,7 +274,21 @@ def get_var(string, care=True):
     """Retrieve a variable that matches the string."""
     if ((care
          and len(Global.tfs) > 0
-         and Global.tfs[-1] is not None)):
+         and Global.tfs[-1] is not None
+         and len(Global.translate_seq) > 0
+         and 'add_type' in Global.translate_seq[-1])):
+        # NOTE(cpg) 型定義の時で関数翻訳時にドットをthis.に変える。
+        defining_type_name = Global.translate_seq[-1].replace("add_type:", '')
+        # TODO(cgp) this.を出力
+        # if string[0] == '.':
+        #     string = 'this' + string
+        for var in get_value_type(defining_type_name).variables:
+            if string[1:] == var.name:
+                return var
+    elif ((care
+           and len(Global.tfs) > 0
+           and Global.tfs[-1] is not None)):
+        # NOTE(cgp) __init関数の出力の際に必要
         runf = Global.tfs[-1]
         tmp = ''
         if string[0] == '.': tmp = runf.name[:runf.name.rfind(".")]
@@ -267,6 +299,7 @@ def get_var(string, care=True):
         for var in runf.vars[-1]:
             if string == var.name:
                 return var
+
     elif Global.fs[-1] != -1:
         runf = Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])]
         if string[0] == '.':
@@ -295,9 +328,44 @@ def get_var(string, care=True):
     return None
 
 
+def is_adding_type():
+    return ((len(Global.translate_seq) > 0
+             and 'add_type' in Global.translate_seq[-1]))
+
+
+def get_adding_type_name():
+    if is_adding_type():
+        return Global.translate_seq[-1].replace("add_type:", "")
+
 def is_var_exists(string):
     """Returns true if the variable that matches a string exists."""
     return get_var(string) is not None
+
+
+def is_func_exists(string):
+    """Returns true if the function that matches a string exists."""
+    for func in Global.Funcs:
+        if func.name == string:
+            return True
+    if is_adding_type():
+        for func in get_value_type(get_adding_type_name()).functions:
+            print(func.name)
+            # NOTE(cgp) .が邪魔なのでそれを取り除いてもじれつを比較
+            if func.name == string[1:]:
+                return True
+    return False
+
+def get_func(string):
+    """Returns true if the function that matches a string exists."""
+    for func in Global.Funcs:
+        if func.name == string:
+            return func
+    if is_adding_type():
+        for func in get_value_type(get_adding_type_name()).functions:
+            # NOTE(cgp) .が邪魔なのでそれを取り除いてもじれつを比較
+            if func.name == string[1:]:
+                return func
+    return None
 
 
 # 親の名前からそのスコープから見える変数すべてのそのメンバを返す(ValueClass.Variable[])
@@ -319,12 +387,14 @@ def get_members(parent_name):
     return res
 
 
-def get_default_value(value_type):
+def get_default_value(value_type, if_dirty_name=''):
     """Retrieve the default value of the type."""
     value_race = value_type.race
     if value_race == 'Integer': return ValueClass.Value('0', value_type)
     if value_race == 'String': return ValueClass.Value('', value_type)
     if value_race == 'Boolean': return ValueClass.Value('false', value_type)
+    if value_race == 'Dirty': return ValueClass.Value(
+            'new ' + value_type.name + '("' + if_dirty_name + '")', value_type)
     return ValueClass.Value('', value_type)
 
 
@@ -403,6 +473,7 @@ def buildin_casting(value, nextvt):
 def cast_value(value, nextvt):
     """Conver a value type."""
     res = value
+    cast_func_name = '__%s_%s' % (value.type.name, nextvt.name)
     user_cast_func_idx = FunctionClass.Function.n2i(
         '__%s_%s' % (value.type.name, nextvt.name))
     if ((Global.fs[-1] == user_cast_func_idx
@@ -469,15 +540,17 @@ def out_expression(token_list, get_string=False):
         return
 
     # NOTE(cgp) 関数ではない呼び出し
-    if ((len(token_list) == 3 or len(token_list) == 4
+    if (((len(token_list) == 3 or len(token_list) == 4)
          and token_list[0].string == '('
-         and token_list[2].string == ')')):
+         and token_list[2].string == ')'
+         and not is_func_exists(token_list[1].string))):
+        # TODO(cgp) is_var_exists関数とかぶっているので、下を消す方向で
         if FunctionClass.Function.n2i(token_list[1].string) == -1:
             cast = ''
             if len(token_list) == 4:
                 cast = get_value_type(token_list[3].string).race
 
-            outnoln((GLobal.jstypes[get_var(token_list[1].string).value.type.race]
+            outnoln((Global.jstypes[get_var(token_list[1].string).value.type.race]
                      if cast == '' else
                      Global.jstypes[cast]) + "(")
 
@@ -733,6 +806,12 @@ def add_type(block_ind):
     """Create new type."""
     inh_count = int((len(Global.blocks[block_ind].root) - 4) / 2)
     new_type = ValueClass.Type(Global.blocks[block_ind].root[2].string, 'Dirty')
+    # NOTE(cgp) この関数内でドットを変更するので、先に追加しておく
+    Global.vtypes.append(new_type)
+
+    dbgprint("SEQENCE >>> add_type")
+    Global.translate_seq.append('add_type:' + new_type.name)
+
     if new_type.race != 'Dirty':
         err("Pure type couldn't have members.")
     dbgprintnoln(("New type '%s' inheritanced by type"
@@ -756,29 +835,46 @@ def add_type(block_ind):
                 if new_type_member.name == var.name:
                     del new_type_member
         new_type.variables.extend(tmp.variables)
+
         for func in tmp.functions:
             for new_type_member_func in new_type.functions:
                 if new_type_member_func.name == func.name:
                     del new_type_member_func
         new_type.functions.extend(tmp.functions)
+
     dbgprint("")
 
+    # function Letter (name) {
+    #     var me = this;
+    #     me.__name = name;
+    #     $("body").append("<span id='"+me.__name+"'>a</span>");
+    #     me.__element = $("#"+me.__name);
+    #     me._onclick = function(e) {
+    #         me.onclick(this, e);
+    #     }
+    # }
+
+    # Letter.prototype = {
+    #     bind: function($target) {
+    #         $target.click(this._onclick);
+    #     },
+    #     onclick: function(sender, evt) {
+    #         this.__element.html("c");
+    #     }
+    # };
+    out("function %s (name) {" % new_type.name)
+    out("var me = this;")
+    out("me.__name = name;")
+    
     token_list = []
+    out_varcreation = lambda name, type: (
+        out("me.%s = %s;"
+            % (name, expvalue(get_default_value(type, name)))))
+
     for token in Global.blocks[block_ind].body:
         token_list.append(token)
         if token.ttype.Return:
-            # 関数作成 ^ @ ( name arg )
             if len(token_list) >= 4 and \
-               is_plain(token_list[0]) and token_list[0].string == "@" and \
-               is_plain(token_list[1]) and token_list[1].string == "(" and \
-               is_plain(token_list[-1]) and token_list[-1].string == ")":
-                for i, block in enumerate(Global.blocks):
-                    if block.root[0].line == token.line:
-                        new_type.functions.append(FunctionClass.Function(i))
-                        Global.exel = block.body[-1].line
-                        break
-
-            elif len(token_list) >= 4 and \
                  is_plain(token_list[0]) and token_list[0].string == '(' and \
                  is_plain(token_list[1]) and \
                  is_plain(token_list[2]) and token_list[2].string == ')' and \
@@ -787,7 +883,8 @@ def add_type(block_ind):
                 if value_type is None:
                     err("Undefined type '%s'." % token_list[3].string)
                 new_type.variables.append(ValueClass.Variable(
-                    token_list[1].string, get_default_value(value_type)))
+                    token_list[1].string,
+                    get_default_value(value_type)))
 
             elif len(token_list) >= 5 and \
                  is_plain(token_list[0]) and token_list[0].string == '+' and \
@@ -798,11 +895,100 @@ def add_type(block_ind):
                 value_type = get_value_type(token_list[4].string)
                 if value_type is None:
                     err("Undefined type '%s'." % token_list[4].string)
-                ValueClass.Variable.create(ValueClass.Variable(
-                    token_list[2].string, get_default_value(value_type)),
-                                           new_type.variables, True)
+                new_type.variables.append(ValueClass.Variable(
+                    token_list[2].string,
+                    get_default_value(value_type)))
+                # ValueClass.Variable.create(ValueClass.Variable(
+                #     token_list[2].string, get_default_value(value_type)),
+                #                            new_type.variables, True)
             del token_list[:]
-    Global.vtypes.append(new_type)
+
+    for var in new_type.variables:
+        # NOTE(cgp): We can't call ValueClass.Variable.create() to ouput
+        # JS code creating variable. Instead, call out_varcreation(), the local
+        # function defined in this function.
+        out_varcreation(var.name, var.value.type)
+        if var.name == '_web':
+            out('me.__element = $("#"+me.__name);')
+
+    # NOTE(cgp) Output of type definition is processed in this function.
+    # Here is the end of output of type definition.
+    out("}")
+
+    for token in Global.blocks[block_ind].body:
+        token_list.append(token)
+        if token.ttype.Return:
+            # 関数作成 ^ @ ( name arg )
+            if len(token_list) >= 4 and \
+               is_plain(token_list[0]) and token_list[0].string == "@" and \
+               is_plain(token_list[1]) and token_list[1].string == "(" and \
+               is_plain(token_list[-1]) and token_list[-1].string == ")":
+                for i, block in enumerate(Global.blocks):
+                    if block.root[0].line == token.line:
+                        func = FunctionClass.Function(i)
+                        # NOTE(cgp) 型の関数リストに入れておく
+                        new_type.functions.append(func)
+            del token_list[:]
+
+    normal_funcs = []
+    init_funcs = []
+    for func in new_type.functions:
+        if func.name == "__init":
+            init_funcs.append(func)
+            new_type.blocks_for_init.append(Global.blocks[func.block_ind])
+        else:
+            normal_funcs.append(func)
+
+    # NOTE(cgp) 継承元のコンストラクタはまとめて一つの関数として出力
+    if len(init_funcs) > 0:
+        outnoln(new_type.name + ".prototype.%s = " % init_funcs[0].name)
+        # HACK(cgp) Global.Varsに無名関数を追加することになるコード
+        tmp_funcs = copy.deepcopy(init_funcs[0])
+        tmp_funcs.name = ''
+        tmp_funcs.add()
+        out("")
+        for func in init_funcs:
+            Global.tfs.append(func)
+            exel = Global.blocks[func.block_ind].body[0].line
+            # 関数内容を出力
+            while True:
+                translate(Global.lines[exel].tokens)
+                # NOTE(cgp) 最後の閉じ括弧まで読み込まないようにする
+                if exel == Global.blocks[func.block_ind].body[-1].line - 2:
+                    Global.tfs.pop()
+                    break
+                exel += 1
+            # new_func = FunctionClass.Function(i)
+            # # NOTE(cgp) For js output.
+            # new_type.functions.append(new_func)
+            Global.exel = Global.blocks[func.block_ind].body[-1].line
+        out("}")
+        
+    for func in normal_funcs:
+        outnoln(new_type.name + ".prototype.%s = " % func.name)
+        # HACK(cgp) Global.Varsに無名関数を追加することになるコード
+        tmp_func = copy.deepcopy(func)
+        tmp_func.name = ''
+        tmp_func.add()
+        out("")
+        exel = Global.blocks[func.block_ind].body[0].line
+        # 関数内容を出力
+        while True:
+            translate(Global.lines[exel].tokens)
+
+            # NOTE(cgp) 最後の閉じ括弧まで読み込む
+            if exel == Global.blocks[func.block_ind].body[-1].line - 1:
+                break
+            exel += 1
+        # new_func = FunctionClass.Function(i)
+        # # NOTE(cgp) For js output.
+        # new_type.functions.append(new_func)
+        Global.exel = Global.blocks[func.block_ind].body[-1].line
+        
+    out("")
+
+    Global.translate_seq.pop()
+    dbgprint("SEQENCE <<<")
 
 
 def get_js_indent_level():
@@ -851,6 +1037,7 @@ def translate(token_list, static_default=None):
             out("}")
         Global.tfs.pop()
         return 1
+
     # NOTE: この先具体的な構文処理：returnしているところはJSへのセミコロン出力を防ぐため
     if ((len(run_tokens) > 0
          and is_plain(run_tokens[0])
@@ -917,7 +1104,9 @@ def translate(token_list, static_default=None):
        is_plain(run_tokens[-1]) and run_tokens[-1].string == ")":
         for i, block in enumerate(Global.blocks):
             if block.root[0].line == run_tokens[0].line:
-                FunctionClass.Function(i).add()
+                new_func = FunctionClass.Function(i)
+                new_func.add()
+#                new_func.outjs()
                 Global.exel += 1
                 break
         out("")
