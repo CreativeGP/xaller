@@ -473,6 +473,7 @@ def buildin_casting(value, nextvt):
 def cast_value(value, nextvt):
     """Conver a value type."""
     res = value
+    cast_func_name = '__%s_%s' % (value.type.name, nextvt.name)
     user_cast_func_idx = FunctionClass.Function.n2i(
         '__%s_%s' % (value.type.name, nextvt.name))
     if ((Global.fs[-1] == user_cast_func_idx
@@ -1036,7 +1037,8 @@ def translate(token_list, static_default=None):
             out("}")
         Global.tfs.pop()
         return 1
-    # NOTE: nnこの先具体的な構文処理：returnしているところはJSへのセミコロン出力を防ぐため
+
+    # NOTE: この先具体的な構文処理：returnしているところはJSへのセミコロン出力を防ぐため
     if ((len(run_tokens) > 0
          and is_plain(run_tokens[0])
          and run_tokens[0].string == 'return')):
