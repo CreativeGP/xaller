@@ -28,6 +28,7 @@ class Type(object):
         self.race = race
         self.variables = []
         self.functions = []
+        self.blocks_for_init = []
 
 
 class Value(object):
@@ -162,61 +163,11 @@ class Variable(object):
         # 型にメンバがある場合はそれも実際に作成
         for member in var.value.type.variables:
             # NOTE(cgp) Don't output member variable definition.
+            print(member.name)
             ValueClass.Variable.create(
                 ValueClass.Variable(var.name + "." + member.name,
                                     genfunc.get_default_value(member.value.type)),
                 variables, external, jsout=False)
-
-        # for func in var.value.type.functions:
-        #     new = copy.deepcopy(func)
-        #     func = FunctionClass.Function(new.block_ind)
-        #     func.name = var.name+"."+new.name
-        #     func.add()
-        #     exel = Global.blocks[func.block_ind].body[0].line
-        #     genfunc.out("")
-        #     # 関数内容を出力
-        #     while True:
-        #         genfunc.translate(Global.lines[exel].tokens)
-
-        #         # NOTE(cgp) 最後の閉じ括弧まで読み込む
-        #         if exel == Global.blocks[func.block_ind].body[-1].line - 1:
-        #             if func.name[func.name.rfind('.'):] != '.__init':
-        #                 pass
-        #             else:
-        #                 if external:
-        #                     variables[-1].external = True
-        #                     Global.wobs.append(WebClass.WebObject(var, pos))
-        #                     Global.wobs[-1].create()
-        #             break
-        #         exel += 1
-        
-#         # TODO(cgp) 変数のメンバ関数が作られない
-#         for func in var.value.type.functions:
-#             if func.name == '__init':
-#                 new = copy.deepcopy(func)
-#                 func = FunctionClass.Function(new.block_ind)
-#                 func.name = var.name+"."+new.name
-#                 func.add()
-#                 exel = Global.blocks[func.block_ind].body[0].line
-#                 genfunc.out("")
-#                 # 関数内容を出力
-#                 while True:
-#                     genfunc.translate(Global.lines[exel].tokens)
-
-#                     # NOTE(cgp) 最後の閉じ括弧まで読み込む
-#                     if exel == Global.blocks[func.block_ind].body[-1].line - 1:
-#                         if func.name[func.name.rfind('.'):] != '.__init':
-#                             pass
-#                         else:
-#                             if external:
-#                                 variables[-1].external = True
-#                                 Global.wobs.append(WebClass.WebObject(var, pos))
-#                                 Global.wobs[-1].create()
-#                         break
-#                     exel += 1
-# #                genfunc.out(var.name + '.' + func.name + '();')
-#                 # NOTE(cgp) __init関数は一つにまとめられているので１回しか出力しないようにする
-#                 break
 
         for func in var.value.type.functions:
             if func.name == '__init':
@@ -225,15 +176,23 @@ class Variable(object):
                 # DOM出力ができないから。
                 #                genfunc.out(var.name + '.' + func.name + '();')
                 # NOTE(cgp) __init関数は一つにまとめられているので１回しか出力しないようにする
+                # flag = False
+                # tmp = []
+                # for idx, tkn in enumerate(Global.tokens):
+                #     tmp.append(tkn)
+                #     if tkn.ttype.Return:
+                #         if line == var.value.type.name + ".prototype.__init = function () {":
+                #             flag = True
                 tmp = []
                 func.name = var.name + "." + func.name
                 Global.tfs.append(func)
-                for tkn in Global.blocks[func.block_ind].body[1:-1]:
-                    tmp.append(tkn)
-                    if tkn.ttype.Return:
-                        genfunc.log_ts("tmp", tmp)
-                        genfunc.translate(tmp)
-                        del tmp[:]
+                for init_block in var.value.type.blocks_for_init:
+                    for tkn in init_block.body[1:-1]:
+                        tmp.append(tkn)
+                        if tkn.ttype.Return:
+                            genfunc.log_ts("tmp", tmp)
+                            genfunc.translate(tmp)
+                            del tmp[:]
                 Global.tfs.pop()
                 break
 

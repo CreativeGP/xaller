@@ -53,7 +53,7 @@
     (backcolor)string
 
     @ (__init) {
-	._web = 'Button'
+	._web = 'Letter'
     }
 }
 

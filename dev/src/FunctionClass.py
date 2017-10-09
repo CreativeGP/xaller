@@ -52,6 +52,7 @@ class Function(object):
         self.fid = Function._static_id
         self.event = False
 
+
     @staticmethod
     def n2i(name):
         """Acquire an index of Global.Funcs that matches the name."""

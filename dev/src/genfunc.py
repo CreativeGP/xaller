@@ -255,6 +255,12 @@ def log_ts(string, tknlst):
     dbgprintnoln("\n")
 
 
+def get_end(ilist):
+    if len(ilist) > 0:
+        return ilist[-1]
+    return None
+
+
 def get_block_idx(line):
     """Retrieve an index of block that matches the line."""
     for i, block in enumerate(Global.blocks):
@@ -924,14 +930,33 @@ def add_type(block_ind):
                         new_type.functions.append(func)
             del token_list[:]
 
+    # # NOTE(cgp) __init関数がない場合もダミーを作る（変数作成時に絶対呼ばれるため）
+    # special_init = None
+    # last = get_end(new_type.functions)
+    # if last is None:
+    #     new_func = FunctionClass.Function()
+    #     new_func.name = "__init"
+    #     special_init = new_func
+    #     new_type.functions.append(special_init)
+    # for func in new_type.functions:
+    #     if func.name == "__init":
+    #         special_init = func
+    #         break
+    #     if func is last:
+    #         new_func = FunctionClass.Function()
+    #         new_func.name = "__init"
+    #         special_init = new_func
+    #         new_type.functions.append(special_init)
+
     normal_funcs = []
     init_funcs = []
     for func in new_type.functions:
         if func.name == "__init":
             init_funcs.append(func)
+            new_type.blocks_for_init.append(Global.blocks[func.block_ind])
         else:
             normal_funcs.append(func)
-    
+
     # NOTE(cgp) 継承元のコンストラクタはまとめて一つの関数として出力
     if len(init_funcs) > 0:
         outnoln(new_type.name + ".prototype.%s = " % init_funcs[0].name)
@@ -946,7 +971,6 @@ def add_type(block_ind):
             # 関数内容を出力
             while True:
                 translate(Global.lines[exel].tokens)
-
                 # NOTE(cgp) 最後の閉じ括弧まで読み込まないようにする
                 if exel == Global.blocks[func.block_ind].body[-1].line - 2:
                     Global.tfs.pop()
@@ -979,7 +1003,6 @@ def add_type(block_ind):
         # new_type.functions.append(new_func)
         Global.exel = Global.blocks[func.block_ind].body[-1].line
         
-
     out("")
 
     Global.translate_seq.pop()
