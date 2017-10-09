@@ -293,7 +293,6 @@ def get_var(string, care=True):
         tmp = ''
         if string[0] == '.': tmp = runf.name[:runf.name.rfind(".")]
         string = tmp + string
-        print(string)
         for var in runf.args[-1]:
             if string == var.name:
                 return var
@@ -869,7 +868,7 @@ def add_type(block_ind):
     token_list = []
     out_varcreation = lambda name, type: (
         out("me.%s = %s;"
-            % (name, expvalue(get_default_value(type)))))
+            % (name, expvalue(get_default_value(type, name)))))
 
     for token in Global.blocks[block_ind].body:
         token_list.append(token)
@@ -929,24 +928,6 @@ def add_type(block_ind):
                         # NOTE(cgp) 型の関数リストに入れておく
                         new_type.functions.append(func)
             del token_list[:]
-
-    # # NOTE(cgp) __init関数がない場合もダミーを作る（変数作成時に絶対呼ばれるため）
-    # special_init = None
-    # last = get_end(new_type.functions)
-    # if last is None:
-    #     new_func = FunctionClass.Function()
-    #     new_func.name = "__init"
-    #     special_init = new_func
-    #     new_type.functions.append(special_init)
-    # for func in new_type.functions:
-    #     if func.name == "__init":
-    #         special_init = func
-    #         break
-    #     if func is last:
-    #         new_func = FunctionClass.Function()
-    #         new_func.name = "__init"
-    #         special_init = new_func
-    #         new_type.functions.append(special_init)
 
     normal_funcs = []
     init_funcs = []

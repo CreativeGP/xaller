@@ -36,7 +36,7 @@ class Function(object):
             new_arg_name = block.root[i*4+4].string
             ValueClass.Variable.create(ValueClass.Variable(
                 new_arg_name,
-                ValueClass.Value('', new_arg_value_type)), arglist)
+                ValueClass.Value('', new_arg_value_type)), arglist, jsout=False)
 
             # if new_arg_value_type.race == 'Dirty':
             #     print('a')

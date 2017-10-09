@@ -150,6 +150,7 @@ class Variable(object):
             var.value.string = var.name
         value_type = genfunc.get_value_type(var.value.type.name)
         if jsout:
+            print(var.name)
             genfunc.out("var %s = %s;"
                         % (var.name.replace('.', '$'),
                            genfunc.expvalue(genfunc.get_default_value(value_type, var.name))))
@@ -163,7 +164,6 @@ class Variable(object):
         # 型にメンバがある場合はそれも実際に作成
         for member in var.value.type.variables:
             # NOTE(cgp) Don't output member variable definition.
-            print(member.name)
             ValueClass.Variable.create(
                 ValueClass.Variable(var.name + "." + member.name,
                                     genfunc.get_default_value(member.value.type)),
@@ -174,15 +174,7 @@ class Variable(object):
                 # NOTE(cgp) __init関数は呼ばないで直接書かなければならない。
                 # なぜなら、その中で行われる_web変数の変更をXallerが動的に読み込まなければ
                 # DOM出力ができないから。
-                #                genfunc.out(var.name + '.' + func.name + '();')
-                # NOTE(cgp) __init関数は一つにまとめられているので１回しか出力しないようにする
-                # flag = False
-                # tmp = []
-                # for idx, tkn in enumerate(Global.tokens):
-                #     tmp.append(tkn)
-                #     if tkn.ttype.Return:
-                #         if line == var.value.type.name + ".prototype.__init = function () {":
-                #             flag = True
+                # genfunc.out(var.name + '.' + func.name + '();')
                 tmp = []
                 func.name = var.name + "." + func.name
                 Global.tfs.append(func)
@@ -191,7 +183,7 @@ class Variable(object):
                         tmp.append(tkn)
                         if tkn.ttype.Return:
                             genfunc.log_ts("tmp", tmp)
-                            genfunc.translate(tmp)
+                            if jsout: genfunc.translate(tmp)
                             del tmp[:]
                 Global.tfs.pop()
                 break
@@ -199,7 +191,6 @@ class Variable(object):
         if external:
             variables[-1].external = True
             Global.wobs.append(WebClass.WebObject(var.name, pos))
-            print('webout')
             Global.wobs[-1].create()
 
         # TODO: コンストラクタを呼び出す
