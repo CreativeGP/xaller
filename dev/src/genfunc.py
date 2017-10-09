@@ -11,6 +11,7 @@ from terminaltables import AsciiTable
 
 import TokenClass
 import ValueClass
+import WebClass
 import FunctionClass
 import Global
 import buildinfunc
@@ -278,17 +279,22 @@ def get_var(string, care=True):
         for var in get_value_type(defining_type_name).variables:
             if string[1:] == var.name:
                 return var
+    elif ((care
+           and len(Global.tfs) > 0
+           and Global.tfs[-1] is not None)):
+        # NOTE(cgp) __init関数の出力の際に必要
+        runf = Global.tfs[-1]
+        tmp = ''
+        if string[0] == '.': tmp = runf.name[:runf.name.rfind(".")]
+        string = tmp + string
+        print(string)
+        for var in runf.args[-1]:
+            if string == var.name:
+                return var
+        for var in runf.vars[-1]:
+            if string == var.name:
+                return var
 
-#         runf = Global.tfs[-1]
-# #        tmp = 'this'
-#         if string[0] == '.': tmp = runf.name[:runf.name.rfind(".")]
-#         string = tmp + string
-#         for var in runf.args[-1]:
-#             if string == var.name:
-#                 return var
-#         for var in runf.vars[-1]:
-#             if string == var.name:
-#                 return var
     elif Global.fs[-1] != -1:
         runf = Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])]
         if string[0] == '.':

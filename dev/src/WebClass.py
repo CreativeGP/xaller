@@ -34,9 +34,10 @@ class WebObject:
     def create(self):
         """Output a JS code creating a DOM variable."""
         # HACK: ここのコードだけ継承されても型を識別できるように特別な変数だけ動的に参照するようにしている
-        typename = ''
+        type_name = ""
         if genfunc.is_var_exists(self.name + "._web"):
-            typename = genfunc.get_var(self.name + "._web").value.string
+            type_name = genfunc.get_var(self.name + "._web").value.string
+        print(type_name)
 
         selector = ""
         func = ""
@@ -56,8 +57,8 @@ class WebObject:
         else:
             selector = "#" + self.pos[self.pos.find(" ")+1:]
 
-        if typename in WebObject.html_tag_names:
-            tagname = WebObject.html_tag_names[typename]
+        if type_name in WebObject.html_tag_names:
+            tagname = WebObject.html_tag_names[type_name]
             opentag = True
             closetag = True
 
@@ -72,7 +73,7 @@ class WebObject:
             if opentag:
                 genfunc.outnoln('<%s id=%s>'
                                % (tagname,
-                                   genfunc.S(genfunc.expname(self.name))))
+                                  genfunc.S(genfunc.expname(self.name))))
             if closetag:
                 genfunc.outnoln('</%s>' % tagname)
             genfunc.out('");')
