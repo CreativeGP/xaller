@@ -150,7 +150,6 @@ class Variable(object):
             var.value.string = var.name
         value_type = genfunc.get_value_type(var.value.type.name)
         if jsout:
-            print(var.name)
             genfunc.out("var %s = %s;"
                         % (var.name.replace('.', '$'),
                            genfunc.expvalue(genfunc.get_default_value(value_type, var.name))))
@@ -192,6 +191,13 @@ class Variable(object):
             variables[-1].external = True
             Global.wobs.append(WebClass.WebObject(var.name, pos))
             Global.wobs[-1].create()
+
+        for func in var.value.type.functions:
+            if "." + func.name in Global.eventlist:
+                # イベント関数の場合
+                eventname = Global.eventlist[Global.eventlist.index("." + func.name)][1:]
+                genfunc.out("$('#%s').%s(%s._%s);" % (
+                    var.name, eventname, var.name, eventname))
 
         # TODO: コンストラクタを呼び出す
         # NOTE: コンストラクタの静的な呼び出しは上のコードで終わっている

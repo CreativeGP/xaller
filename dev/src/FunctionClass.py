@@ -100,15 +100,10 @@ class Function(object):
             Global.Funcs.append(self)
             Global.tfs.append(self)
             if genfunc.is_var_web(var):
-                eventlist = ['.blur', '.click', '.change', '.ctxmenu',
-                             '.dbclick', '.error', '.focus', '.focusin',
-                             '.focusout', '.hover', '.load', '.ready',
-                             '.scroll', '.resize', '.select', '.submit',
-                             '.unload']
                 if self.name[self.name.rfind('.'):] in eventlist:
                     self.event = True
-                    idx = eventlist.index(self.name[self.name.rfind('.'):])
-                    genfunc.outnoln("$('#%s')%s" % (genfunc.expid(var.name), eventlist[idx])
+                    idx = Global.eventlist.index(self.name[self.name.rfind('.'):])
+                    genfunc.outnoln("$('#%s')%s" % (genfunc.expid(var.name), Global.eventlist[idx])
                                     + "(function () {")
                     return
 
@@ -117,14 +112,20 @@ class Function(object):
                 try:
                     genfunc.outnoln("function %s("
                                     % (''
-                                       if ((len(Global.translate_seq) > 0
-                                            and 'add_type' in Global.translate_seq[-1]))
+                                       if genfunc.is_adding_type()
                                        else genfunc.expname(self.name)))
+
                     without_member_args = []
                     for arg in self.args[-1]:
                         # NOTE(cgp) JS出力の際にdirty型のメンバは出力しないようにする。
                         if not '.' in arg.name:
                             without_member_args.append(arg)
+
+                    if ((len(Global.translate_seq[-1]) > 0
+                         and "type:evfunc" in Global.translate_seq[-1])):
+                        eventname = Global.translate_seq[-1].replace("type:evfunc", '')
+                        genfunc.outnoln("self")
+
                     for arg_var in without_member_args[:-1]:
                         genfunc.outnoln("%s, " % arg_var.name)
                     genfunc.outnoln("%s" % without_member_args[-1].name)

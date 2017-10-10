@@ -33,6 +33,13 @@ html_rule_file_path = os.path.dirname(os.path.abspath(__file__)) + '/html_rules.
 #     "../test/",
 #     ]
 
+eventlist = ['.blur', '.click', '.change', '.ctxmenu',
+             '.dbclick', '.error', '.focus', '.focusin',
+             '.focusout', '.hover', '.load', '.ready',
+             '.scroll', '.resize', '.select', '.submit',
+             '.unload']
+
+
 buildin_func_names = [
 '+', '-', '*', '/',
 '%', 'neg', 'and', 'or',

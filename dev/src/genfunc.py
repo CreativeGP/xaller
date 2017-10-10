@@ -142,11 +142,14 @@ def expname(string):
     """Convert a xaller variable name into an valid string for JS."""
     # NOTE(cgp) this.をつけて返すようにする
     string = string.replace('.', '.')
-    if ((len(Global.translate_seq) > 0
-         and 'add_type' in Global.translate_seq[-1])):
-        # NOTE(cgp) ドットが２個続けて出力されることがあったのでそのようなことがないように
-        # こっちで調整する
-        string = "this" + ('' if string[0] == '.' else '.') + string
+    class_name = "this"
+    if is_adding_type():
+        if Global.translate_seq[-1] == 'add_type:evfunc':
+            class_name = "self"
+        else:
+            # NOTE(cgp) ドットが２個続けて出力されることがあったのでそのようなことがないように
+            # こっちで調整する
+            string = class_name + ('' if string[0] == '.' else '.') + string
     return string
 
 
@@ -275,14 +278,12 @@ def get_var(string, care=True):
     if ((care
          and len(Global.tfs) > 0
          and Global.tfs[-1] is not None
-         and len(Global.translate_seq) > 0
-         and 'add_type' in Global.translate_seq[-1])):
+         and is_adding_type())):
+         # and len(Global.translate_seq) > 0
+         # and 'add_type' in Global.translate_seq[-1])):
         # NOTE(cpg) 型定義の時で関数翻訳時にドットをthis.に変える。
         defining_type_name = Global.translate_seq[-1].replace("add_type:", '')
-        # TODO(cgp) this.を出力
-        # if string[0] == '.':
-        #     string = 'this' + string
-        for var in get_value_type(defining_type_name).variables:
+        for var in get_value_type(get_adding_type_name()).variables:
             if string[1:] == var.name:
                 return var
     elif ((care
@@ -329,13 +330,20 @@ def get_var(string, care=True):
 
 
 def is_adding_type():
-    return ((len(Global.translate_seq) > 0
-             and 'add_type' in Global.translate_seq[-1]))
+    if len(Global.translate_seq) == 0:
+        return False
+    if 'add_type' in ''.join(Global.translate_seq):
+        return True
+    return False
 
 
 def get_adding_type_name():
     if is_adding_type():
-        return Global.translate_seq[-1].replace("add_type:", "")
+        for seq in Global.translate_seq[::-1]:
+            if 'add_type' in seq:
+                return seq.replace("add_type:", "")
+    return ''
+
 
 def is_var_exists(string):
     """Returns true if the variable that matches a string exists."""
@@ -354,6 +362,7 @@ def is_func_exists(string):
             if func.name == string[1:]:
                 return True
     return False
+
 
 def get_func(string):
     """Returns true if the function that matches a string exists."""
@@ -849,16 +858,16 @@ def add_type(block_ind):
     #     me.__name = name;
     #     $("body").append("<span id='"+me.__name+"'>a</span>");
     #     me.__element = $("#"+me.__name);
-    #     me._onclick = function(e) {
-    #         me.onclick(this, e);
+    #     me._click = functi(e) {
+    #         me.click(this, e);
     #     }
     # }
 
     # Letter.prototype = {
-    #     bind: function($target) {
-    #         $target.click(this._onclick);
+    #     bind: functi($target) {
+    #         $target.click(this._click);
     #     },
-    #     onclick: function(sender, evt) {
+    #     click: functi(sender, evt) {
     #         this.__element.html("c");
     #     }
     # };
@@ -911,10 +920,6 @@ def add_type(block_ind):
         if var.name == '_web':
             out('me.__element = $("#"+me.__name);')
 
-    # NOTE(cgp) Output of type definition is processed in this function.
-    # Here is the end of output of type definition.
-    out("}")
-
     for token in Global.blocks[block_ind].body:
         token_list.append(token)
         if token.ttype.Return:
@@ -932,12 +937,46 @@ def add_type(block_ind):
 
     normal_funcs = []
     init_funcs = []
+    event_funcs = []
     for func in new_type.functions:
         if func.name == "__init":
             init_funcs.append(func)
             new_type.blocks_for_init.append(Global.blocks[func.block_ind])
+        elif "." + func.name in Global.eventlist:
+            eventname = Global.eventlist[Global.eventlist.index("." + func.name)][1:]
+            out("""
+me._%s = function () {
+me.%s(me);
+};""" % (eventname, eventname))
+            event_funcs.append(func)
         else:
             normal_funcs.append(func)
+
+    # NOTE(cgp) Output of type definition is processed in this function.
+    # Here is the end of output of type definition.
+    out("}")
+
+    for func in event_funcs:
+        # NOTE(cpg) 翻訳モードを[type:evfunc]にする
+        # これは本来はthisを出力するところをselfとしたりするexpname()の
+        # 処理変更に必要になってくる
+        Global.translate_seq.append("type:evfunc:" + func.name)
+        outnoln(new_type.name + ".prototype.%s = " % func.name)
+        # HACK(cgp) Global.Varsに無名関数を追加することになるコード
+        tmp_func = copy.deepcopy(func)
+        tmp_func.name = ''
+        tmp_func.add()
+        out("")
+        exel = Global.blocks[func.block_ind].body[0].line
+        # 関数内容を出力
+        while True:
+            translate(Global.lines[exel].tokens)
+            # NOTE(cgp) 最後の閉じ括弧まで読み込む
+            if exel == Global.blocks[func.block_ind].body[-1].line - 1:
+                break
+            exel += 1
+        Global.exel = Global.blocks[func.block_ind].body[-1].line
+        Global.translate_seq.pop()
 
     # NOTE(cgp) 継承元のコンストラクタはまとめて一つの関数として出力
     if len(init_funcs) > 0:
@@ -1572,3 +1611,10 @@ def report():
     dbgprint("\nVALUE TYPES: "+str(len(Global.vtypes)))
     for vtype in Global.vtypes:
         dbgprint(vtype.race + ":" + vtype.name)
+        dbgprint("variables >")
+        for var in vtype.variables:
+            dbgprint(var.name)
+        dbgprint("func >")
+        for func in vtype.functions:
+            dbgprint(func.name)
+        
