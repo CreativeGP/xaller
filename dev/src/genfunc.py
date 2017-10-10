@@ -144,12 +144,11 @@ def expname(string):
     string = string.replace('.', '.')
     class_name = "this"
     if is_adding_type():
-        if Global.translate_seq[-1] == 'add_type:evfunc':
+        if 'type:evfunc' in Global.translate_seq[-1]:
             class_name = "self"
-        else:
-            # NOTE(cgp) ドットが２個続けて出力されることがあったのでそのようなことがないように
-            # こっちで調整する
-            string = class_name + ('' if string[0] == '.' else '.') + string
+        # NOTE(cgp) ドットが２個続けて出力されることがあったのでそのようなことがないように
+        # こっちで調整する
+        string = class_name + ('' if string[0] == '.' else '.') + string
     return string
 
 
