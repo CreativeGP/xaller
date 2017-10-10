@@ -102,16 +102,6 @@ class Variable(object):
         """
 
         if js_out:
-            # if genfunc.is_var_web(self):
-            #     name = self.name[self.name.rfind(".")+1:]
-            #     uniquename = self.name[:self.name.rfind(".")]
-            #     if name == "text":
-            #         Global.jsbuf += "$(%s).html()" % genfunc.S("#" + genfunc.expid(uniquename))
-            #     elif name == "name":
-            #         Global.jsbuf += "$(%s).attr('id')" % genfunc.S("#" + genfunc.expid(uniquename))
-            #     else:
-            #         Global.jsbuf += genfunc.expname(self.name)
-            # else:
             if '.' in self.name and not self.name[0] == '.':
                 parent_name = self.name[:self.name.find('.')]
                 member_name = self.name[self.name.find('.')+1:]

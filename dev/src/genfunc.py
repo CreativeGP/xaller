@@ -938,7 +938,8 @@ def add_type(block_ind):
     init_funcs = []
     event_funcs = []
     for func in new_type.functions:
-        if func.name == "__init":
+        print(func.name)
+        if "__init" in func.name:
             init_funcs.append(func)
             new_type.blocks_for_init.append(Global.blocks[func.block_ind])
         elif "." + func.name in Global.eventlist:
@@ -976,11 +977,13 @@ me.%s(me);
             exel += 1
         Global.exel = Global.blocks[func.block_ind].body[-1].line
         Global.translate_seq.pop()
+        outnoln(";")
 
     # NOTE(cgp) 継承元のコンストラクタはまとめて一つの関数として出力
     if len(init_funcs) > 0:
         outnoln(new_type.name + ".prototype.%s = " % init_funcs[0].name)
         # HACK(cgp) Global.Varsに無名関数を追加することになるコード
+        print('a')
         tmp_funcs = copy.deepcopy(init_funcs[0])
         tmp_funcs.name = ''
         tmp_funcs.add()
@@ -1000,7 +1003,7 @@ me.%s(me);
             # # NOTE(cgp) For js output.
             # new_type.functions.append(new_func)
             Global.exel = Global.blocks[func.block_ind].body[-1].line
-        out("}")
+        out("};")
         
     for func in normal_funcs:
         outnoln(new_type.name + ".prototype.%s = " % func.name)
@@ -1022,6 +1025,7 @@ me.%s(me);
         # # NOTE(cgp) For js output.
         # new_type.functions.append(new_func)
         Global.exel = Global.blocks[func.block_ind].body[-1].line
+        outnoln(";")
         
     out("")
 
