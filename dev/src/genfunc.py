@@ -138,9 +138,25 @@ def expid(string):
     return string.replace('.', '-')
 
 
+def expvar(var):
+    """Convert a xaller variable name into an valid string for JS."""
+    print("EXP " + var.name + ("#MEM" if var.is_member else ''))
+    class_name = "this"
+    res = var.name
+    if is_adding_type():
+        if 'type:evfunc' in Global.translate_seq[-1]:
+            class_name = "self"
+        # NOTE(cgp) ドットが２個続けて出力されることがあったのでそのようなことがないように
+        # こっちで調整する
+        if var.is_member:
+            res = class_name + ('' if var.name[0] == '.' else '.') + var.name
+    return res
+
+
+# TODO: できるだけexpvarを使う
 def expname(string):
     """Convert a xaller variable name into an valid string for JS."""
-    # NOTE(cgp) this.をつけて返すようにする
+    print("EXP " + string)
     string = string.replace('.', '.')
     class_name = "this"
     if is_adding_type():
@@ -356,7 +372,6 @@ def is_func_exists(string):
             return True
     if is_adding_type():
         for func in get_value_type(get_adding_type_name()).functions:
-            print(func.name)
             # NOTE(cgp) .が邪魔なのでそれを取り除いてもじれつを比較
             if func.name == string[1:]:
                 return True
@@ -892,7 +907,7 @@ def add_type(block_ind):
                     err("Undefined type '%s'." % token_list[3].string)
                 new_type.variables.append(ValueClass.Variable(
                     token_list[1].string,
-                    get_default_value(value_type)))
+                    get_default_value(value_type), is_member=True))
 
             elif len(token_list) >= 5 and \
                  is_plain(token_list[0]) and token_list[0].string == '+' and \
@@ -905,10 +920,7 @@ def add_type(block_ind):
                     err("Undefined type '%s'." % token_list[4].string)
                 new_type.variables.append(ValueClass.Variable(
                     token_list[2].string,
-                    get_default_value(value_type)))
-                # ValueClass.Variable.create(ValueClass.Variable(
-                #     token_list[2].string, get_default_value(value_type)),
-                #                            new_type.variables, True)
+                    get_default_value(value_type), is_member=True))
             del token_list[:]
 
     for var in new_type.variables:
@@ -938,7 +950,6 @@ def add_type(block_ind):
     init_funcs = []
     event_funcs = []
     for func in new_type.functions:
-        print(func.name)
         if "__init" in func.name:
             init_funcs.append(func)
             new_type.blocks_for_init.append(Global.blocks[func.block_ind])
@@ -971,19 +982,19 @@ me.%s(me);
         # 関数内容を出力
         while True:
             translate(Global.lines[exel].tokens)
-            # NOTE(cgp) 最後の閉じ括弧まで読み込む
-            if exel == Global.blocks[func.block_ind].body[-1].line - 1:
+            # NOTE(cgp) 最後の閉じ括弧まで読み込まないようにする
+            if exel == Global.blocks[func.block_ind].body[-1].line - 2:
                 break
             exel += 1
         Global.exel = Global.blocks[func.block_ind].body[-1].line
         Global.translate_seq.pop()
-        outnoln(";")
+        out("};")
 
     # NOTE(cgp) 継承元のコンストラクタはまとめて一つの関数として出力
     if len(init_funcs) > 0:
-        outnoln(new_type.name + ".prototype.%s = " % init_funcs[0].name)
+        outnoln(new_type.name + ".prototype.__init = ")
+        init_funcs[0].name = "__init"
         # HACK(cgp) Global.Varsに無名関数を追加することになるコード
-        print('a')
         tmp_funcs = copy.deepcopy(init_funcs[0])
         tmp_funcs.name = ''
         tmp_funcs.add()
@@ -1016,16 +1027,15 @@ me.%s(me);
         # 関数内容を出力
         while True:
             translate(Global.lines[exel].tokens)
-
-            # NOTE(cgp) 最後の閉じ括弧まで読み込む
-            if exel == Global.blocks[func.block_ind].body[-1].line - 1:
+            # NOTE(cgp) 最後の閉じ括弧まで読み込まないようにする
+            if exel == Global.blocks[func.block_ind].body[-1].line - 2:
                 break
             exel += 1
         # new_func = FunctionClass.Function(i)
         # # NOTE(cgp) For js output.
         # new_type.functions.append(new_func)
         Global.exel = Global.blocks[func.block_ind].body[-1].line
-        outnoln(";")
+        out("};")
         
     out("")
 

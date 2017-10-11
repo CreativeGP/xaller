@@ -100,7 +100,7 @@ class Function(object):
             Global.Funcs.append(self)
             Global.tfs.append(self)
             if genfunc.is_var_web(var):
-                if self.name[self.name.rfind('.'):] in eventlist:
+                if self.name[self.name.rfind('.'):] in Global.eventlist:
                     self.event = True
                     idx = Global.eventlist.index(self.name[self.name.rfind('.'):])
                     genfunc.outnoln("$('#%s')%s" % (genfunc.expid(var.name), Global.eventlist[idx])

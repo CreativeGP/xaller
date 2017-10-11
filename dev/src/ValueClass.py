@@ -60,15 +60,16 @@ class Variable(object):
             external variable.
     """
 
-    def __init__(self, _name, _value):
+    def __init__(self, _name, _value, is_member=False):
         self.name = _name
         self.value = _value
         self.external = False
+        self.is_member = is_member
 
     def subst(self, new, js_out=True):
         """Substitute the value for this variable."""
         # NOTE: JS出力用バッファを使うときは関数の処理のときに限る
-        if js_out: genfunc.outnoln(genfunc.expname(self.name) + " = ")
+        if js_out: genfunc.outnoln(genfunc.expvar(self) + " = ")
         if ((str(type(new)) == "<class 'list'>"
              or str(type(new)) == "<type 'list'>")):
             # TODO: 静的な変数だった場合は内容を更新するようにする
@@ -86,7 +87,7 @@ class Variable(object):
 
             wob = WebClass.WebObject.find_by_name(parent_name)
             if wob is None: return
-            wob.change(member_name, genfunc.expname(self.name))
+            wob.change(member_name, genfunc.expvar(self))
 
 
     # NOTE: JS出力はバッファに行います
@@ -107,13 +108,13 @@ class Variable(object):
                 member_name = self.name[self.name.find('.')+1:]
                 wob = WebClass.WebObject.find_by_name(parent_name)
                 if wob:
-                    tmp = wob.refer(genfunc.expname(member_name))
+                    tmp = wob.refer(genfunc.expvar(self))
                     if tmp == '':
-                        tmp = genfunc.expname(self.name)
+                        tmp = genfunc.expvar(self)
                     Global.jsbuf += tmp
                     return
             else:
-                Global.jsbuf += genfunc.expname(self.name)
+                Global.jsbuf += genfunc.expvar(self)
         return self.value
 
 
@@ -159,6 +160,7 @@ class Variable(object):
                 variables, external, jsout=False)
 
         for func in var.value.type.functions:
+            print(func.name)
             if func.name == '__init':
                 # NOTE(cgp) __init関数は呼ばないで直接書かなければならない。
                 # なぜなら、その中で行われる_web変数の変更をXallerが動的に読み込まなければ
