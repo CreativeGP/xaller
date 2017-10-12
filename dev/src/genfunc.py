@@ -931,6 +931,10 @@ def add_type(block_ind):
         if var.name == '_web':
             out('me.__element = $("#"+me.__name);')
 
+    for var in new_type.variables:
+        if var.name == '_web':
+            out('me.id = me.__name;')
+
     for token in Global.blocks[block_ind].body:
         token_list.append(token)
         if token.ttype.Return:

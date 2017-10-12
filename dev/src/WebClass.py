@@ -87,12 +87,20 @@ class WebObject:
             return ""
         res = """me.__update = function () {
 """
-        this = """$("#" + me.__name)."""
+        this = """$("#" + me.id)."""
+        for attr in Global.html_rules['global']['attr']:
+            if attr == "type":
+                res += this + "get(0).type = me.type;\n"
+            else:
+                res += this + "attr('%s', me.%s);\n" % (attr, attr)
         for attr in Global.html_rules[tagname]['attr']:
-            res += this + "attr('%s', me.%s);\n" % (attr, attr)
-        for attr in Global.html_rules[tagname]['attr']:
-            res += this + "attr('%s', me.%s);\n" % (attr, attr)
-        res += """$("#" + me.__name).html(me.text);
+            if Global.html_rules[tagname]['attr'][attr]['type'] == 'boolean':
+                res += this + "prop('%s', me.%s);\n" % (attr, attr)
+            elif attr == "type":
+                res += this + "get(0).type = me.type;\n"
+            else:
+                res += this + "attr('%s', me.%s);\n" % (attr, attr)
+        res += this + """html(me.text);
 };"""
         return res
 

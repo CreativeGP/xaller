@@ -68,7 +68,7 @@
     (text)string
 
     (autofocus)bool
-    (autocomlete)string
+# 非標準要素！    (autocomlete)string
     (disabled)bool
     (form)string
     (formaction)string

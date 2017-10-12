@@ -43,7 +43,6 @@
 	"dom_interface": "HTMLButtonElement",
 	"attr": {
 	    "autofocus": { "type": "boolean" },
-	    "autocomlete": { "type": "enum", "enums": ["on", "off"] },
 	    "disabled": { "type": "boolean" },
 	    "form": { "type": "id" },
 	    "formaction": { "type": "uri" },
