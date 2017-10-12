@@ -963,6 +963,36 @@ me.%s(me);
         else:
             normal_funcs.append(func)
 
+    # NOTE(cgp) 継承元のコンストラクタはまとめて一つの関数として出力
+    if len(init_funcs) > 0:
+        outnoln("me.__init = ")
+        init_funcs[0].name = "__init"
+        # HACK(cgp) Global.Varsに無名関数を追加することになるコード
+        tmp_funcs = copy.deepcopy(init_funcs[0])
+        tmp_funcs.name = ''
+        tmp_funcs.add()
+        out("")
+        for func in init_funcs:
+            Global.tfs.append(func)
+            exel = Global.blocks[func.block_ind].body[0].line
+            # 関数内容を出力
+            while True:
+                translate(Global.lines[exel].tokens)
+                # NOTE(cgp) 最後の閉じ括弧まで読み込まないようにする
+                if exel == Global.blocks[func.block_ind].body[-1].line - 2:
+                    Global.tfs.pop()
+                    break
+                exel += 1
+            # new_func = FunctionClass.Function(i)
+            # # NOTE(cgp) For js output.
+            # new_type.functions.append(new_func)
+            Global.exel = Global.blocks[func.block_ind].body[-1].line
+        out("};")
+
+    for var in new_type.variables:
+        if var.name == '_web':
+            out(WebClass.WebObject.get_applying_js(var.value.string))
+
     # NOTE(cgp) Output of type definition is processed in this function.
     # Here is the end of output of type definition.
     out("}")
@@ -988,32 +1018,7 @@ me.%s(me);
             exel += 1
         Global.exel = Global.blocks[func.block_ind].body[-1].line
         Global.translate_seq.pop()
-        out("};")
-
-    # NOTE(cgp) 継承元のコンストラクタはまとめて一つの関数として出力
-    if len(init_funcs) > 0:
-        outnoln(new_type.name + ".prototype.__init = ")
-        init_funcs[0].name = "__init"
-        # HACK(cgp) Global.Varsに無名関数を追加することになるコード
-        tmp_funcs = copy.deepcopy(init_funcs[0])
-        tmp_funcs.name = ''
-        tmp_funcs.add()
-        out("")
-        for func in init_funcs:
-            Global.tfs.append(func)
-            exel = Global.blocks[func.block_ind].body[0].line
-            # 関数内容を出力
-            while True:
-                translate(Global.lines[exel].tokens)
-                # NOTE(cgp) 最後の閉じ括弧まで読み込まないようにする
-                if exel == Global.blocks[func.block_ind].body[-1].line - 2:
-                    Global.tfs.pop()
-                    break
-                exel += 1
-            # new_func = FunctionClass.Function(i)
-            # # NOTE(cgp) For js output.
-            # new_type.functions.append(new_func)
-            Global.exel = Global.blocks[func.block_ind].body[-1].line
+        out("self.__update();")
         out("};")
         
     for func in normal_funcs:

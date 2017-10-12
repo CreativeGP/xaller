@@ -80,6 +80,23 @@ class WebObject:
 
 
     @staticmethod
+    def get_applying_js(typename):
+        try:
+            tagname = WebObject.html_tag_names[typename]
+        except Exception:
+            return ""
+        res = """me.__update = function () {
+"""
+        this = """$("#" + me.__name)."""
+        for attr in Global.html_rules[tagname]['attr']:
+            res += this + "attr('%s', me.%s);\n" % (attr, attr)
+        for attr in Global.html_rules[tagname]['attr']:
+            res += this + "attr('%s', me.%s);\n" % (attr, attr)
+        res += """$("#" + me.__name).html(me.text);
+};"""
+        return res
+
+    @staticmethod
     def find_by_name(name):
         """Find the web object by its name."""
         for wob in Global.wobs:
