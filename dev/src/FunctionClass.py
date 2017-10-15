@@ -31,7 +31,7 @@ class Function(object):
         arg_count = int((len(block.root) - 4) / 4)
         # 引数リストを作成
         arglist = []
-        for i in range(arg_count):
+        for i in xrange(arg_count):
             new_arg_value_type = genfunc.get_value_type(block.root[i*4+6].string)
             new_arg_name = block.root[i*4+4].string
             # NOTE(cgp) 初期化関数を通したり面倒なことをしたくないので直接追加

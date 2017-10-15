@@ -118,7 +118,7 @@ def outnoln(string):
 def crfind(srcs, finds, count):
     """Get index that found the string for nth."""
     ans = -1
-    for _ in range(count):
+    for _ in xrange(count):
         ans = srcs.rfind(finds, 0, ans)
     return ans
 
@@ -728,7 +728,7 @@ def eval_tokens(token_list, js_out=True):
         indent = -1
         arg_tokens = []
         last_index = 0
-        for i in range(len(token_list)-1):
+        for i in xrange(len(token_list)-1):
             if token_list[i].string == '(': indent += 1
             if token_list[i].string == ')': indent -= 1
             if i >= 2 and indent != -1: arg_tokens.append(token_list[i])
@@ -856,7 +856,7 @@ def add_type(block_ind):
         err("Pure type couldn't have members.")
     dbgprintnoln(("New type '%s' inheritanced by type"
                   % Global.blocks[block_ind].root[2].string))
-    for i in range(inh_count):
+    for i in xrange(inh_count):
         tmp = get_value_type(Global.blocks[block_ind].root[5+i*2].string)
         if tmp is None:
             err("Undefined type '%s'" % tmp.name)
@@ -1270,7 +1270,7 @@ def translate(token_list, static_default=None):
                 err("Incorrect substituting value which has different member.")
             memdst = get_members(run_tokens[0].string)
             memsrc = get_members(run_tokens[2].string)
-            for i in range(len(memdst)):
+            for i in xrange(len(memdst)):
                 # NOTE: 宣言順が同じであるという条件のもとの代入（計算量削減）
                 memdst[i].subst(memsrc[i])
                 out(";")
@@ -1527,7 +1527,7 @@ def RUN(token_list, static_default=None, funcexam=False):
                 err("Incorrect substituting value which has different member.")
             memdst = get_members(run_tokens[0].string)
             memsrc = get_members(run_tokens[2].string)
-            for i in range(len(memdst)):
+            for i in xrange(len(memdst)):
                 # NOTE: 宣言順が同じであるという条件のもとの代入（計算量削減）
                 memdst[i].subst(memsrc[i])
                 out(";")

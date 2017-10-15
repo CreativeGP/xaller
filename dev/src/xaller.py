@@ -9,6 +9,7 @@ import json
 import os
 import sys
 import copy
+import time
 
 # TODO(future)
 # Dirty型の比較（これから）
@@ -51,6 +52,10 @@ def deal_with_cmdargs():
     # -dを見つけた際にはデバッグモード
     if '-d' in args:
         Global.bDbg = True
+
+    # -tを見つけた際にはタイムスタンプを押す
+    if '-t' in args:
+        Global.bTime = True
 
     # その他のスイッチを見つけた場合はその次にある引数がデータになる
     if '-o' in args and args.index('-o')+1 < len(args):
@@ -244,6 +249,8 @@ def out_js():
 
 def main():
     """Process entry point."""
+    now = time.time()
+
     deal_with_cmdargs()
     out_html()
 
@@ -254,6 +261,8 @@ def main():
 
     prepare_js()
     out_js()
+
+    if Global.bTime: print("Elapsed time: " + str(time.time()-now))
 
 if __name__ == '__main__':
     main()

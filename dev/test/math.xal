@@ -1,3 +1,23 @@
+###
+###   Xaller Standard Library - math.xal
+###   CreativeGP - 2017.10.16(yyyy.mm.dd)
+###
+###   A library to use advanced operations for string.
+
+@(min (a)int (b)int) {
+    (< a b) ? {
+        return a
+    }
+    return b
+}
+
+@(max (a)int (b)int) {
+    (> a b) ? {
+        return a
+    }
+    return b
+}
+
 @(fact (n)int) {
     (m)int
     (i)int

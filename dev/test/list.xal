@@ -7,7 +7,7 @@
 <'str.xal'>
 
 @ (_li_is_colon (list)string (i)int) {
-    (>= (strlen list) 2) ? {
+    (>= (strlen list) 1) ? {
         (> (strlen list) i) ? {
             return (and (not (eq '%' (strat list (- i 1)))) (eq ':' (strat list i)))
         }
@@ -17,14 +17,12 @@
         }
     }
     branch true ? {
-        __log 'Error(_li_is_colon): 文字列の長さが短すぎます'
-        __log list
-        stop
+        return false
     }
 }
 
 @ (_li_is_bar (list)string (i)int) {
-    (>= (strlen list) 2) ? {
+    (>= (strlen list) 1) ? {
         (> (strlen list) i) ? {
             return (and (not (eq '%' (strat list (- i 1)))) (eq '|' (strat list i)))
         }
@@ -34,9 +32,7 @@
         }
     }
     branch true ? {
-        __log 'Error(_li_is_bar): 文字列の長さが短すぎます'
-        __log list
-        stop
+        return false
     }
 }
 

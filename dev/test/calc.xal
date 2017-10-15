@@ -1,6 +1,6 @@
 <'list.xal'>
 <'web.xal'>
-
+<'math.xal'>
 
 @ (negative (i)int) {
     return (- 0 i)
@@ -8,10 +8,11 @@
 
 (mode)int
 (using_operation)string
-# using_operation = (licon '+')
-# using_operation = (licon '-')
-# using_operation = (licon '*')
-# using_operation = (licon '/')
+(operations)string
+operations = (licon operations '+')
+operations = (licon operations '-')
+operations = (licon operations '*')
+operations = (licon operations '/')
 
 +(main)Div
 +(num1)Div
@@ -21,6 +22,26 @@
 +(view)Letter in main
 view.text = '0'
 mode = 0
+
+@ (parse (str)string) {
+    (words)string
+    (ofs)int
+    (j)int
+    loop {
+        (tmpofs)int
+        tmpofs = ofs
+        (i)int
+        loop {
+            ofs = (min ofs (stridx str (liat operations i) ofs))
+            i = (+ i 1)
+            (eq i (lilen operations)) ? {
+                escape
+            }
+        }
+        words = (licon words (substr str tmpofs (- ofs tmpofs)))
+    }
+view.text = words
+}
 
 +(plus_btn)Button in operators
 plus_btn.text = '+'
@@ -124,25 +145,26 @@ eq_btn.text = '='
 @ (eq_btn.click) {
     (eq mode 1) ? {
         (ans)int
+        (parse view.text)
         # view.text = '62+41'
-        (a)int
-        (b)int
-        a = (substr view.text 0 (stridx view.text using_operation))int
-        b = (substr view.text (+ 1 (stridx view.text using_operation)) (negative 1))int
-        cond (eq using_operation '+') ? {
-            ans = (+ a b)
-        }
-        branch (eq using_operation '-') ? {
-            ans = (- a b)
-        }
-        branch (eq using_operation '*') ? {
-            ans = (* a b)
-        }
-        branch (eq using_operation '/') ? {
-            ans = (/ a b)
-        }
-        view.text = (concat view.text '=' (ans)string)
-        mode = 0
+        # (a)int
+        # (b)int
+        # a = (substr view.text 0 (stridx view.text using_operation))int
+        # b = (substr view.text (+ 1 (stridx view.text using_operation)) (negative 1))int
+        # cond (eq using_operation '+') ? {
+        #     ans = (+ a b)
+        # }
+        # branch (eq using_operation '-') ? {
+        #     ans = (- a b)
+        # }
+        # branch (eq using_operation '*') ? {
+        #     ans = (* a b)
+        # }
+        # branch (eq using_operation '/') ? {
+        #     ans = (/ a b)
+        # }
+        # view.text = (concat view.text '=' (ans)string)
+        # mode = 0
 
     }
 }

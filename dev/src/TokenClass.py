@@ -127,7 +127,7 @@ class Token(object):
 
             # NOTE(cgp) Ignore pylint's error message.
             # These codes need only index. 
-            for i in range(len(line)):
+            for i in xrange(len(line)):
                 # String
                 if not comment and string and line[i] == '\'':
                     token = Token(line_count, bufferstr)
@@ -294,7 +294,7 @@ class Block(object):
 
         # NOTE(cgp) Ignore pylint's error message.
         # These codes need only index. 
-        for i in range(len((tokens))):
+        for i in xrange(len((tokens))):
             if tokens[i].string == '{':
                 if len(tokens) != 1:
                     tokens[i-1].ttype.Return = True

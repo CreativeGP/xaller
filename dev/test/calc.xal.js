@@ -84,7 +84,7 @@ $(function() {
 		return res;
 	}
 	function _li_is_colon(list, i) {
-		if ((strlen$(list) >=  2)) {
+		if ((strlen$(list) >=  1)) {
 			if ((strlen$(list) >  i)) {
 				return (!(('%' == strat(list,(i - 1)))) &&  (':' == strat(list,i)));
 			}
@@ -94,13 +94,11 @@ $(function() {
 			}
 		}
 		else if (true) {
-			console.log('Error(_li_is_colon): 文字列の長さが短すぎます');;
-			console.log(list);;
-			throw new Error('This is not an error. This is just to abort javascript');
+			return false;
 		}
 	}
 	function _li_is_bar(list, i) {
-		if ((strlen$(list) >=  2)) {
+		if ((strlen$(list) >=  1)) {
 			if ((strlen$(list) >  i)) {
 				return (!(('%' == strat(list,(i - 1)))) &&  ('|' == strat(list,i)));
 			}
@@ -110,9 +108,7 @@ $(function() {
 			}
 		}
 		else if (true) {
-			console.log('Error(_li_is_bar): 文字列の長さが短すぎます');;
-			console.log(list);;
-			throw new Error('This is not an error. This is just to abort javascript');
+			return false;
 		}
 	}
 	function lilen(list) {
@@ -2835,11 +2831,45 @@ $(function() {
 		};
 	}
 	
+	function min(a, b) {
+		if ((a < b)) {
+			return a;
+		}
+		return b;
+	}
+	function max(a, b) {
+		if ((a > b)) {
+			return a;
+		}
+		return b;
+	}
+	function fact(n) {
+		var m = 0;
+		var i = 0;
+		if ((n == 0)) {
+			return 1;
+		}
+		else if (true) {
+			m = fact((n - 1));
+			return (n * m);
+		}
+	}
+	function fib(n) {
+		if (((n == 0) ||  (n == 1))) {
+			return 1;
+		}
+		return (fib((n - 1)) +  fib((n - 2)));
+	}
 	function negative(i) {
 		return (0 - i);
 	}
 	var mode = 0;
 	var using_operation = '';
+	var operations = '';
+	operations = licon(operations,'+');
+	operations = licon(operations,'-');
+	operations = licon(operations,'*');
+	operations = licon(operations,'/');
 	var main = new Div("main");
 	main._web = 'Div';
 	$('body').append("<div id='main'></div>");
@@ -2861,6 +2891,26 @@ $(function() {
 	view.text = '0';
 	$('#view').html(view.text);
 	mode = 0;
+	function parse(str) {
+		var words = '';
+		var ofs = 0;
+		var j = 0;
+		while (true) {
+			var tmpofs = 0;
+			tmpofs = ofs;
+			var i = 0;
+			while (true) {
+				ofs = min(ofs,stridx$(str,liat(operations,i) ,  ofs));
+				i = (i + 1);
+				if ((i == lilen(operations))) {
+					break;
+				}
+			}
+			words = licon(words,substr$(str,tmpofs,(ofs - tmpofs)));
+		}
+		view.text = words;
+		$('#view').html(view.text);
+	}
 	var plus_btn = new Button("plus_btn");
 	plus_btn._web = 'Button';
 	$('#operators').append("<button id='plus_btn'></button>");
@@ -2892,10 +2942,7 @@ $(function() {
 	var ac_btn = new Button("ac_btn");
 	ac_btn._web = 'Button';
 	$('#operators').append("<button id='ac_btn'></button>");
-	var fruits = '';
-	fruits = '0:apple|1:banana|8:grapes|';
-	fruits = lialt(fruits,0,'peach');
-	ac_btn.text = fruits;
+	ac_btn.text = 'AC';
 	$('#ac_btn').html(ac_btn.text);
 	$('#ac_btn').click(function () {
 		view.text = '0';
@@ -3098,25 +3145,7 @@ $(function() {
 	$('#eq_btn').click(function () {
 		if ((mode == 1)) {
 			var ans = 0;
-			var a = 0;
-			var b = 0;
-			a = Number(substr$(view.text,0,stridx$(view.text,using_operation)));
-			b = Number(substr$(view.text,(1 + stridx$(view.text,using_operation)) ,  negative(1)));
-			if ((using_operation == '+')) {
-				ans = (a + b);
-			}
-			else if ((using_operation == '-')) {
-				ans = (a - b);
-			}
-			else if ((using_operation == '*')) {
-				ans = (a * b);
-			}
-			else if ((using_operation == '/')) {
-				ans = (a / b);
-			}
-			view.text = (view.text + '=' + String((ans)));
-			$('#view').html(view.text);
-			mode = 0;
+			parse(view.text);
 		}
 	});
 	return;
