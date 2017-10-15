@@ -160,15 +160,19 @@ class Variable(object):
                 variables, external, jsout=False)
 
         for func in var.value.type.functions:
-            print(func.name)
             if func.name == '__init':
                 # NOTE(cgp) __init関数は呼ばないで直接書かなければならない。
                 # なぜなら、その中で行われる_web変数の変更をXallerが動的に読み込まなければ
                 # DOM出力ができないから。
                 # genfunc.out(var.name + '.' + func.name + '();')
                 tmp = []
+
+                # NOTE(cgp): ここで変更している名前はホントの型定義の関数なので
+                # ここで一時保存しておいてあとで復元する
+                tmpname = func.name
                 func.name = var.name + "." + func.name
                 Global.tfs.append(func)
+
                 for init_block in var.value.type.blocks_for_init:
                     for tkn in init_block.body[1:-1]:
                         tmp.append(tkn)
@@ -177,6 +181,7 @@ class Variable(object):
                             if jsout: genfunc.translate(tmp)
                             del tmp[:]
                 Global.tfs.pop()
+                func.name = tmpname
                 break
 
         if external:

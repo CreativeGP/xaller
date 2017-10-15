@@ -121,8 +121,6 @@ class Token(object):
             # NOTE(cgp) Tell console a name of importing file.
             genfunc.dbgprint("Imported file name: " + filename)
 
-            
-
         for line in open(filename, 'r'):
             new_line = False
             line_count += 1
@@ -159,7 +157,11 @@ class Token(object):
                     comment = True
 
                 if not string and not comment:
+                    # コメントやら文字列の途中やらではなかったときにはこのような記号
+                    # があった場合にトークンを分割する
                     if ((re.match("[!-/:-@[-`{-~]", line[i])
+                         # NOTE(cgp) これらの記号は諸事情によりトークン分割
+                         # 対象に入れないようにする
                          and line[i] != '_'
                          and line[i] != '$'
                          and line[i] != '.')):
@@ -197,7 +199,7 @@ class Token(object):
                 # Unitify unequal symbols and equal symbol to enable <= and >= of buildin functions.
                 if (token.string == '<' or token.string == '>') and tokens[idx+1].string == '=':
                     del tokens[idx+1]
-                    tokenstring += '='
+                    token.string += '='
             except IndexError:
                 pass
 

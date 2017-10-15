@@ -1,0 +1,63 @@
+###
+###   Xaller Standard Library - list.xal
+###   CreativeGP - 2017.10.14(yyyy.mm.dd)
+###
+###   A library to use list operations.
+
+
+<str.xal>
+
+@ (lilen (list)string) {
+    (res)int
+    (i)int
+    loop {
+        (eq (strat list i) ':') ? {
+            res = (+ res 1)
+        }
+        i = (+ i 1)
+        (eq i strlen(list)) ? {
+            escape
+        }
+    }
+    return res
+}
+
+
+@ (liat (list)string (idx)int) {
+    (>= lilen(list) idx) ? {
+        return 'Error'
+    }
+    (start_of_element)int
+    start_of_element = (stridx list (concat idx ':'))
+    start_of_element = (stridx list ':' start_of_element)
+    (end_of_element)int
+    end_of_element = (stridx list '|' start_of_element)
+    return (substr list start_of_element (- end_of_element start_of_element))
+}
+
+
+@ (licon (list)string (element)string)
+{
+    (escaped_str)string
+    (i)int
+    loop {
+        (char)string
+        char = (strat element i)
+        (eq char ':') ? {
+            char = '%:'
+        }
+        (eq char '|') ? {
+            char = '%|'
+        }
+        (eq char '%') ? {
+            char = '%%'
+        }
+        escaped_str = (concat escaped_str char)
+        i = (+ i 1)
+        (eq i strlen(element)) ? {
+            escape
+        }
+    }
+    list = (concat list (lilen list) ':' escaped_str '|')
+    return list
+}

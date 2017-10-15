@@ -140,7 +140,6 @@ def expid(string):
 
 def expvar(var):
     """Convert a xaller variable name into an valid string for JS."""
-    print("EXP " + var.name + ("#MEM" if var.is_member else ''))
     class_name = "this"
     res = var.name
     if is_adding_type():
@@ -156,7 +155,6 @@ def expvar(var):
 # TODO: できるだけexpvarを使う
 def expname(string):
     """Convert a xaller variable name into an valid string for JS."""
-    print("EXP " + string)
     string = string.replace('.', '.')
     class_name = "this"
     if is_adding_type():
@@ -303,7 +301,8 @@ def get_var(string, care=True):
                 return var
     elif ((care
            and len(Global.tfs) > 0
-           and Global.tfs[-1] is not None)):
+           and Global.tfs[-1] is not None
+           and len(string) > 0)):
         # NOTE(cgp) __init関数の出力の際に必要
         runf = Global.tfs[-1]
         tmp = ''
@@ -543,7 +542,7 @@ def out_arg_value(tkn, next_tkn, sep):
                             if sep == ',' else
                             ' ' + sep + ' '))
 
-
+# TODO(cgp) 不等号関数の複数引数指定時の処理
 def out_expression(token_list, get_string=False):
     """Output to JS file an expression."""
     if get_string: backup = Global.jsbuf
@@ -616,7 +615,9 @@ def out_expression(token_list, get_string=False):
                     if Global.sep_type[func_name] == ",":
                         Global.jsbuf += func_name + "$"
 
-                    Global.jsbuf += "("
+                    Global.jsbuf += ("!("
+                                     if func_name == "not" else
+                                     "(")
                 else:
                     # 普通関数の場合:
                     # コンマと関数の開始位置を更新して関数名と開始用カッコをつける
@@ -634,7 +635,11 @@ def out_expression(token_list, get_string=False):
 
                 lvl -= 1
                 is_arg = token_list[i+1].string != ")"
-                cast_vt = get_value_type(token_list[i+1].string)
+                # NOTE(cgp): 文字列を表すトークンが間違って読み込まれていたので
+                # 修正。is_plain()をかませただけ。
+                cast_vt = (get_value_type(token_list[i+1].string)
+                           if is_plain(token_list[i+1]) else
+                           None)
                 if cast_vt is not None:
                     # キャストがあった場合:
                     # ある場合は関数の開始位置に型変換関数名追加して式全体を括弧で括る
@@ -865,26 +870,6 @@ def add_type(block_ind):
                     del new_type_member_func
         new_type.functions.extend(tmp.functions)
 
-    dbgprint("")
-
-    # function Letter (name) {
-    #     var me = this;
-    #     me.__name = name;
-    #     $("body").append("<span id='"+me.__name+"'>a</span>");
-    #     me.__element = $("#"+me.__name);
-    #     me._click = functi(e) {
-    #         me.click(this, e);
-    #     }
-    # }
-
-    # Letter.prototype = {
-    #     bind: functi($target) {
-    #         $target.click(this._click);
-    #     },
-    #     click: functi(sender, evt) {
-    #         this.__element.html("c");
-    #     }
-    # };
     out("function %s (name) {" % new_type.name)
     out("var me = this;")
     out("me.__name = name;")
@@ -991,6 +976,9 @@ me.%s(me);
             # # NOTE(cgp) For js output.
             # new_type.functions.append(new_func)
             Global.exel = Global.blocks[func.block_ind].body[-1].line
+        # NOTE(cgp) 初期化関数もＨＴＭＬ属性を変更する可能性があるので
+        # しっかり更新しておく。
+        out("this.__update();")
         out("};")
 
     for var in new_type.variables:
@@ -1044,6 +1032,10 @@ me.%s(me);
         # # NOTE(cgp) For js output.
         # new_type.functions.append(new_func)
         Global.exel = Global.blocks[func.block_ind].body[-1].line
+
+        # NOTE(cgp) 普通関数もＨＴＭＬ属性を変更する可能性があるので
+        # しっかり更新しておく。
+        out("this.__update();")
         out("};")
         
     out("")

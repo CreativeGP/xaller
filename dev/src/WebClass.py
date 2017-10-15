@@ -37,7 +37,6 @@ class WebObject:
         type_name = ""
         if genfunc.is_var_exists(self.name + "._web"):
             type_name = genfunc.get_var(self.name + "._web").value.string
-        print(type_name)
 
         selector = ""
         func = ""

@@ -1,3 +1,4 @@
+<list.xal>
 <web.xal>
 
 @ (negative (i)int) {
@@ -7,6 +8,39 @@
 (mode)int
 (using_operation)string
 
++(main)Div
++(num1)Div
++(num2)Div
++(num3)Div
++(operators)Div
++(view)Letter in main
+view.text = '0'
+mode = 0
+
++(plus_btn)Button in operators
+plus_btn.text = '+'
+plus_btn.disabled = true
+
++(product_btn)Button in operators
+product_btn.text = '*'
+product_btn.disabled = true
+
++(mi_btn)Button in operators
+mi_btn.text = '-'
+mi_btn.disabled = true
+
++(divid_btn)Button in operators
+divid_btn.text = '/'
+divid_btn.disabled = true
+
++(ac_btn)Button in operators
+# ac_btn.text = 'AC'
+ac_btn.text = (licon '' 'apple')
+@ (ac_btn.click) {
+    view.text = '0'
+    mode = 0
+}
+
 -(numbtn):Button {
     (num)int
     @ (set_num (num)int) {
@@ -15,17 +49,18 @@
     }
     @ (click) {
         # 文字を後ろにくっつける
+        (eq view.text '0') ? {
+            view.text = ''
+        }
         view.text = (concat view.text (.num)string)
         mode = 1
+
+        plus_btn.disabled = false
+        product_btn.disabled = false
+        mi_btn.disabled = false
+        divid_btn.disabled = false
     }
 }
-
-+(main)Div
-+(view)Textbox in main
-+(num1)Div
-+(num2)Div
-+(num3)Div
-+(operators)Div
 
 +(button9)numbtn in num1
 (button9.set_num 9)
@@ -48,8 +83,6 @@
 +(button0)numbtn in num3
 (button0.set_num 0)
 
-+(plus_btn)Button in operators
-plus_btn.text = '+'
 @ (plus_btn.click) {
     (eq mode 1) ? {
         view.text = (concat view.text '+')
@@ -58,8 +91,6 @@ plus_btn.text = '+'
     }
 }
 
-+(product_btn)Button in operators
-product_btn.text = '*'
 @ (product_btn.click) {
     (eq mode 1) ? {
         view.text = (concat view.text '*')
@@ -68,8 +99,6 @@ product_btn.text = '*'
     }
 }
 
-+(mi_btn)Button in operators
-mi_btn.text = '-'
 @ (mi_btn.click) {
     (eq mode 1) ? {
         view.text = (concat view.text '-')
@@ -78,8 +107,6 @@ mi_btn.text = '-'
     }
 }
 
-+(divid_btn)Button in operators
-divid_btn.text = '/'
 @ (divid_btn.click) {
     (eq mode 1) ? {
         view.text = (concat view.text '/')
@@ -112,6 +139,7 @@ eq_btn.text = '='
         }
         view.text = (concat view.text '=' (ans)string)
         mode = 0
+
     }
 }
 

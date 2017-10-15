@@ -1,0 +1,32 @@
+@ (strat (str)string (i)int) {
+    return (substr str i 1)
+}
+
+### CGP:2017:10:14
+# isnum ( str )
+# 文字列が数字かどうか判別する関数
+# str -- 判別する文字列
+@ (isnum (str)string) {
+    (i)int
+    (numbers)string
+    numbers = '0123456789'
+    loop {
+        (j)int
+        loop {
+            cond (eq (strat str i) (strat numbers j)) ? {
+                escape
+            }
+            branch true ? {
+                (eq j 9) ? {
+                    return false
+                }
+            }
+            j = (+ j 1)
+        }
+        (eq i (strlen str)) ? {
+            escape
+        }
+        i = (+ i 1)
+    }
+    return true
+}

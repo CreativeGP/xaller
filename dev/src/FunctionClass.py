@@ -91,9 +91,9 @@ class Function(object):
         idx = Function.n2i(self.name)
         if idx < -1:
             genfunc. err("Function '%s' is build-in function name." % self.name)
-        elif idx > 0:
-            # 関数がもともとあった場合
-            genfunc.err("関数は定義されています!!")
+        # elif idx > 0:
+        #     # 関数がもともとあった場合
+        #     genfunc.err("関数は定義されています!!")
         # そうでない場合は新規作成する
         else:
             var = genfunc.get_var(self.name[:self.name.rfind('.')])
@@ -121,7 +121,7 @@ class Function(object):
                         if not '.' in arg.name:
                             without_member_args.append(arg)
 
-                    if ((len(Global.translate_seq[-1]) > 0
+                    if ((len(Global.translate_seq) > 0
                          and "type:evfunc" in Global.translate_seq[-1])):
                         eventname = Global.translate_seq[-1].replace("type:evfunc", '')
                         genfunc.outnoln("self")

@@ -186,8 +186,8 @@ function strtrimr$(str, char) {
     return res;
 }
 """)
-    genfunc.out("""function stridx$(cmpstr, string) { return cmpstr.indexOf(string); }""")
-    genfunc.out("""function strridx$(cmpstr, string) { return cmpstr.lastIndexOf(string); }""")
+    genfunc.out("""function stridx$(cmpstr, string, start=0) { return cmpstr.indexOf(string, start); }""")
+    genfunc.out("""function strridx$(cmpstr, string, start=0) { return cmpstr.lastIndexOf(string, start); }""")
     genfunc.out("""function strrep$(src, pattern, replacement) {
 var regExp = new RegExp(pattern, "g");
 return src.replace(regExp, replacement); }""")
