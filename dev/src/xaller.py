@@ -98,15 +98,12 @@ def out_html():
     html.close()
 
 
-def deal_with_import():
+def deal_with_import(filename):
     """Deal with xaller import statement."""
-    # TODO(cgp): インポート時のエラー行調整
-    header = 0
 
     # このままだとコメントが反映されないので一回トークン解析してからもとのファイルに戻す
-    raw_tokens = TokenClass.Token.tokenize(Global.input)
-    inputd = Global.input[:Global.input.rfind('/')] + '/'
-    with open(Global.input) as raw_file:
+    raw_tokens = TokenClass.Token.tokenize(filename)
+    with open(filename) as raw_file:
         raw = raw_file.read().splitlines()
         for i in range(len(raw_tokens)):
             if ((genfunc.is_plain(raw_tokens[i-1]) and
@@ -128,7 +125,8 @@ def deal_with_import():
 
                 try:
                     # TODO(cgp) May suupport expanding symbolic link?
-                    new_tokens = TokenClass.Token.tokenize(filename)
+                    new_tokens = deal_with_import(filename)
+#                    new_tokens = TokenClass.Token.tokenize(filename)
                 except Exception:
                     genfunc.err("File not found. '%s'" % filename)
 
@@ -139,11 +137,7 @@ def deal_with_import():
                 # i-1 ~ i+2 <...>
                 del raw_tokens[i-1:i+2]
                 raw_tokens = genfunc.insert(raw_tokens, i - 1, new_tokens)
-
-    Global.tokens = raw_tokens
-
-    Global.blocks = TokenClass.Block.parse(Global.tokens)
-    Global.lines = TokenClass.Line.parse(Global.tokens, header)
+    return raw_tokens
 
 
 def prepare_js():
@@ -256,7 +250,12 @@ def main():
     """Process entry point."""
     deal_with_cmdargs()
     out_html()
-    deal_with_import()
+
+    Global.tokens = deal_with_import(Global.input)
+    Global.blocks = TokenClass.Block.parse(Global.tokens)
+    # TODO(cgp): インポート時のエラー行調整
+    Global.lines = TokenClass.Line.parse(Global.tokens, 0)
+
     prepare_js()
     out_js()
 

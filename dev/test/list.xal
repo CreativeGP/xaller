@@ -4,7 +4,6 @@
 ###
 ###   A library to use list operations.
 
-
 <str.xal>
 
 @ (lilen (list)string) {
@@ -15,7 +14,7 @@
             res = (+ res 1)
         }
         i = (+ i 1)
-        (eq i strlen(list)) ? {
+        (eq i (strlen list)) ? {
             escape
         }
     }
@@ -24,12 +23,12 @@
 
 
 @ (liat (list)string (idx)int) {
-    (>= lilen(list) idx) ? {
+    (<= (lilen list) idx) ? {
         return 'Error'
     }
     (start_of_element)int
     start_of_element = (stridx list (concat idx ':'))
-    start_of_element = (stridx list ':' start_of_element)
+    start_of_element = (+ 1 (stridx list ':' start_of_element))
     (end_of_element)int
     end_of_element = (stridx list '|' start_of_element)
     return (substr list start_of_element (- end_of_element start_of_element))
@@ -54,7 +53,7 @@
         }
         escaped_str = (concat escaped_str char)
         i = (+ i 1)
-        (eq i strlen(element)) ? {
+        (eq i (strlen element)) ? {
             escape
         }
     }

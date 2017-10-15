@@ -1,8 +1,14 @@
+###
+###   Xaller Standard Library - str.xal
+###   CreativeGP - 2017.10.3(yyyy.mm.dd)
+###
+###   A library to use advanced operations for string.
+
+
 @ (strat (str)string (i)int) {
     return (substr str i 1)
 }
 
-### CGP:2017:10:14
 # isnum ( str )
 # 文字列が数字かどうか判別する関数
 # str -- 判別する文字列
@@ -23,10 +29,10 @@
             }
             j = (+ j 1)
         }
+        i = (+ i 1)
         (eq i (strlen str)) ? {
             escape
         }
-        i = (+ i 1)
     }
     return true
 }

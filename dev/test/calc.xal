@@ -1,6 +1,7 @@
 <list.xal>
 <web.xal>
 
+
 @ (negative (i)int) {
     return (- 0 i)
 }
@@ -34,8 +35,7 @@ divid_btn.text = '/'
 divid_btn.disabled = true
 
 +(ac_btn)Button in operators
-# ac_btn.text = 'AC'
-ac_btn.text = (licon '' 'apple')
+ac_btn.text = 'AC'
 @ (ac_btn.click) {
     view.text = '0'
     mode = 0

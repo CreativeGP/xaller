@@ -35,6 +35,33 @@ function strrep$(src, pattern, replacement) {
 	var regExp = new RegExp(pattern, "g");
 	return src.replace(regExp, replacement); }
 $(function() {
+	function strat(str, i) {
+		return substr$(str,i,1);
+	}
+	function isnum(str) {
+		var i = 0;
+		var numbers = '';
+		numbers = '0123456789';
+		while (true) {
+			var j = 0;
+			while (true) {
+				if ((strat(str,i) ==  strat(numbers,j))) {
+					break;
+				}
+				else if (true) {
+					if ((j == 9)) {
+						return false;
+					}
+				}
+				j = (j + 1);
+			}
+			i = (i + 1);
+			if ((i == strlen$(str))) {
+				break;
+			}
+		}
+		return true;
+	}
 	function lilen(list) {
 		var res = 0;
 		var i = 0;
@@ -43,19 +70,19 @@ $(function() {
 				res = (res + 1);
 			}
 			i = (i + 1);
-			if ((i == strlen == (list))) {
+			if ((i == strlen$(list))) {
 				break;
 			}
 		}
 		return res;
 	}
 	function liat(list, idx) {
-		if ((lilen >= (list) >=  idx)) {
+		if ((lilen(list) <=  idx)) {
 			return 'Error';
 		}
 		var start_of_element = 0;
 		start_of_element = stridx$(list,(idx + ':'));
-		start_of_element = stridx$(list,':',start_of_element);
+		start_of_element = (1 + stridx$(list,':',start_of_element));
 		var end_of_element = 0;
 		end_of_element = stridx$(list,'|',start_of_element);
 		return substr$(list,start_of_element,(end_of_element - start_of_element));
@@ -77,7 +104,7 @@ $(function() {
 			}
 			escaped_str = (escaped_str + char);
 			i = (i + 1);
-			if ((i == strlen == (element))) {
+			if ((i == strlen$(element))) {
 				break;
 			}
 		}
@@ -2757,7 +2784,7 @@ $(function() {
 	var ac_btn = new Button("ac_btn");
 	ac_btn._web = 'Button';
 	$('#operators').append("<button id='ac_btn'></button>");
-	ac_btn.text = licon('','apple');
+	ac_btn.text = String(licon('0:apple|1:banana|2:grapes|','fafafa'));
 	$('#ac_btn').html(ac_btn.text);
 	$('#ac_btn').click(function () {
 		view.text = '0';
