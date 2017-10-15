@@ -39,13 +39,7 @@ divid_btn.text = '/'
 divid_btn.disabled = true
 
 +(ac_btn)Button in operators
-#ac_btn.text = 'AC'
-(fruits)string
-
-fruits = '0:apple|1:banana|8:grapes|'
-# fruits = (lialt fruits 0 'peach')
-fruits = (lireindex fruits)
-ac_btn.text = fruits
+ac_btn.text = 'AC'
 @ (ac_btn.click) {
     view.text = '0'
     mode = 0

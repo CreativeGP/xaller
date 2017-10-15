@@ -178,7 +178,8 @@ $(function() {
 	}
 	function lidel(list, idx) {
 		if ((lilen(list) <=  idx)) {
-			return 'Error';
+			console.log('Error(lidel) Index error');;
+			throw new Error('This is not an error. This is just to abort javascript');
 		}
 		var start_of_element = 0;
 		start_of_element = stridx$(list,(idx + ':'));
@@ -206,11 +207,17 @@ $(function() {
 		return list;
 	}
 	function lialt(list, idx, elm) {
-		list = lidel(list,idx);
-		if ((list == 'Error')) {
-			return 'Error';
+		if ((lilen(list) <=  idx)) {
+			console.log('Error(lidel) Index error');;
+			throw new Error('This is not an error. This is just to abort javascript');
 		}
-		return licon(list,elm);
+		var start_of_element = 0;
+		start_of_element = stridx$(list,(idx + ':'));
+		var end_of_element = 0;
+		end_of_element = stridx$(list,'|',start_of_element);
+		var res = '';
+		res = (substr$(list,0,(2 + start_of_element)) +  elm + substr$(list,end_of_element));
+		return res;
 	}
 	function Web_Object (name) {
 		var me = this;
@@ -2887,7 +2894,7 @@ $(function() {
 	$('#operators').append("<button id='ac_btn'></button>");
 	var fruits = '';
 	fruits = '0:apple|1:banana|8:grapes|';
-	fruits = lireindex(fruits);
+	fruits = lialt(fruits,0,'peach');
 	ac_btn.text = fruits;
 	$('#ac_btn').html(ac_btn.text);
 	$('#ac_btn').click(function () {

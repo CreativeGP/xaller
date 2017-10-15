@@ -115,7 +115,8 @@
 # リストから指定したキーの要素を削除する関数
 @ (lidel (list)string (idx)int) {
     (<= (lilen list) idx) ? {
-        return 'Error'
+        __log 'Error(lidel) Index error'
+        stop
     }
     (start_of_element)int
     start_of_element = (stridx list (concat idx ':'))
@@ -148,11 +149,19 @@
     return list
 }
 
-
+# (lialt list idx elm) -> list
+# リストの指定した要素を変更する関数
 @ (lialt (list)string (idx)int (elm)string) {
-    list = (lidel list idx)
-    (eq list 'Error') ? {
-        return 'Error'
+    (<= (lilen list) idx) ? {
+        __log 'Error(lidel) Index error'
+        stop
     }
-    return (licon list elm)
+    (start_of_element)int
+    start_of_element = (stridx list (concat idx ':'))
+    (end_of_element)int
+    end_of_element = (stridx list '|' start_of_element)
+
+    (res)string
+    res = (concat (substr list 0 (+ 2 start_of_element)) elm (substr list end_of_element))
+    return res
 }
