@@ -62,11 +62,65 @@ $(function() {
 		}
 		return true;
 	}
+	function strdel(str, idx, len) {
+		var res = '';
+		var i = 0;
+		while (true) {
+			if (((idx <= i) &&  (i < (idx + len)))) {
+			}
+			else if (true) {
+				res = (res + strat(str,i));
+			}
+			if ((i == strlen$(str))) {
+				break;
+			}
+			i = (i + 1);
+		}
+		return res;
+	}
+	function strins(src, idx, dst) {
+		var res = '';
+		res = (substr$(src,0,idx) +  dst + substr$(src,idx));
+		return res;
+	}
+	function _li_is_colon(list, i) {
+		if ((strlen$(list) >=  2)) {
+			if ((strlen$(list) >  i)) {
+				return (!(('%' == strat(list,(i - 1)))) &&  (':' == strat(list,i)));
+			}
+			else if (true) {
+				console.log('Error(_li_is_colon): Index error.');;
+				throw new Error('This is not an error. This is just to abort javascript');
+			}
+		}
+		else if (true) {
+			console.log('Error(_li_is_colon): 文字列の長さが短すぎます');;
+			console.log(list);;
+			throw new Error('This is not an error. This is just to abort javascript');
+		}
+	}
+	function _li_is_bar(list, i) {
+		if ((strlen$(list) >=  2)) {
+			if ((strlen$(list) >  i)) {
+				return (!(('%' == strat(list,(i - 1)))) &&  ('|' == strat(list,i)));
+			}
+			else if (true) {
+				console.log('Error(_li_is_bar): Index error.');;
+				throw new Error('This is not an error. This is just to abort javascript');
+			}
+		}
+		else if (true) {
+			console.log('Error(_li_is_bar): 文字列の長さが短すぎます');;
+			console.log(list);;
+			throw new Error('This is not an error. This is just to abort javascript');
+		}
+	}
 	function lilen(list) {
 		var res = 0;
 		var i = 0;
+		i = 2;
 		while (true) {
-			if ((strat(list,i) ==  ':')) {
+			if (_li_is_colon(list,i)) {
 				res = (res + 1);
 			}
 			i = (i + 1);
@@ -85,7 +139,18 @@ $(function() {
 		start_of_element = (1 + stridx$(list,':',start_of_element));
 		var end_of_element = 0;
 		end_of_element = stridx$(list,'|',start_of_element);
-		return substr$(list,start_of_element,(end_of_element - start_of_element));
+		var res = '';
+		res = substr$(list,start_of_element,(end_of_element - start_of_element));
+		var i = 0;
+		i = 1;
+		while (true) {
+			(strat(res,(i - i)) ==  '%');
+			i = (i + 1);
+			if ((i == strlen$(res))) {
+				break;
+			}
+		}
+		return res;
 	}
 	function licon(list, element) {
 		var escaped_str = '';
@@ -110,6 +175,42 @@ $(function() {
 		}
 		list = (list + lilen(list) +  ':' + escaped_str + '|');
 		return list;
+	}
+	function lidel(list, idx) {
+		if ((lilen(list) <=  idx)) {
+			return 'Error';
+		}
+		var start_of_element = 0;
+		start_of_element = stridx$(list,(idx + ':'));
+		var end_of_element = 0;
+		end_of_element = (1 + stridx$(list,'|',start_of_element));
+		var res = '';
+		res = (substr$(list,0,start_of_element) +  substr$(list,end_of_element));
+		return res;
+	}
+	function lireindex(list) {
+		var count = 0;
+		var i = 0;
+		i = 1;
+		while (true) {
+			if (_li_is_colon(list,i)) {
+				list = strdel(list,(i - 1), 1);
+				list = strins(list,(i - 1), String((count)));
+				count = (count + 1);
+			}
+			i = (i + 1);
+			if ((i == strlen$(list))) {
+				break;
+			}
+		}
+		return list;
+	}
+	function lialt(list, idx, elm) {
+		list = lidel(list,idx);
+		if ((list == 'Error')) {
+			return 'Error';
+		}
+		return licon(list,elm);
 	}
 	function Web_Object (name) {
 		var me = this;
@@ -2784,7 +2885,10 @@ $(function() {
 	var ac_btn = new Button("ac_btn");
 	ac_btn._web = 'Button';
 	$('#operators').append("<button id='ac_btn'></button>");
-	ac_btn.text = String(licon('0:apple|1:banana|2:grapes|','fafafa'));
+	var fruits = '';
+	fruits = '0:apple|1:banana|8:grapes|';
+	fruits = lireindex(fruits);
+	ac_btn.text = fruits;
 	$('#ac_btn').html(ac_btn.text);
 	$('#ac_btn').click(function () {
 		view.text = '0';

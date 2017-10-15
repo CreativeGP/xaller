@@ -36,3 +36,39 @@
     }
     return true
 }
+
+
+# strdel ( str idx len )
+# 文字列中のある箇所の文字列を削除して返す関数
+# str -- ソース文字列
+# idx -- 削除開始添字
+# str -- 削除する長さ
+# TODO(cgp) デフォルト引数を実装したときは、lenをデフォで１にするように改造する
+@ (strdel (str)string (idx)int (len)int) {
+    (res)string
+    (i)int
+    loop {
+        (and (<= idx i) (< i (+ idx len))) ? {
+        }
+        branch true ? {
+            res = (concat res (strat str i))
+        }
+        (eq i (strlen str)) ? {
+            escape
+        }
+        i = (+ i 1)
+    }
+    return res
+}
+
+    
+# strins ( src idx dst )
+# 文字列中のある箇所に新しい文字列を挿入して返す関数
+# src -- ソース文字列
+# dst -- 追加する文字列
+# idx -- 追加する箇所
+@ (strins (src)string (idx)int (dst)string) {
+    (res)string
+    res = (concat (substr src 0 idx) dst (substr src idx))
+    return res
+}

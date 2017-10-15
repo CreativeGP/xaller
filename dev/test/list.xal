@@ -4,13 +4,48 @@
 ###
 ###   A library to use list operations.
 
-<str.xal>
+<'str.xal'>
+
+@ (_li_is_colon (list)string (i)int) {
+    (>= (strlen list) 2) ? {
+        (> (strlen list) i) ? {
+            return (and (not (eq '%' (strat list (- i 1)))) (eq ':' (strat list i)))
+        }
+        branch true ? {
+            __log 'Error(_li_is_colon): Index error.'
+            stop
+        }
+    }
+    branch true ? {
+        __log 'Error(_li_is_colon): 文字列の長さが短すぎます'
+        __log list
+        stop
+    }
+}
+
+@ (_li_is_bar (list)string (i)int) {
+    (>= (strlen list) 2) ? {
+        (> (strlen list) i) ? {
+            return (and (not (eq '%' (strat list (- i 1)))) (eq '|' (strat list i)))
+        }
+        branch true ? {
+            __log 'Error(_li_is_bar): Index error.'
+            stop
+        }
+    }
+    branch true ? {
+        __log 'Error(_li_is_bar): 文字列の長さが短すぎます'
+        __log list
+        stop
+    }
+}
 
 @ (lilen (list)string) {
     (res)int
     (i)int
+    i = 2
     loop {
-        (eq (strat list i) ':') ? {
+        (_li_is_colon list i) ? {
             res = (+ res 1)
         }
         i = (+ i 1)
@@ -27,11 +62,25 @@
         return 'Error'
     }
     (start_of_element)int
+    # TODO コロン処理とバー処理
     start_of_element = (stridx list (concat idx ':'))
     start_of_element = (+ 1 (stridx list ':' start_of_element))
     (end_of_element)int
     end_of_element = (stridx list '|' start_of_element)
-    return (substr list start_of_element (- end_of_element start_of_element))
+
+    (res)string
+    res = (substr list start_of_element (- end_of_element start_of_element))
+    (i)int
+    i = 1
+    loop {
+        # エスケープ文字として%が入っていた場合それを削除
+        (eq (strat res (- i i)) '%')
+        i = (+ i 1)
+        (eq i (strlen res)) ? {
+            escape
+        }
+    }
+    return res
 }
 
 
@@ -59,4 +108,51 @@
     }
     list = (concat list (lilen list) ':' escaped_str '|')
     return list
+}
+
+
+# (lidel list idx) -> list
+# リストから指定したキーの要素を削除する関数
+@ (lidel (list)string (idx)int) {
+    (<= (lilen list) idx) ? {
+        return 'Error'
+    }
+    (start_of_element)int
+    start_of_element = (stridx list (concat idx ':'))
+    (end_of_element)int
+    end_of_element = (+ 1 (stridx list '|' start_of_element))
+
+    (res)string
+    res = (concat (substr list 0 start_of_element) (substr list end_of_element))
+    return res
+}
+
+
+# (lireindex list) -> list
+# リストの通し番号をつけ直す関数
+@ (lireindex (list)string) {
+    (count)int
+    (i)int
+    i = 1
+    loop {
+        (_li_is_colon list i) ? {
+            list = (strdel list (- i 1) 1)
+            list = (strins list (- i 1) (count)string)
+            count = (+ count 1)
+        }
+        i = (+ i 1)
+        (eq i (strlen list)) ? {
+            escape
+        }
+    }
+    return list
+}
+
+
+@ (lialt (list)string (idx)int (elm)string) {
+    list = (lidel list idx)
+    (eq list 'Error') ? {
+        return 'Error'
+    }
+    return (licon list elm)
 }

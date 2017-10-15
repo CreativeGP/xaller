@@ -1,3 +1,9 @@
+###
+###   Xaller Standard Library - web.xal
+###   CreativeGP - 2017.10.15(yyyy.mm.dd)
+###
+###   A library to defube web types.
+
 -(Web_Object) {
     (_web)string
 

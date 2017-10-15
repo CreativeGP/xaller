@@ -8,7 +8,7 @@ import atexit
 import json
 import os
 import sys
-
+import copy
 
 # TODO(future)
 # Dirty型の比較（これから）
@@ -102,42 +102,51 @@ def deal_with_import(filename):
     """Deal with xaller import statement."""
 
     # このままだとコメントが反映されないので一回トークン解析してからもとのファイルに戻す
-    raw_tokens = TokenClass.Token.tokenize(filename)
+    origin_tokens = TokenClass.Token.tokenize(filename)
+    extended_tokens = copy.deepcopy(origin_tokens)
     with open(filename) as raw_file:
         raw = raw_file.read().splitlines()
-        for i in range(len(raw_tokens)):
-            if ((genfunc.is_plain(raw_tokens[i-1]) and
-                 raw_tokens[i-1].string is '<')):
+        offset = 0
+        for i in range(len(origin_tokens))[1:-1]:
+            if ((genfunc.is_plain(origin_tokens[i-1])
+                 and origin_tokens[i-1].string == '<'
+                 and origin_tokens[i+1].string == '>')):
                 # NOTE(cgp) If there is a plain angle bracket, get a file name
                 # to import from raw file to contain spaces.
                 # TODO(cgp) Support user and environment variables.
-                raw_line = raw[raw_tokens[i].real_line - 1]
-                filename = raw_line[raw_line.find('<')+1:raw_line.find('>')]
+                raw_line = raw[origin_tokens[i].real_line - 1]
+                importfile = raw_line[raw_line.find('<')+2:raw_line.find('>')-1]
 
-                if os.path.isabs(filename):
+                if os.path.isabs(importfile):
                     # NOTE(cgp) If the path is absolute, import the file as it is.
                     pass
                 else:
                     # NOTE(cgp) Change relative path into absolute.
                     # Here note that the working directory has already been
                     # changed into the source file directory.
-                    filename = os.path.abspath(filename)
+                    importfile = os.path.abspath(importfile)
 
-                try:
-                    # TODO(cgp) May suupport expanding symbolic link?
-                    new_tokens = deal_with_import(filename)
-#                    new_tokens = TokenClass.Token.tokenize(filename)
-                except Exception:
-                    genfunc.err("File not found. '%s'" % filename)
+                if not os.path.isfile(importfile):
+                    genfunc.err("File not found. '%s'" % importfile)
+
+                # TODO(cgp) May suupport expanding symbolic link?
+                new_tokens = deal_with_import(importfile)
+                Global.imported.append(
+                    (importfile, sum(1 for line in open(importfile))))
 
                 # 新しいファイルのトークンの行番号をずらす
                 # TokenClass.Token.shift_line(new_tokens, i - 1)
 
                 # 新しいファイル名もトークン化して、もとのトークンに埋め込む
                 # i-1 ~ i+2 <...>
-                del raw_tokens[i-1:i+2]
-                raw_tokens = genfunc.insert(raw_tokens, i - 1, new_tokens)
-    return raw_tokens
+                # NOTE(cgp) ループはorigin_tokens、操作しているリストは追加された
+                # extended_tokensなのでこの操作にはその差を記録してあるoffsetが必要
+                # TODO(cgp) 二重インポートに対応する
+                del extended_tokens[i+offset-1:i+offset+2]
+                extended_tokens = genfunc.insert(extended_tokens, i + offset - 1, new_tokens)
+                # NOTE(cgp) オフセット設定時は<...>を消したことを考慮して3を引く
+                offset += len(new_tokens) - 3
+    return extended_tokens
 
 
 def prepare_js():
@@ -224,19 +233,6 @@ return src.replace(regExp, replacement); }""")
         elif char == '}':
             indent -= 1
         idx += 1
-
-# while True:
-#     if not genfunc.RUN(Global.lines[Global.exel-1].tokens): break
-#     element_stack = Global.blocks[genfunc.RUN.element_stack[-1]]
-#     if (len(genfunc.RUN.element_stack) > 0
-#         and element_blocks.body[-1].line <= Global.exel):
-#         genfunc.RUN.element_stack.pop()
-#     if Global.exel-1 >= len(Global.lines)-1:
-#         break
-#     Global.exel += 1
-
-# os.remove(Global.input)
-
 
 def out_js():
     """Output JS file."""

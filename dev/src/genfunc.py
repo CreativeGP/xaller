@@ -7,6 +7,9 @@ programmer: CreativeGP
 from __future__ import print_function
 import copy
 import sys
+reload(sys)  
+sys.setdefaultencoding('utf8')
+
 from terminaltables import AsciiTable
 
 import TokenClass
@@ -71,6 +74,14 @@ def dbgprintnoln(string):
     if Global.bDbg: sys.stdout.write(string)
 
 
+def get_error_info(linum):
+    sumlilen = 0
+    for name, lilen in Global.imported:
+        if linum > sumlilen:
+            return (name, linum - sumlilen)
+        sumlilen += lilen
+    return None
+
 def err(string):
     """Throw an error.
 
@@ -81,8 +92,9 @@ def err(string):
     # 便利なように自動的に実行行を見つけるようにする
     for tkn in Global.tokens:
         if Global.exel == tkn.line:
+            errinfo = get_error_info(tkn.real_line)
             print("%s:%d: %s"
-                  % (Global.input, tkn.real_line, string))
+                  % (errinfo[0], tkn.real_line+1, string))
             sys.exit(1)
     # もし実行業がみつからなかったときには、適当に出力しておく
     print(Global.input+":"+"0: "+string)
@@ -1141,8 +1153,26 @@ def translate(token_list, static_default=None):
                 idx = i
                 break
         if idx == -1:
-            err("It is impossible to use 'continue' outside of Global.blocks.")
+            # TODO(cgp) 上と同じなのになぜかエラー
+            pass
+            # err("It is impossible to use 'continue' outside of Global.blocks.")
         return True
+
+    elif Global.fs[-1] == -1 and len(run_tokens) == 1 and \
+         is_plain(run_tokens[0]) and run_tokens[0].string == 'stop':
+        out("throw new Error('This is not an error. This is just to abort javascript');")
+        return True
+
+    if ((len(run_tokens) > 0
+         and is_plain(run_tokens[0])
+         and run_tokens[0].string == '__log')):
+        try:
+            outnoln("console.log(")
+            out_expression(run_tokens[1:])
+            solvebuf()
+            outnoln(");")
+        except IndexError:
+            pass
 
     elif Global.fs[-1] == -1 and len(run_tokens) == 1 and \
          is_plain(run_tokens[0]) and run_tokens[0].string == 'end':
