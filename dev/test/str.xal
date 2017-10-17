@@ -45,6 +45,11 @@
 # str -- 削除する長さ
 # TODO(cgp) デフォルト引数を実装したときは、lenをデフォで１にするように改造する
 @ (strdel (str)string (idx)int (len)int) {
+    # NOTE idx が負の数だった場合最後からのインデックスとして再設定
+    (< idx 0) ? {
+        idx = (+ (strlen str) idx)
+    }
+
     (res)string
     (i)int
     loop {
@@ -68,6 +73,11 @@
 # dst -- 追加する文字列
 # idx -- 追加する箇所
 @ (strins (src)string (idx)int (dst)string) {
+    # NOTE idx が負の数だった場合最後からのインデックスとして再設定
+    (< idx 0) ? {
+        idx = (+ (strlen str) idx)
+    }
+
     (res)string
     res = (concat (substr src 0 idx) dst (substr src idx))
     return res

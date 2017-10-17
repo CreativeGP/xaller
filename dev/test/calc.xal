@@ -2,17 +2,13 @@
 <'web.xal'>
 <'math.xal'>
 
-@ (negative (i)int) {
-    return (- 0 i)
-}
-
 (mode)int
 (using_operation)string
-(operations)string
-operations = (licon operations '+')
-operations = (licon operations '-')
-operations = (licon operations '*')
-operations = (licon operations '/')
+(lOperators)string
+lOperators = (licon lOperators '+')
+lOperators = (licon lOperators '-')
+lOperators = (licon lOperators '*')
+lOperators = (licon lOperators '/')
 
 +(main)Div
 +(num1)Div
@@ -30,17 +26,116 @@ mode = 0
     loop {
         (tmpofs)int
         tmpofs = ofs
+        # 最大数文字
+        ofs = 100000 
         (i)int
         loop {
-            ofs = (min ofs (stridx str (liat operations i) ofs))
+            (opridx)int
+            opridx = (stridx str (liat lOperators i) tmpofs)
+            (not (eq opridx -1)) ? {
+                ofs = (min ofs opridx)
+            }
             i = (+ i 1)
-            (eq i (lilen operations)) ? {
+            (eq i (lilen lOperators)) ? {
                 escape
             }
         }
+        (eq ofs 100000) ? {
+            words = (licon words (substr str (- tmpofs 1)))
+            escape
+        }
+        # tmpofsを調整して「符号+数字」が入るようにする
+        (eq tmpofs 0) ? {
+            tmpofs = 0
+        }
+        branch true ? {
+            tmpofs = (- tmpofs 1)
+        }
         words = (licon words (substr str tmpofs (- ofs tmpofs)))
+        ofs = (+ 1 ofs)
     }
-view.text = words
+    # めんどくさいので、0番目の要素の最初にスペースを入れて調整
+    words = (lialt words 0 (concat ' ' (liat words 0)))
+    # 0:32|1:+21|2:+14|3:*21|
+    i = 0
+    loop {
+        (eq (strat (liat words i) 0) '*') ? {
+            # 掛け算が見つかった場合、前の要素の数字を取得してこの要素
+            # の数字と掛け合わせる。この要素を削除して前の要素の内容を
+            # 演算結果に変更する。
+            (a)int
+            a = (substr (liat words (- i 1)) 1)int
+            (b)int
+            (eq (strlen (liat words i)) 1) ? {
+                # この場合計算すべき数字は次の要素に入っているのでそれを取得
+                b = (liat words (+ i 1))int
+                words = (lidel words (+ i 1))
+            }
+            branch true ? {
+                b = (substr (liat words i) 1)int
+            }
+            (ans)int
+            ans = (* a b)
+            words = (lidel words i)
+            words = (lialt words (- i 1) (concat (strat (liat words (- i 1)) 0) (ans)string))
+            i = (- i 1)
+        }
+        (eq (strat (liat words i) 0) '/') ? {
+            # 掛け算が見つかった場合、前の要素の数字を取得してこの要素
+            # の数字と掛け合わせる。この要素を削除して前の要素の内容を
+            # 演算結果に変更する。
+            (a)int
+            a = (substr (liat words (- i 1)) 1)int
+            (b)int
+            (eq (strlen (liat words i)) 1) ? {
+                # この場合計算すべき数字は次の要素に入っているのでそれを取得
+                b = (liat words (+ i 1))int
+                words = (lidel words (+ i 1))
+            }
+            branch true ? {
+                b = (substr (liat words i) 1)int
+            }
+            (ans)int
+            ans = (/ a b)
+            words = (lidel words i)
+            words = (lialt words (- i 1) (concat (strat (liat words (- i 1)) 0) (ans)string))
+            i = (- i 1)
+        }
+        i = (+ i 1)
+        (>= i (lilen words)) ? {
+            escape
+        }
+    }
+    i = 0
+    loop {
+        (eq (strat (liat words i) 0) '+') ? {
+            (a)int
+            a = (substr (liat words (- i 1)) 1)int
+            (b)int
+            b = (substr (liat words i) 1)int
+            (ans)int
+            ans = (+ a b)
+            words = (lidel words i)
+            words = (lialt words (- i 1) (concat (strat (liat words (- i 1)) 0) (ans)string))
+            i = (- i 1)
+        }
+        (eq (strat (liat words i) 0) '-') ? {
+            (a)int
+            a = (substr (liat words (- i 1)) 1)int
+            (b)int
+            b = (substr (liat words i) 1)int
+            (ans)int
+            ans = (- a b)
+            words = (lidel words i)
+            words = (lialt words (- i 1) (concat (strat (liat words (- i 1)) 0) (ans)string))
+            i = (- i 1)
+        }
+        i = (+ i 1)
+        (>= i (lilen words)) ? {
+            escape
+        }
+    }
+    return (liat words 0)string
 }
 
 +(plus_btn)Button in operators
@@ -64,6 +159,21 @@ ac_btn.text = 'AC'
 @ (ac_btn.click) {
     view.text = '0'
     mode = 0
+}
+
++(ce_btn)Button in operators
+ce_btn.text = 'CE'
+@ (ce_btn.click) {
+    # TODO 複数文字列関数が出てきたときには対応する
+    # NOTE 直前の文字を一つ消すだけ
+    view.text = (strdel view.text (- (strlen view.text) 1) 1)
+#    mode = 0
+}
+
++(point_btn)Button in operators
+point_btn.text = '.'
+@ (point_btn.click) {
+    view.text = (concat view.text '.')
 }
 
 -(numbtn):Button {
@@ -110,32 +220,45 @@ ac_btn.text = 'AC'
 
 @ (plus_btn.click) {
     (eq mode 1) ? {
+        (limatchstr lOperators (strat view.text (- (strlen view.text) 1))) ? {
+            # 前の文字が記号の場合は記号を置換
+            view.text = (strdel view.text -1 1)
+        }
         view.text = (concat view.text '+')
-        mode = 0
         using_operation = '+'
     }
 }
 
 @ (product_btn.click) {
+    (limatchstr lOperators (strat view.text (- (strlen view.text) 1))) ? {
+        view.text = (strdel view.text -1 1)
+    }
     (eq mode 1) ? {
         view.text = (concat view.text '*')
-        mode = 0
         using_operation = '*'
     }
 }
 
 @ (mi_btn.click) {
+    (prev_char)string
+    prev_char = (strat view.text (- (strlen view.text) 1))
+    (limatchstr lOperators prev_char) ? {
+        (not (or (eq prev_char '*') (eq prev_char '/'))) ? {
+            view.text = (strdel view.text -1 1)
+        }
+    }
     (eq mode 1) ? {
         view.text = (concat view.text '-')
-        mode = 0
         using_operation = '-'
     }
 }
 
 @ (divid_btn.click) {
+    (limatchstr lOperators (strat view.text (- (strlen view.text) 1))) ? {
+        view.text = (strdel view.text -1 1)
+    }
     (eq mode 1) ? {
         view.text = (concat view.text '/')
-        mode = 0
         using_operation = '/'
     }
 }
@@ -144,28 +267,9 @@ ac_btn.text = 'AC'
 eq_btn.text = '='
 @ (eq_btn.click) {
     (eq mode 1) ? {
-        (ans)int
-        (parse view.text)
-        # view.text = '62+41'
-        # (a)int
-        # (b)int
-        # a = (substr view.text 0 (stridx view.text using_operation))int
-        # b = (substr view.text (+ 1 (stridx view.text using_operation)) (negative 1))int
-        # cond (eq using_operation '+') ? {
-        #     ans = (+ a b)
-        # }
-        # branch (eq using_operation '-') ? {
-        #     ans = (- a b)
-        # }
-        # branch (eq using_operation '*') ? {
-        #     ans = (* a b)
-        # }
-        # branch (eq using_operation '/') ? {
-        #     ans = (/ a b)
-        # }
-        # view.text = (concat view.text '=' (ans)string)
-        # mode = 0
-
+        (ans)string
+        ans = (parse view.text)
+        view.text = (concat view.text ' = ' ans)
     }
 }
 

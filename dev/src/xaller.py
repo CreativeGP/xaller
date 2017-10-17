@@ -11,6 +11,9 @@ import sys
 import copy
 import time
 
+from multiprocessing import Pool
+from multiprocessing import Process
+
 # TODO(future)
 # Dirty型の比較（これから）
 # 変数の初期化
@@ -250,7 +253,6 @@ def out_js():
 def main():
     """Process entry point."""
     now = time.time()
-
     deal_with_cmdargs()
     out_html()
 
@@ -260,9 +262,10 @@ def main():
     Global.lines = TokenClass.Line.parse(Global.tokens, 0)
 
     prepare_js()
+    if Global.bTime: print("Elapsed time: " + str(time.time()-now))
     out_js()
 
-    if Global.bTime: print("Elapsed time: " + str(time.time()-now))
+#    if Global.bTime: print("Elapsed time: " + str(time.time()-now))
 
 if __name__ == '__main__':
     main()

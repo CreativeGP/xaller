@@ -63,6 +63,9 @@ $(function() {
 		return true;
 	}
 	function strdel(str, idx, len) {
+		if ((idx < 0)) {
+			idx = (strlen$(str) +  idx);
+		}
 		var res = '';
 		var i = 0;
 		while (true) {
@@ -79,6 +82,9 @@ $(function() {
 		return res;
 	}
 	function strins(src, idx, dst) {
+		if ((idx < 0)) {
+			idx = (strlen$(str) +  idx);
+		}
 		var res = '';
 		res = (substr$(src,0,idx) +  dst + substr$(src,idx));
 		return res;
@@ -112,9 +118,12 @@ $(function() {
 		}
 	}
 	function lilen(list) {
+		if ((strlen$(list) <=  1)) {
+			return 0;
+		}
 		var res = 0;
 		var i = 0;
-		i = 2;
+		i = 1;
 		while (true) {
 			if (_li_is_colon(list,i)) {
 				res = (res + 1);
@@ -128,7 +137,8 @@ $(function() {
 	}
 	function liat(list, idx) {
 		if ((lilen(list) <=  idx)) {
-			return 'Error';
+			console.log('Error(liat): Index error.');;
+			throw new Error('This is not an error. This is just to abort javascript');
 		}
 		var start_of_element = 0;
 		start_of_element = stridx$(list,(idx + ':'));
@@ -139,11 +149,12 @@ $(function() {
 		res = substr$(list,start_of_element,(end_of_element - start_of_element));
 		var i = 0;
 		i = 1;
-		while (true) {
-			(strat(res,(i - i)) ==  '%');
-			i = (i + 1);
-			if ((i == strlen$(res))) {
-				break;
+		if ((i > 1)) {
+			while (true) {
+				i = (i + 1);
+				if ((i == strlen$(res))) {
+					break;
+				}
 			}
 		}
 		return res;
@@ -183,6 +194,7 @@ $(function() {
 		end_of_element = (1 + stridx$(list,'|',start_of_element));
 		var res = '';
 		res = (substr$(list,0,start_of_element) +  substr$(list,end_of_element));
+		res = lireindex(res);
 		return res;
 	}
 	function lireindex(list) {
@@ -195,10 +207,10 @@ $(function() {
 				list = strins(list,(i - 1), String((count)));
 				count = (count + 1);
 			}
-			i = (i + 1);
-			if ((i == strlen$(list))) {
+			if ((i == (strlen$(list) -  1))) {
 				break;
 			}
+			i = (i + 1);
 		}
 		return list;
 	}
@@ -214,6 +226,19 @@ $(function() {
 		var res = '';
 		res = (substr$(list,0,(2 + start_of_element)) +  elm + substr$(list,end_of_element));
 		return res;
+	}
+	function limatchstr(list, str) {
+		var i = 0;
+		while (true) {
+			if ((liat(list,i) ==  str)) {
+				return true;
+			}
+			if ((i == (lilen(list) -  1))) {
+				break;
+			}
+			i = (i + 1);
+		}
+		return false;
 	}
 	function Web_Object (name) {
 		var me = this;
@@ -2860,16 +2885,13 @@ $(function() {
 		}
 		return (fib((n - 1)) +  fib((n - 2)));
 	}
-	function negative(i) {
-		return (0 - i);
-	}
 	var mode = 0;
 	var using_operation = '';
-	var operations = '';
-	operations = licon(operations,'+');
-	operations = licon(operations,'-');
-	operations = licon(operations,'*');
-	operations = licon(operations,'/');
+	var lOperators = '';
+	lOperators = licon(lOperators,'+');
+	lOperators = licon(lOperators,'-');
+	lOperators = licon(lOperators,'*');
+	lOperators = licon(lOperators,'/');
 	var main = new Div("main");
 	main._web = 'Div';
 	$('body').append("<div id='main'></div>");
@@ -2898,18 +2920,104 @@ $(function() {
 		while (true) {
 			var tmpofs = 0;
 			tmpofs = ofs;
+			ofs = 100000;
 			var i = 0;
 			while (true) {
-				ofs = min(ofs,stridx$(str,liat(operations,i) ,  ofs));
+				var opridx = 0;
+				opridx = stridx$(str,liat(lOperators,i) ,  tmpofs);
+				if (!((opridx == -1))) {
+					ofs = min(ofs,opridx);
+				}
 				i = (i + 1);
-				if ((i == lilen(operations))) {
+				if ((i == lilen(lOperators))) {
 					break;
 				}
 			}
+			if ((ofs == 100000)) {
+				words = licon(words,substr$(str,(tmpofs - 1)));
+				break;
+			}
+			if ((tmpofs == 0)) {
+				tmpofs = 0;
+			}
+			else if (true) {
+				tmpofs = (tmpofs - 1);
+			}
 			words = licon(words,substr$(str,tmpofs,(ofs - tmpofs)));
+			ofs = (1 + ofs);
 		}
-		view.text = words;
-		$('#view').html(view.text);
+		words = lialt(words,0,(' ' + liat(words,0)));
+		i = 0;
+		while (true) {
+			if ((strat(liat(words,i), 0) ==  '*')) {
+				var a = 0;
+				a = Number(substr$(liat(words,(i - 1)) ,  1));
+				var b = 0;
+				if ((strlen$(liat(words,i)) ==  1)) {
+					b = Number(liat(words,(i + 1)));
+					words = lidel(words,(i + 1));
+				}
+				else if (true) {
+					b = Number(substr$(liat(words,i) ,  1));
+				}
+				var ans = 0;
+				ans = (a * b);
+				words = lidel(words,i);
+				words = lialt(words,(i - 1), (strat(liat(words,(i - 1)), 0) +  String((ans))));
+				i = (i - 1);
+			}
+			if ((strat(liat(words,i), 0) ==  '/')) {
+				var a = 0;
+				a = Number(substr$(liat(words,(i - 1)) ,  1));
+				var b = 0;
+				if ((strlen$(liat(words,i)) ==  1)) {
+					b = Number(liat(words,(i + 1)));
+					words = lidel(words,(i + 1));
+				}
+				else if (true) {
+					b = Number(substr$(liat(words,i) ,  1));
+				}
+				var ans = 0;
+				ans = (a / b);
+				words = lidel(words,i);
+				words = lialt(words,(i - 1), (strat(liat(words,(i - 1)), 0) +  String((ans))));
+				i = (i - 1);
+			}
+			i = (i + 1);
+			if ((i >= lilen(words))) {
+				break;
+			}
+		}
+		i = 0;
+		while (true) {
+			if ((strat(liat(words,i), 0) ==  '+')) {
+				var a = 0;
+				a = Number(substr$(liat(words,(i - 1)) ,  1));
+				var b = 0;
+				b = Number(substr$(liat(words,i) ,  1));
+				var ans = 0;
+				ans = (a + b);
+				words = lidel(words,i);
+				words = lialt(words,(i - 1), (strat(liat(words,(i - 1)), 0) +  String((ans))));
+				i = (i - 1);
+			}
+			if ((strat(liat(words,i), 0) ==  '-')) {
+				var a = 0;
+				a = Number(substr$(liat(words,(i - 1)) ,  1));
+				var b = 0;
+				b = Number(substr$(liat(words,i) ,  1));
+				var ans = 0;
+				ans = (a - b);
+				words = lidel(words,i);
+				words = lialt(words,(i - 1), (strat(liat(words,(i - 1)), 0) +  String((ans))));
+				i = (i - 1);
+			}
+			i = (i + 1);
+			if ((i >= lilen(words))) {
+				break;
+			}
+		}
+		return String(liat(words,0));
 	}
 	var plus_btn = new Button("plus_btn");
 	plus_btn._web = 'Button';
@@ -2948,6 +3056,24 @@ $(function() {
 		view.text = '0';
 		$('#view').html(view.text);
 		mode = 0;
+	});
+	var ce_btn = new Button("ce_btn");
+	ce_btn._web = 'Button';
+	$('#operators').append("<button id='ce_btn'></button>");
+	ce_btn.text = 'CE';
+	$('#ce_btn').html(ce_btn.text);
+	$('#ce_btn').click(function () {
+		view.text = strdel(view.text,(strlen$(view.text) -  1), 1);
+		$('#view').html(view.text);
+	});
+	var point_btn = new Button("point_btn");
+	point_btn._web = 'Button';
+	$('#operators').append("<button id='point_btn'></button>");
+	point_btn.text = '.';
+	$('#point_btn').html(point_btn.text);
+	$('#point_btn').click(function () {
+		view.text = (view.text + '.');
+		$('#view').html(view.text);
 	});
 	function numbtn (name) {
 		var me = this;
@@ -3107,33 +3233,49 @@ $(function() {
 	button0.set_num(0);
 	$('#plus_btn').click(function () {
 		if ((mode == 1)) {
+			if (limatchstr(lOperators,strat(view.text,(strlen$(view.text) -  1)))) {
+				view.text = strdel(view.text,-1,1);
+				$('#view').html(view.text);
+			}
 			view.text = (view.text + '+');
 			$('#view').html(view.text);
-			mode = 0;
 			using_operation = '+';
 		}
 	});
 	$('#product_btn').click(function () {
+		if (limatchstr(lOperators,strat(view.text,(strlen$(view.text) -  1)))) {
+			view.text = strdel(view.text,-1,1);
+			$('#view').html(view.text);
+		}
 		if ((mode == 1)) {
 			view.text = (view.text + '*');
 			$('#view').html(view.text);
-			mode = 0;
 			using_operation = '*';
 		}
 	});
 	$('#mi_btn').click(function () {
+		var prev_char = '';
+		prev_char = strat(view.text,(strlen$(view.text) -  1));
+		if (limatchstr(lOperators,prev_char)) {
+			if (!(((prev_char == '*') ||  (prev_char == '/')))) {
+				view.text = strdel(view.text,-1,1);
+				$('#view').html(view.text);
+			}
+		}
 		if ((mode == 1)) {
 			view.text = (view.text + '-');
 			$('#view').html(view.text);
-			mode = 0;
 			using_operation = '-';
 		}
 	});
 	$('#divid_btn').click(function () {
+		if (limatchstr(lOperators,strat(view.text,(strlen$(view.text) -  1)))) {
+			view.text = strdel(view.text,-1,1);
+			$('#view').html(view.text);
+		}
 		if ((mode == 1)) {
 			view.text = (view.text + '/');
 			$('#view').html(view.text);
-			mode = 0;
 			using_operation = '/';
 		}
 	});
@@ -3144,8 +3286,10 @@ $(function() {
 	$('#eq_btn').html(eq_btn.text);
 	$('#eq_btn').click(function () {
 		if ((mode == 1)) {
-			var ans = 0;
-			parse(view.text);
+			var ans = '';
+			ans = parse(view.text);
+			view.text = (view.text + ' = ' + ans);
+			$('#view').html(view.text);
 		}
 	});
 	return;

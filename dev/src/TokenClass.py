@@ -164,7 +164,8 @@ class Token(object):
                          # 対象に入れないようにする
                          and line[i] != '_'
                          and line[i] != '$'
-                         and line[i] != '.')):
+                         and line[i] != '.'
+                         and not (line[i] == '-' and line[i+1].isdigit()))):
                         if bufferstr != '':
                             token = Token(line_count, bufferstr)
                             token.real_line = line_count

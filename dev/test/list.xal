@@ -37,9 +37,12 @@
 }
 
 @ (lilen (list)string) {
+    (<= (strlen list) 1) ? {
+        return 0
+    }
     (res)int
     (i)int
-    i = 2
+    i = 1
     loop {
         (_li_is_colon list i) ? {
             res = (+ res 1)
@@ -55,7 +58,8 @@
 
 @ (liat (list)string (idx)int) {
     (<= (lilen list) idx) ? {
-        return 'Error'
+        __log 'Error(liat): Index error.'
+        stop
     }
     (start_of_element)int
     # TODO コロン処理とバー処理
@@ -68,12 +72,14 @@
     res = (substr list start_of_element (- end_of_element start_of_element))
     (i)int
     i = 1
-    loop {
-        # エスケープ文字として%が入っていた場合それを削除
-        (eq (strat res (- i i)) '%')
-        i = (+ i 1)
-        (eq i (strlen res)) ? {
-            escape
+    (> i 1) ? {
+        loop {
+            # エスケープ文字として%が入っていた場合それを削除
+            # (eq (strat res (- i i)) '%')
+            i = (+ i 1)
+            (eq i (strlen res)) ? {
+                escape
+            }
         }
     }
     return res
@@ -121,6 +127,7 @@
 
     (res)string
     res = (concat (substr list 0 start_of_element) (substr list end_of_element))
+    res = (lireindex res)
     return res
 }
 
@@ -137,10 +144,10 @@
             list = (strins list (- i 1) (count)string)
             count = (+ count 1)
         }
-        i = (+ i 1)
-        (eq i (strlen list)) ? {
+        (eq i (- (strlen list) 1)) ? {
             escape
         }
+        i = (+ i 1)
     }
     return list
 }
@@ -160,4 +167,20 @@
     (res)string
     res = (concat (substr list 0 (+ 2 start_of_element)) elm (substr list end_of_element))
     return res
+}
+
+# (limatchstr list str) -> Boolean
+# リスト内の各文字列に入力文字列と同じものがあるかどうかを判断
+@ (limatchstr (list)string (str)string) {
+    (i)int
+    loop {
+        (eq (liat list i) str) ? {
+            return true
+        }
+        (eq i (- (lilen list) 1)) ? {
+            escape
+        }
+        i = (+ i 1)
+    }
+    return false
 }

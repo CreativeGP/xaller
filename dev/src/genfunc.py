@@ -537,6 +537,12 @@ def get_func_idx(string):
 
 
 def out_arg_value(tkn, next_tkn, sep):
+    res = 0
+# if ((tkn.string == '-'
+#      and  is_number(next_tkn))):
+#     tkn.string += next_tkn.string
+#     res = 1
+
     js_formatted_string = ("'" + tkn.string + "'"
                            if tkn.ttype.String
                            else tkn.string)
@@ -553,6 +559,8 @@ def out_arg_value(tkn, next_tkn, sep):
                          % (','
                             if sep == ',' else
                             ' ' + sep + ' '))
+    return res
+
 
 # TODO(cgp) 不等号関数の複数引数指定時の処理
 def out_expression(token_list, get_string=False):
@@ -627,9 +635,13 @@ def out_expression(token_list, get_string=False):
                     if Global.sep_type[func_name] == ",":
                         Global.jsbuf += func_name + "$"
 
-                    Global.jsbuf += ("!("
-                                     if func_name == "not" else
-                                     "(")
+                    # 特別な演算子たちの出力
+                    if func_name == "not":
+                        Global.jsbuf += "!("
+                    elif func_name == "neg":
+                        Global.jsbuf += "-("
+                    else:
+                        Global.jsbuf += "("
                 else:
                     # 普通関数の場合:
                     # コンマと関数の開始位置を更新して関数名と開始用カッコをつける
@@ -684,7 +696,7 @@ def out_expression(token_list, get_string=False):
                 # NOTE: Web変数は展開して出力
                 # TODO: これだけでは値が定義されていなかった場合の処理が適切ではないので改善する
                 # eval_tokens([t])
-                out_arg_value(tkn, token_list[i+1], buildin[-1])
+                con = i + out_arg_value(tkn, token_list[i+1], buildin[-1])
         except IndexError:
             pass
 
