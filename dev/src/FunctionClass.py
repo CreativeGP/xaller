@@ -23,8 +23,8 @@ class Function(object):
 
     _static_id = 0
 
-    def __init__(self, block_ind, buildin=False):
-        block = Global.blocks[block_ind]
+    def __init__(self, block, buildin=False):
+#        block = Global.blocks[block_ind]
         if not TokenClass.Token.find_keyword(block.body, "return"):
 #            err("There is no 'return' in function '"+block.root[2].string+"'")
             pass
@@ -40,7 +40,8 @@ class Function(object):
                 ValueClass.Value('', new_arg_value_type)))
 
         self.name = block.root[2].string
-        self.block_ind = block_ind
+        self.block = block
+#        self.block_ind = block_ind
         self.args = [arglist]
         self.vars = [[]]
         self.has_returned = None
@@ -151,7 +152,7 @@ class Function(object):
         genfunc.dbgprint("RUNNING FUNCTION: LEN(ARGS)=%d" % len(self.args))
 
         Global.retl.append(Global.exel)
-        Global.exel = Global.tokens[Global.blocks[self.block_ind].token_ind].line-1
+        Global.exel = Global.tokens[self.block.token_ind].line-1
         Global.fs.append(self.fid)
 
         self.has_returned = None

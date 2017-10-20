@@ -10,6 +10,7 @@ brace_requests = [1] # Remember request of brace.
 outjs = '' # JS File to output
 bDbg = False # Flag output for debug.
 bTime = False
+bPreCompile = False
 jsbuf = ''
 lock = False
 
@@ -65,4 +66,5 @@ sep_type = {
 output = ''
 input = ''
 imported = []
+imported_line = 0
 

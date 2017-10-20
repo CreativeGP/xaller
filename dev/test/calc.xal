@@ -182,6 +182,7 @@ point_btn.text = '.'
         .num = num
         .text = (num)string
     }
+
     @ (click) {
         # 文字を後ろにくっつける
         (eq view.text '0') ? {

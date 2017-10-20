@@ -82,3 +82,5 @@
     res = (concat (substr src 0 idx) dst (substr src idx))
     return res
 }
+
+abort

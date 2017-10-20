@@ -10,6 +10,8 @@ import os
 import sys
 import copy
 import time
+import pickle
+import tarfile
 
 from multiprocessing import Pool
 from multiprocessing import Process
@@ -59,6 +61,10 @@ def deal_with_cmdargs():
     # -tを見つけた際にはタイムスタンプを押す
     if '-t' in args:
         Global.bTime = True
+
+    # -cを見つけた際にはタイムスタンプを押す
+    if '-c' in args:
+        Global.bPreCompile = True
 
     # その他のスイッチを見つけた場合はその次にある引数がデータになる
     if '-o' in args and args.index('-o')+1 < len(args):
@@ -134,13 +140,22 @@ def deal_with_import(filename):
                     # changed into the source file directory.
                     importfile = os.path.abspath(importfile)
 
+                if not Global.bPreCompile:
+                    # プリコンパイルモードではない場合はプリコンパイルファイルを探してあればそちらを使う
+                    name, ext = os.path.splitext(os.path.basename(raw_line[raw_line.find('<')+2:raw_line.find('>')-1]))
+                    pcp_path = os.path.dirname(importfile) + "/" + name + ".pcp"
+                    if os.path.isfile(pcp_path):
+                        genfunc.dbgprint("Pre-compiled file found. (%s" % pcp_path)
+                        Global.imported.append([pcp_path, 0, [True, False]])
+                        continue
+
                 if not os.path.isfile(importfile):
                     genfunc.err("File not found. '%s'" % importfile)
 
                 # TODO(cgp) May suupport expanding symbolic link?
                 new_tokens = deal_with_import(importfile)
                 Global.imported.append(
-                    (importfile, sum(1 for line in open(importfile))))
+                    [importfile, sum(1 for line in open(importfile)), [False, False]])
 
                 # 新しいファイルのトークンの行番号をずらす
                 # TokenClass.Token.shift_line(new_tokens, i - 1)
@@ -163,46 +178,47 @@ def prepare_js():
                      + "/html_rule.json"), 'r')
     Global.html_rules = json.load(json_file)
 
-    # 'strtrimr':'',
-    # 'strtriml'
-    # 'strridx':',', 'strrep':'',
-    genfunc.out("""function strlen$(str) { return str.length; }""")
-    genfunc.out("""function substr$(str, start, length=-1) { if (length == -1) { length = str.length - start;} return str.substr(start, length); }""")
-    genfunc.out("""
-function strtrim$(str, char) {
-    res = ''
-    for (var i = 0; i < str.length; i++) {
-        if (str[i] != char) { res += str[i]; }
+    if not Global.bPreCompile:
+        # 'strtrimr':'',
+        # 'strtriml'
+        # 'strridx':',', 'strrep':'',
+        genfunc.out("""function strlen$(str) { return str.length; }""")
+        genfunc.out("""function substr$(str, start, length=-1) { if (length == -1) { length = str.length - start;} return str.substr(start, length); }""")
+        genfunc.out("""
+    function strtrim$(str, char) {
+        res = ''
+        for (var i = 0; i < str.length; i++) {
+            if (str[i] != char) { res += str[i]; }
+        }
+        return res;
     }
-    return res;
-}
-""")
-    genfunc.out("""
-function strtriml$(str, char) {
-    res = ''
-    if (str[0] != char) { return str; }
-    for (var i = 0; i < str.length; i++) {
-        if (str[i] != char) { res = str.substr(i); break; }
+    """)
+        genfunc.out("""
+    function strtriml$(str, char) {
+        res = ''
+        if (str[0] != char) { return str; }
+        for (var i = 0; i < str.length; i++) {
+            if (str[i] != char) { res = str.substr(i); break; }
+        }
+        return res;
     }
-    return res;
-}
-""")
-    genfunc.out("""
-function strtrimr$(str, char) {
-    res = ''
-    if (str[str.length-1] != char) { return str; }
-    for (var i = str.length-1; i >= 0; i--) {
-        if (str[i] != char) { res = str.substr(0, i+1); break; }
+    """)
+        genfunc.out("""
+    function strtrimr$(str, char) {
+        res = ''
+        if (str[str.length-1] != char) { return str; }
+        for (var i = str.length-1; i >= 0; i--) {
+            if (str[i] != char) { res = str.substr(0, i+1); break; }
+        }
+        return res;
     }
-    return res;
-}
-""")
-    genfunc.out("""function stridx$(cmpstr, string, start=0) { return cmpstr.indexOf(string, start); }""")
-    genfunc.out("""function strridx$(cmpstr, string, start=0) { return cmpstr.lastIndexOf(string, start); }""")
-    genfunc.out("""function strrep$(src, pattern, replacement) {
-var regExp = new RegExp(pattern, "g");
-return src.replace(regExp, replacement); }""")
-    genfunc.out("$(function() {")
+    """)
+        genfunc.out("""function stridx$(cmpstr, string, start=0) { return cmpstr.indexOf(string, start); }""")
+        genfunc.out("""function strridx$(cmpstr, string, start=0) { return cmpstr.lastIndexOf(string, start); }""")
+        genfunc.out("""function strrep$(src, pattern, replacement) {
+    var regExp = new RegExp(pattern, "g");
+    return src.replace(regExp, replacement); }""")
+        genfunc.out("$(function() {")
 
     # RUN!!!!!
     # 静的な翻訳
@@ -218,7 +234,8 @@ return src.replace(regExp, replacement); }""")
                 genfunc.translate.element_stack.pop()
         Global.exel += 1
 
-    genfunc.out("});")
+    if not Global.bPreCompile:
+        genfunc.out("});")
 
     # インデントを出力、基本は閉じ括弧開き括弧でインデント数を操作しているが、
     # 単独閉じ括弧の場合に小細工を加えている(See L131)
@@ -245,16 +262,33 @@ return src.replace(regExp, replacement); }""")
 def out_js():
     """Output JS file."""
     # TODO(cgp) calc.xal -> (calc.xal.js => calc.js)
-    js_file = open(Global.output + ".js", 'w')
-    js_file.write(Global.outjs)
-    js_file.close()
+    if Global.bPreCompile:
+        pcp = tarfile.TarFile(os.path.splitext(Global.output)[0] + ".pcp", 'w')
+
+        tmp = open(Global.output + ".pickle", 'wb')
+        pickle.dump((Global.Vars, Global.Funcs, Global.vtypes, Global.wobs, Global.blocks, Global.tokens, Global.lines), tmp)
+        tmp.close()
+        pcp.add(Global.output + ".pickle")
+        os.remove(Global.output + ".pickle")
+
+        tmp = open(Global.output + ".js", 'wb')
+        tmp.write(Global.outjs)
+        tmp.close()
+        pcp.add(Global.output + ".js")
+        os.remove(Global.output + ".js")
+
+        pcp.close()
+    else:
+        js_file = open(Global.output + ".js", 'w')
+        js_file.write(Global.outjs)
+        js_file.close()
 
 
 def main():
     """Process entry point."""
     now = time.time()
     deal_with_cmdargs()
-    out_html()
+    if not Global.bPreCompile: out_html()
 
     Global.tokens = deal_with_import(Global.input)
     Global.blocks = TokenClass.Block.parse(Global.tokens)

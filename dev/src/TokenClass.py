@@ -61,6 +61,13 @@ class Token(object):
         self.line = line
         self.real_line = 0 # 実際のファイルでの行番号
 
+
+    def get_idx(self):
+        for idx, tkn in enumerate(Global.tokens):
+            if self is tkn:
+                return idx
+
+
     @staticmethod
     def find_keyword(tokens, keyword):
         ''' トークンの中にキーワードがあるかどうかを識別する '''
@@ -221,8 +228,25 @@ class Line(object):
 
     def __init__(self, num):
         self.tokens = []
-        self.num = num
-        self.token_ind = 0
+
+
+    def get_first_token_idx(self):
+        for idx, tkn in enumerate(Global.tokens):
+            if self.tokens[0] is tkn:
+                return idx
+
+
+    def get_end_token_idx(self):
+        for idx, tkn in enumerate(Global.tokens):
+            if self.tokens[0] is tkn:
+                return idx
+
+
+    def get_idx(self):
+        for idx, line in enumerate(Global.lines):
+            if line is self:
+                return idx
+
 
     @staticmethod
     def parse(tokens, header):
@@ -230,13 +254,13 @@ class Line(object):
         line_count = 1
         lines = []
         lines.append(Line(line_count))
-        lines[0].token_ind = 0
+#        lines[0].token_ind = 0
         for idx, token in enumerate(tokens):
             token.line = line_count # - header
             lines[line_count-1].tokens.append(token)
             if token.ttype.Return:
                 lines.append(Line(line_count))
-                lines[line_count].token_ind = idx
+ #               lines[line_count].token_ind = idx
                 line_count += 1
         return lines
 
@@ -265,7 +289,14 @@ class Block(object):
         self.doms = []
         self.token_ind = 0
         self.indent = 0
-        self.num = 0
+
+
+    def get_idx(self):
+        for idx, block in enumerate(Global.blocks):
+            if block is self:
+                return idx
+        return -1
+
 
     @staticmethod
     def report():
@@ -281,9 +312,8 @@ class Block(object):
                 prnt(token.string + " ")
 
             prnt("\nDominations:\n")
-            for block_idx in block.doms:
-                block = Global.blocks[block_idx]
-                prnt("Block" + str(block.num) + " is dominating this block.\n")
+            for block in block.doms:
+                prnt("Block" + str(block.get_num()) + " is dominating this block.\n")
         prnt("\n\n")
 
 
@@ -309,14 +339,14 @@ class Block(object):
                 new_block = Block()
                 for block in blocks:
                     if block.indent != 0 and block.indent <= indent_size:
-                        new_block.doms.append(block.num)
+                        new_block.doms.append(block)
                 for tkn_idx in range(i)[::-1]:
                     new_block.root.append(tokens[tkn_idx])
                     if tokens[tkn_idx].ttype.NL:
                         break
                 new_block.root = new_block.root[::-1]
                 new_block.indent = indent_size
-                new_block.num = len(blocks) + 1
+#                new_block.num = len(blocks) + 1
                 new_block.token_ind = i + 1
                 blocks.append(new_block)
 

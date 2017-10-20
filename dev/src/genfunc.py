@@ -9,6 +9,9 @@ import copy
 import sys
 reload(sys)  
 sys.setdefaultencoding('utf8')
+import os
+import tarfile
+import pickle
 
 from terminaltables import AsciiTable
 
@@ -76,11 +79,21 @@ def dbgprintnoln(string):
 
 def get_error_info(linum):
     sumlilen = 0
-    for name, lilen in Global.imported:
+    for name, lilen, flags in Global.imported:
         if linum > sumlilen:
             return (name, linum - sumlilen)
         sumlilen += lilen
     return None
+
+
+def global_linum(local_linum):
+    sum = 0
+    for name, lilen, flags in Global.imported:
+        print(lilen)
+        if flags[1]:
+            sum += lilen
+    return sum + local_linum
+
 
 def err(string):
     """Throw an error.
@@ -331,7 +344,7 @@ def get_var(string, care=True):
         runf = Global.Funcs[FunctionClass.Function.id2i(Global.fs[-1])]
         if string[0] == '.':
             tmp = runf.name.replace(
-                Global.blocks[runf.block_ind].root[2].string, '', 1)
+                runf.block.root[2].string, '', 1)
             string = string.replace('.', tmp, 1)
         dirty_in_runf = [(v for v in runf.args[-1]
                           if v.value.type.race == 'Dirty')]
@@ -869,6 +882,7 @@ def add_type(block_ind):
     dbgprintnoln(("New type '%s' inheritanced by type"
                   % Global.blocks[block_ind].root[2].string))
     for i in xrange(inh_count):
+        print(Global.blocks[block_ind].root[5+i*2].string)
         tmp = get_value_type(Global.blocks[block_ind].root[5+i*2].string)
         if tmp is None:
             err("Undefined type '%s'" % tmp.name)
@@ -952,9 +966,9 @@ def add_type(block_ind):
                is_plain(token_list[0]) and token_list[0].string == "@" and \
                is_plain(token_list[1]) and token_list[1].string == "(" and \
                is_plain(token_list[-1]) and token_list[-1].string == ")":
-                for i, block in enumerate(Global.blocks):
+                for block in Global.blocks:
                     if block.root[0].line == token.line:
-                        func = FunctionClass.Function(i)
+                        func = FunctionClass.Function(block)
                         # NOTE(cgp) 型の関数リストに入れておく
                         new_type.functions.append(func)
             del token_list[:]
@@ -965,7 +979,7 @@ def add_type(block_ind):
     for func in new_type.functions:
         if "__init" in func.name:
             init_funcs.append(func)
-            new_type.blocks_for_init.append(Global.blocks[func.block_ind])
+            new_type.blocks_for_init.append(func.block)
         elif "." + func.name in Global.eventlist:
             eventname = Global.eventlist[Global.eventlist.index("." + func.name)][1:]
             out("""
@@ -987,19 +1001,20 @@ me.%s(me);
         out("")
         for func in init_funcs:
             Global.tfs.append(func)
-            exel = Global.blocks[func.block_ind].body[0].line
+            # HACK@@@
+            exel = func.block.body[0].line
             # 関数内容を出力
             while True:
                 translate(Global.lines[exel].tokens)
                 # NOTE(cgp) 最後の閉じ括弧まで読み込まないようにする
-                if exel == Global.blocks[func.block_ind].body[-1].line - 2:
+                if exel == func.block.body[-1].line - 2:
                     Global.tfs.pop()
                     break
                 exel += 1
             # new_func = FunctionClass.Function(i)
             # # NOTE(cgp) For js output.
             # new_type.functions.append(new_func)
-            Global.exel = Global.blocks[func.block_ind].body[-1].line
+            Global.exel = func.block.body[-1].line
         # NOTE(cgp) 初期化関数もＨＴＭＬ属性を変更する可能性があるので
         # しっかり更新しておく。
         out("this.__update();")
@@ -1024,15 +1039,15 @@ me.%s(me);
         tmp_func.name = ''
         tmp_func.add()
         out("")
-        exel = Global.blocks[func.block_ind].body[0].line
+        exel = func.block.body[0].line
         # 関数内容を出力
         while True:
             translate(Global.lines[exel].tokens)
             # NOTE(cgp) 最後の閉じ括弧まで読み込まないようにする
-            if exel == Global.blocks[func.block_ind].body[-1].line - 2:
+            if exel == func.block.body[-1].line - 2:
                 break
             exel += 1
-        Global.exel = Global.blocks[func.block_ind].body[-1].line
+        Global.exel = func.block.body[-1].line
         Global.translate_seq.pop()
         out("self.__update();")
         out("};")
@@ -1044,18 +1059,18 @@ me.%s(me);
         tmp_func.name = ''
         tmp_func.add()
         out("")
-        exel = Global.blocks[func.block_ind].body[0].line
+        exel = func.block.body[0].line
         # 関数内容を出力
         while True:
             translate(Global.lines[exel].tokens)
             # NOTE(cgp) 最後の閉じ括弧まで読み込まないようにする
-            if exel == Global.blocks[func.block_ind].body[-1].line - 2:
+            if exel == func.block.body[-1].line - 2:
                 break
             exel += 1
         # new_func = FunctionClass.Function(i)
         # # NOTE(cgp) For js output.
         # new_type.functions.append(new_func)
-        Global.exel = Global.blocks[func.block_ind].body[-1].line
+        Global.exel = func.block.body[-1].line
 
         # NOTE(cgp) 普通関数もＨＴＭＬ属性を変更する可能性があるので
         # しっかり更新しておく。
@@ -1081,6 +1096,7 @@ def get_js_indent_level():
 
 def translate(token_list, static_default=None):
     """Examine a statement staticly."""
+    print(Global.exel)
     # NOTE: 疑似関数内static変数の準備
     if static_default is None:
         static_default = []
@@ -1115,6 +1131,58 @@ def translate(token_list, static_default=None):
         Global.tfs.pop()
         return 1
 
+    if ((not Global.bPreCompile
+         and len(run_tokens) == 3
+         and run_tokens[0].string == '<'
+         and run_tokens[2].string == '>'
+    )):
+        importfile = run_tokens[1].string
+        if not os.path.isabs(importfile):
+            importfile = os.path.abspath(importfile)
+
+        name, ext = os.path.splitext(os.path.basename(run_tokens[1].string))
+        pcp_path = os.path.dirname(importfile) + "/" + name + ".pcp"
+        for name, size, flags in Global.imported:
+            if pcp_path == name and flags[0]:
+                tar = tarfile.open(pcp_path, 'r')
+                for member in tar.getmembers():
+                    f=tar.extractfile(member)
+                    if '.pickle' in member.name:
+                        data = pickle.load(f)
+                        Global.Vars.extend(data[0])
+                        Global.Funcs.extend(data[1])
+                        Global.vtypes.extend(data[2])
+                        Global.wobs.extend(data[3])
+
+                        for tkn in Global.tokens[Global.lines[Global.exel + 1].get_end_token_idx():]:
+                            tkn.line += data[5][-1].line + 1
+                        for tkn in data[5]:
+                            tkn.line += Global.exel + 1
+
+                        # TODO このコードのせいでブロック内でインポートすることはできません
+                        # HACK
+                        start_block = 0
+                        for line in Global.lines[:Global.exel:-1]:
+                            if ((len(line.tokens) > 0
+                                 and line.tokens[0].string == "}")):
+                                for idx, block in enumerate(Global.blocks):
+                                    if block.body[-1].get_idx() == line.tokens[0].get_idx():
+                                        start_block = idx
+                        Global.blocks = insert(Global.blocks, start_block, data[4])
+
+                        Global.tokens = insert(Global.tokens,
+                                               Global.lines[Global.exel+1].get_end_token_idx(),
+                                               data[5])
+                        Global.lines = insert(Global.lines, Global.exel + 1, data[6])
+                        Global.exel = data[5][-1].line
+                        Global.imported_line = data[5][-1].line + 2
+
+                    if '.js' in member.name:
+                        content=f.read()
+                        Global.outjs += content.replace("\t", "")
+                    flags[1] = True
+        return True
+
     # NOTE: この先具体的な構文処理：returnしているところはJSへのセミコロン出力を防ぐため
     if ((len(run_tokens) > 0
          and is_plain(run_tokens[0])
@@ -1137,17 +1205,19 @@ def translate(token_list, static_default=None):
         out("break;")
         idx = -1
         line_idx = -1
-        for line in Global.lines[Global.exel::-1]:
+        for line in Global.lines[:Global.exel:-1]:
             if len(line.tokens) == 1:
                 if line.tokens[0].string == 'loop':
-                    line_idx = line.num
+                    line_idx = line.get_idx()
                     break
         for i, block in enumerate(Global.blocks):
-            if block.root[0].line == line_idx+1:
+            print(block.root[0].line)
+            if block.root[0].line == line_idx:
                 idx = i
                 break
         if idx == -1:
-            err("It is impossible to use 'escape' outside of Global.blocks.")
+            pass
+#            err("It is impossible to use 'escape' outside of Global.blocks.")
         return True
 
     elif len(run_tokens) == 1 and \
@@ -1158,7 +1228,7 @@ def translate(token_list, static_default=None):
         for line in Global.lines[Global.exel::-1]:
             if len(Global.tokens) == 1:
                 if Global.tokens[0].string == 'loop':
-                    line_idx = line.num
+                    line_idx = line.get_idx()
                     break
         for i, block in enumerate(Global.blocks):
             if block.root[0].line == line_idx+1:
@@ -1187,6 +1257,10 @@ def translate(token_list, static_default=None):
             pass
 
     elif Global.fs[-1] == -1 and len(run_tokens) == 1 and \
+         is_plain(run_tokens[0]) and run_tokens[0].string == 'abort':
+        return False
+
+    elif Global.fs[-1] == -1 and len(run_tokens) == 1 and \
          is_plain(run_tokens[0]) and run_tokens[0].string == 'end':
         out("return;")
         return False
@@ -1197,9 +1271,9 @@ def translate(token_list, static_default=None):
        is_plain(run_tokens[0]) and run_tokens[0].string == "@" and \
        is_plain(run_tokens[1]) and run_tokens[1].string == "(" and \
        is_plain(run_tokens[-1]) and run_tokens[-1].string == ")":
-        for i, block in enumerate(Global.blocks):
+        for block in Global.blocks:
             if block.root[0].line == run_tokens[0].line:
-                new_func = FunctionClass.Function(i)
+                new_func = FunctionClass.Function(block)
                 new_func.add()
 #                new_func.outjs()
                 Global.exel += 1
@@ -1247,7 +1321,14 @@ def translate(token_list, static_default=None):
        is_plain(run_tokens[2]) and \
        is_plain(run_tokens[3]) and run_tokens[3].string == ')':
         for i, block in enumerate(Global.blocks):
+            log_ts ("block.root", block.root)
+            print ("i", i)
+            print ("get_idx()", str(block.get_idx()))
+            print (block.root[0].line)
+            print (Global.exel)
             if block.root[0].line == Global.exel + 1:
+                print('a')
+                print(i)
                 add_type(i)
                 Global.exel = block.body[-1].line - 1
                 break
@@ -1420,7 +1501,7 @@ def RUN(token_list, static_default=None, funcexam=False):
         for line in Global.lines[Global.exel::-1]:
             if len(line.tokens) == 1:
                 if line.tokens[0].string == 'loop':
-                    line_idx = line.num
+                    line_idx = line.get_idx()
                     break
         for i, block in enumerate(Global.blocks):
             if block.root[0].line == line_idx+1:
@@ -1438,7 +1519,7 @@ def RUN(token_list, static_default=None, funcexam=False):
         for line in Global.lines[Global.exel::-1]:
             if len(Global.tokens) == 1:
                 if Global.tokens[0].string == 'loop':
-                    line_idx = line.num
+                    line_idx = line.get_idx().num
                     break
         for i, block in enumerate(Global.blocks):
             if block.root[0].line == line_idx+1:
@@ -1458,9 +1539,9 @@ def RUN(token_list, static_default=None, funcexam=False):
        is_plain(run_tokens[0]) and run_tokens[0].string == "@" and \
        is_plain(run_tokens[1]) and run_tokens[1].string == "(" and \
        is_plain(run_tokens[-1]) and run_tokens[-1].string == ")":
-        for i, block in enumerate(Global.blocks):
+        for block in Global.blocks:
             if block.root[0].line == Global.exel:
-                FunctionClass.Function(i).add()
+                FunctionClass.Function(block).add()
                 Global.exel = block.body[-1].line
                 break
         out("")
@@ -1640,9 +1721,9 @@ def report():
     dbgprint("\nBLOCKS "+str(len(Global.blocks)))
     for block in Global.blocks:
         dbgprintnoln(("BLOCK%d This block is dominated by block "
-                      % block.num))
+                      % block.get_idx()))
         for dom in block.doms:
-            dbgprintnoln(str(dom))
+            dbgprintnoln(str(dom.get_idx()) + " ")
         dbgprint("")
         log_ts("root", block.root)
         log_ts("body", block.body)
@@ -1661,7 +1742,7 @@ def report():
     # Display all variables
     dbgprint("\nFUNCTIONS "+str(len(Global.Funcs)))
     for func in Global.Funcs:
-        dbgprint("%s BLKIDX:%d ID:%d" % (func.name, func.block_ind, func.fid))
+        dbgprint("%s BLKIDX:%d ID:%d" % (func.name, func.block.get_idx(), func.fid))
 
     # Display all types
     dbgprint("\nVALUE TYPES: "+str(len(Global.vtypes)))
