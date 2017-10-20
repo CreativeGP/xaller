@@ -224,6 +224,11 @@ def prepare_js():
     # 静的な翻訳
     Global.exel = 0
     while True:
+        if len(Global.lines) <= Global.exel and Global.bPreCompile:
+            # もしプリコンパイルモードだったときにはabortは効かないので
+            # 自動で終了するようにする
+            break
+
         runline = Global.lines[Global.exel]
         if not genfunc.translate(runline.tokens):
             break

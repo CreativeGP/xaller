@@ -1211,7 +1211,6 @@ def translate(token_list, static_default=None):
                     line_idx = line.get_idx()
                     break
         for i, block in enumerate(Global.blocks):
-            print(block.root[0].line)
             if block.root[0].line == line_idx:
                 idx = i
                 break
@@ -1256,8 +1255,11 @@ def translate(token_list, static_default=None):
         except IndexError:
             pass
 
-    elif Global.fs[-1] == -1 and len(run_tokens) == 1 and \
-         is_plain(run_tokens[0]) and run_tokens[0].string == 'abort':
+    elif ((Global.fs[-1] == -1
+           and len(run_tokens) == 1
+           and is_plain(run_tokens[0])
+           and run_tokens[0].string == 'abort'
+           and not Global.bPreCompile)):
         return False
 
     elif Global.fs[-1] == -1 and len(run_tokens) == 1 and \
@@ -1327,8 +1329,6 @@ def translate(token_list, static_default=None):
             print (block.root[0].line)
             print (Global.exel)
             if block.root[0].line == Global.exel + 1:
-                print('a')
-                print(i)
                 add_type(i)
                 Global.exel = block.body[-1].line - 1
                 break
