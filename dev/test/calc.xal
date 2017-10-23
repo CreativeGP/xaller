@@ -2,6 +2,9 @@
 <'web.xal'>
 <'math.xal'>
 
+# TODO 最初の数を負の数にする
+# 
+
 (mode)int
 (using_operation)string
 (lOperators)string
@@ -10,23 +13,19 @@ lOperators = (licon lOperators '-')
 lOperators = (licon lOperators '*')
 lOperators = (licon lOperators '/')
 
-(lSeparators)string
-lSeparators = lOperators
-lSeparators = (licon lSeparators '(')
-lSeparators = (licon lSeparators ')')
-
 +(main)Div
 +(num1)Div
 +(num2)Div
 +(num3)Div
 +(operators)Div
-+(view)Textbox in main
++(view)Letter in main
 view.text = '0'
 mode = 0
 
-@ (makelist (str)string) {
+@ (parse (str)string) {
     (words)string
     (ofs)int
+    (j)int
     loop {
         (tmpofs)int
         tmpofs = ofs
@@ -35,16 +34,12 @@ mode = 0
         (i)int
         loop {
             (opridx)int
-            opridx = (stridx str (liat lSeparators i) tmpofs)
+            opridx = (stridx str (liat lOperators i) tmpofs)
             (not (eq opridx -1)) ? {
                 ofs = (min ofs opridx)
             }
-
             i = (+ i 1)
-            (eq i (lilen lSeparators)) ? {
-                (eq ofs 0) ? {
-                    ofs = 1
-                }
+            (eq i (lilen lOperators)) ? {
                 escape
             }
         }
@@ -62,80 +57,9 @@ mode = 0
         words = (licon words (substr str tmpofs (- ofs tmpofs)))
         ofs = (+ 1 ofs)
     }
-
-    i = 0
-    loop {
-        # 括弧は単独でリストに入れるようにする
-        (and (eq (strat (liat words i)  0) '(') (> (strlen (liat words i)) 1)) ? {
-            words = (liins words i (substr (liat words i) 1))
-            words = (lialt words i '(')
-        }
-        # (eq (strat (liat words i) -1) ')') ? {
-        #     words = (liins words (- i 1) (substr (liat words i) 0 (- (strlen (liat words i)) 1)))
-        #     words = (lialt words (+ i 1) ')')
-        # }
-        (eq (- (lilen words) 1) i) ? {
-            escape
-        }
-        i = (+ i 1)
-    }
-    return words
-}
-
-@ (parse (words)string) {
-    # 0:32|1:+21|2:+14|3:*21|
-    (i)int
-    loop {
-        (eq (strat (liat words i) 0) '(') ? {
-            (ans)string
-            (parsen)string
-            (indent)int
-            (j)int
-            j = i
-            loop {
-                (eq (liat words j) '(') ? {
-                    indent = (+ indent 1)
-                }
-                parsen = (concat parsen (liat words j))
-                (eq (liat words j) ')') ? {
-                    indent = (- indent 1)
-                    (eq indent 0) ? {
-                        # 括弧がついたままなので外す
-                        (eq (strat parsen 0) '(') ? {
-                            parsen = (strdel parsen 0 1)
-                            (eq (strat parsen -1) ')') ? {
-                                parsen = (strdel parsen -1 1)
-                            }
-                        }
-                        # parsen = (strrep parsen '(' '')
-                        # jは後で使うので＋１しておく
-                        j = (+ j 1)
-                        escape
-                    }
-                }
-                (eq (- (lilen words) 1) j) ? {
-                    escape
-                }
-                j = (+ j 1)
-            }
-            ans = (parse (makelist parsen))
-            # 空白が最初に入っているのでそれを削除
-            ans = (substr ans 1)
-            (b)int
-            b =  (+ (liidx words ')' i) 1)
-            words = (concat (lisub words 0 (+ i 1)) (lisub words j (- (lilen words) j)))
-            words = (lireindex words)
-            words = (lialt words i ans)
-            words = (lireindex words)
-            i = (- i 1)
-        }
-        i = (+ i 1)
-        (>= i (lilen words)) ? {
-            escape
-        }
-    }
+    # めんどくさいので、0番目の要素の最初にスペースを入れて調整
     words = (lialt words 0 (concat ' ' (liat words 0)))
-    words = (makelist (li2str words ''))
+    # 0:32|1:+21|2:+14|3:*21|
     i = 0
     loop {
         (eq (strat (liat words i) 0) '*') ? {
@@ -227,7 +151,7 @@ product_btn.disabled = true
 
 +(mi_btn)Button in operators
 mi_btn.text = '-'
-# mi_btn.disabled = true
+mi_btn.disabled = true
 
 +(divid_btn)Button in operators
 divid_btn.text = '/'
@@ -238,24 +162,6 @@ ac_btn.text = 'AC'
 @ (ac_btn.click) {
     view.text = '0'
     mode = 0
-}
-
-+(parbeg_btn)Button in operators
-parbeg_btn.text = '('
-@ (parbeg_btn.click) {
-    (eq view.text '0') ? {
-        view.text = ''
-    }
-    view.text = (concat view.text '(')
-}
-
-+(parend_btn)Button in operators
-parend_btn.text = ')'
-@ (parend_btn.click) {
-    (eq view.text '0') ? {
-        view.text = ''
-    }
-    view.text = (concat view.text ')')
 }
 
 +(ce_btn)Button in operators
@@ -346,9 +252,6 @@ point_btn.text = '.'
         }
     }
 #    (eq mode 1) ? {
-        (eq view.text '0') ? {
-            view.text = ''
-        }
         view.text = (concat view.text '-')
         using_operation = '-'
 #    }
@@ -369,7 +272,7 @@ eq_btn.text = '='
 @ (eq_btn.click) {
     (eq mode 1) ? {
         (ans)string
-        ans = (parse (makelist view.text))
+        ans = (parse view.text)
         view.text = (concat view.text ' = ' ans)
     }
 }

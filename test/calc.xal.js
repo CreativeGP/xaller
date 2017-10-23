@@ -32,8 +32,8 @@ function substr$(str, start, length=-1) { if (length == -1) { length = str.lengt
 function stridx$(cmpstr, string, start=0) { return cmpstr.indexOf(string, start); }
 function strridx$(cmpstr, string, start=0) { return cmpstr.lastIndexOf(string, start); }
 function strrep$(src, pattern, replacement) {
-	    var regExp = new RegExp(pattern, "g");
-	    return src.replace(regExp, replacement); }
+	//    var regExp = new RegExp(pattern, "g");
+	        return src.split(pattern).join(replacement); }
 $(function() {
 	function strat(str, i) {
 		return substr$(str,i,1);
@@ -161,6 +161,9 @@ $(function() {
 		return res;
 	}
 	function licon(list, element) {
+		if ((strlen$(element) ==  0)) {
+			return ;
+		}
 		var escaped_str = '';
 		var i = 0;
 		while (true) {
@@ -204,9 +207,25 @@ $(function() {
 		i = 1;
 		while (true) {
 			if (_li_is_colon(list,i)) {
-				list = strdel(list,(i - 1), 1);
-				list = strins(list,(i - 1), String((count)));
+				var bar_pos = 0;
+				var j = 0;
+				j = i;
+				while (true) {
+					if (_li_is_bar(list,j)) {
+						bar_pos = (j + 1);
+						break;
+					}
+					if ((j == 0)) {
+						break;
+					}
+					j = (j - 1);
+				}
+				var figure_length = 0;
+				figure_length = strlen$(String((count)));
+				list = strdel(list,bar_pos,(i - bar_pos));
+				list = strins(list,bar_pos,String((count)));
 				count = (count + 1);
+				i = (i + (figure_length - 1));
 			}
 			if ((i == (strlen$(list) -  1))) {
 				break;
@@ -225,7 +244,9 @@ $(function() {
 		var end_of_element = 0;
 		end_of_element = stridx$(list,'|',start_of_element);
 		var res = '';
-		res = (substr$(list,0,(2 + start_of_element)) +  elm + substr$(list,end_of_element));
+		var figure_length = 0;
+		figure_length = strlen$(String((idx)));
+		res = (substr$(list,0,((1 + figure_length) +  start_of_element)) +  elm + substr$(list,end_of_element));
 		return res;
 	}
 	function limatchstr(list, str) {
@@ -240,6 +261,53 @@ $(function() {
 			i = (i + 1);
 		}
 		return false;
+	}
+	function liidx(list, elm, start) {
+		var i = 0;
+		i = start;
+		while (true) {
+			if ((liat(list,i) ==  elm)) {
+				return i;
+			}
+			if ((i == (lilen(list) -  1))) {
+				break;
+			}
+			i = (i + 1);
+		}
+		return -1;
+	}
+	function lisub(list, start, length) {
+		if ((length == 0)) {
+			return '';
+		}
+		var res = '';
+		var i = 0;
+		i = start;
+		while (true) {
+			res = licon(res,liat(list,i));
+			if ((i == ((start + length) -  1))) {
+				break;
+			}
+			i = (i + 1);
+		}
+		res = lireindex(res);
+		return res;
+	}
+	function liins(list, idx, elm) {
+		return lireindex((lisub(list,0,(idx + 1)) +  licon('',elm) +  lisub(list,(idx + 1), (lilen(list) -  (idx + 1)))));
+	}
+	function li2str(list, sep) {
+		var res = '';
+		var i = 0;
+		while (true) {
+			res = (res + liat(list,i));
+			if ((i == (lilen(list) -  1))) {
+				break;
+			}
+			i = (i + 1);
+			res = (res + sep);
+		}
+		return res;
 	}
 	;
 	;
@@ -2899,6 +2967,10 @@ $(function() {
 	lOperators = licon(lOperators,'-');
 	lOperators = licon(lOperators,'*');
 	lOperators = licon(lOperators,'/');
+	var lSeparators = '';
+	lSeparators = lOperators;
+	lSeparators = licon(lSeparators,'(');
+	lSeparators = licon(lSeparators,')');
 	var main = new Div("main");
 	main._web = 'Div';
 	$('body').append("<div id='main'></div>");
@@ -2914,16 +2986,15 @@ $(function() {
 	var operators = new Div("operators");
 	operators._web = 'Div';
 	$('body').append("<div id='operators'></div>");
-	var view = new Letter("view");
-	view._web = 'Letter';
-	$('#main').append("<span id='view'></span>");
+	var view = new Textbox("view");
+	view._web = 'Textbox';
+	$('#main').append("<textarea id='view'></textarea>");
 	view.text = '0';
 	$('#view').html(view.text);
 	mode = 0;
-	function parse(str) {
+	function makelist(str) {
 		var words = '';
 		var ofs = 0;
-		var j = 0;
 		while (true) {
 			var tmpofs = 0;
 			tmpofs = ofs;
@@ -2931,12 +3002,15 @@ $(function() {
 			var i = 0;
 			while (true) {
 				var opridx = 0;
-				opridx = stridx$(str,liat(lOperators,i) ,  tmpofs);
+				opridx = stridx$(str,liat(lSeparators,i) ,  tmpofs);
 				if (!((opridx == -1))) {
 					ofs = min(ofs,opridx);
 				}
 				i = (i + 1);
-				if ((i == lilen(lOperators))) {
+				if ((i == lilen(lSeparators))) {
+					if ((ofs == 0)) {
+						ofs = 1;
+					}
 					break;
 				}
 			}
@@ -2953,7 +3027,68 @@ $(function() {
 			words = licon(words,substr$(str,tmpofs,(ofs - tmpofs)));
 			ofs = (1 + ofs);
 		}
+		i = 0;
+		while (true) {
+			if (((strat(liat(words,i), 0) ==  '(') &&  (strlen$(liat(words,i)) >  1))) {
+				words = liins(words,i,substr$(liat(words,i) ,  1));
+				words = lialt(words,i,'(');
+			}
+			if (((lilen(words) -  1) ==  i)) {
+				break;
+			}
+			i = (i + 1);
+		}
+		return words;
+	}
+	function parse(words) {
+		var i = 0;
+		while (true) {
+			if ((strat(liat(words,i), 0) ==  '(')) {
+				var ans = '';
+				var parsen = '';
+				var indent = 0;
+				var j = 0;
+				j = i;
+				while (true) {
+					if ((liat(words,j) ==  '(')) {
+						indent = (indent + 1);
+					}
+					parsen = (parsen + liat(words,j));
+					if ((liat(words,j) ==  ')')) {
+						indent = (indent - 1);
+						if ((indent == 0)) {
+							if ((strat(parsen,0) ==  '(')) {
+								parsen = strdel(parsen,0,1);
+								if ((strat(parsen,-1) ==  ')')) {
+									parsen = strdel(parsen,-1,1);
+								}
+							}
+							j = (j + 1);
+							break;
+						}
+					}
+					if (((lilen(words) -  1) ==  j)) {
+						break;
+					}
+					j = (j + 1);
+				}
+				ans = parse(makelist(parsen));
+				ans = substr$(ans,1);
+				var b = 0;
+				b = (liidx(words,')',i) +  1);
+				words = (lisub(words,0,(i + 1)) +  lisub(words,j,(lilen(words) -  j)));
+				words = lireindex(words);
+				words = lialt(words,i,ans);
+				words = lireindex(words);
+				i = (i - 1);
+			}
+			i = (i + 1);
+			if ((i >= lilen(words))) {
+				break;
+			}
+		}
 		words = lialt(words,0,(' ' + liat(words,0)));
+		words = makelist(li2str(words,''));
 		i = 0;
 		while (true) {
 			if ((strat(liat(words,i), 0) ==  '*')) {
@@ -3045,8 +3180,6 @@ $(function() {
 	$('#operators').append("<button id='mi_btn'></button>");
 	mi_btn.text = '-';
 	$('#mi_btn').html(mi_btn.text);
-	mi_btn.disabled = true;
-	$('#mi_btn').prop('disabled', mi_btn.disabled);
 	var divid_btn = new Button("divid_btn");
 	divid_btn._web = 'Button';
 	$('#operators').append("<button id='divid_btn'></button>");
@@ -3064,13 +3197,39 @@ $(function() {
 		$('#view').html(view.text);
 		mode = 0;
 	});
+	var parbeg_btn = new Button("parbeg_btn");
+	parbeg_btn._web = 'Button';
+	$('#operators').append("<button id='parbeg_btn'></button>");
+	parbeg_btn.text = '(';
+	$('#parbeg_btn').html(parbeg_btn.text);
+	$('#parbeg_btn').click(function () {
+		if (($('#view').html() == '0')) {
+			view.text = '';
+			$('#view').html(view.text);
+		}
+		view.text = ($('#view').html() + '(');
+		$('#view').html(view.text);
+	});
+	var parend_btn = new Button("parend_btn");
+	parend_btn._web = 'Button';
+	$('#operators').append("<button id='parend_btn'></button>");
+	parend_btn.text = ')';
+	$('#parend_btn').html(parend_btn.text);
+	$('#parend_btn').click(function () {
+		if (($('#view').html() == '0')) {
+			view.text = '';
+			$('#view').html(view.text);
+		}
+		view.text = ($('#view').html() + ')');
+		$('#view').html(view.text);
+	});
 	var ce_btn = new Button("ce_btn");
 	ce_btn._web = 'Button';
 	$('#operators').append("<button id='ce_btn'></button>");
 	ce_btn.text = 'CE';
 	$('#ce_btn').html(ce_btn.text);
 	$('#ce_btn').click(function () {
-		view.text = strdel(view.text,(strlen$(view.text) -  1), 1);
+		view.text = strdel($('#view').html(),(strlen$($('#view').html()) -  1), 1);
 		$('#view').html(view.text);
 	});
 	var point_btn = new Button("point_btn");
@@ -3079,7 +3238,7 @@ $(function() {
 	point_btn.text = '.';
 	$('#point_btn').html(point_btn.text);
 	$('#point_btn').click(function () {
-		view.text = (view.text + '.');
+		view.text = ($('#view').html() + '.');
 		$('#view').html(view.text);
 	});
 	function numbtn (name) {
@@ -3165,11 +3324,11 @@ $(function() {
 		};
 	}
 	numbtn.prototype.click = function (self) {
-		if ((view.text == '0')) {
+		if (($('#view').html() == '0')) {
 			view.text = '';
 			$('#view').html(view.text);
 		}
-		view.text = (view.text + String((self.num)));
+		view.text = ($('#view').html() + String((self.num)));
 		$('#view').html(view.text);
 		mode = 1;
 		plus_btn.disabled = false;
@@ -3240,48 +3399,50 @@ $(function() {
 	button0.set_num(0);
 	$('#plus_btn').click(function () {
 		if ((mode == 1)) {
-			if (limatchstr(lOperators,strat(view.text,(strlen$(view.text) -  1)))) {
-				view.text = strdel(view.text,-1,1);
+			if (limatchstr(lOperators,strat($('#view').html(),(strlen$($('#view').html()) -  1)))) {
+				view.text = strdel($('#view').html(),-1,1);
 				$('#view').html(view.text);
 			}
-			view.text = (view.text + '+');
+			view.text = ($('#view').html() + '+');
 			$('#view').html(view.text);
 			using_operation = '+';
 		}
 	});
 	$('#product_btn').click(function () {
-		if (limatchstr(lOperators,strat(view.text,(strlen$(view.text) -  1)))) {
-			view.text = strdel(view.text,-1,1);
+		if (limatchstr(lOperators,strat($('#view').html(),(strlen$($('#view').html()) -  1)))) {
+			view.text = strdel($('#view').html(),-1,1);
 			$('#view').html(view.text);
 		}
 		if ((mode == 1)) {
-			view.text = (view.text + '*');
+			view.text = ($('#view').html() + '*');
 			$('#view').html(view.text);
 			using_operation = '*';
 		}
 	});
 	$('#mi_btn').click(function () {
 		var prev_char = '';
-		prev_char = strat(view.text,(strlen$(view.text) -  1));
+		prev_char = strat($('#view').html(),(strlen$($('#view').html()) -  1));
 		if (limatchstr(lOperators,prev_char)) {
 			if (!(((prev_char == '*') ||  (prev_char == '/')))) {
-				view.text = strdel(view.text,-1,1);
+				view.text = strdel($('#view').html(),-1,1);
 				$('#view').html(view.text);
 			}
 		}
-		if ((mode == 1)) {
-			view.text = (view.text + '-');
+		if (($('#view').html() == '0')) {
+			view.text = '';
 			$('#view').html(view.text);
-			using_operation = '-';
 		}
+		view.text = ($('#view').html() + '-');
+		$('#view').html(view.text);
+		using_operation = '-';
 	});
 	$('#divid_btn').click(function () {
-		if (limatchstr(lOperators,strat(view.text,(strlen$(view.text) -  1)))) {
-			view.text = strdel(view.text,-1,1);
+		if (limatchstr(lOperators,strat($('#view').html(),(strlen$($('#view').html()) -  1)))) {
+			view.text = strdel($('#view').html(),-1,1);
 			$('#view').html(view.text);
 		}
 		if ((mode == 1)) {
-			view.text = (view.text + '/');
+			view.text = ($('#view').html() + '/');
 			$('#view').html(view.text);
 			using_operation = '/';
 		}
@@ -3294,8 +3455,8 @@ $(function() {
 	$('#eq_btn').click(function () {
 		if ((mode == 1)) {
 			var ans = '';
-			ans = parse(view.text);
-			view.text = (view.text + ' = ' + ans);
+			ans = parse(makelist($('#view').html()));
+			view.text = ($('#view').html() + ' = ' + ans);
 			$('#view').html(view.text);
 		}
 	});

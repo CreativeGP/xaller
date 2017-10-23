@@ -36,6 +36,7 @@
     }
 }
 
+
 @ (lilen (list)string) {
     (<= (strlen list) 1) ? {
         return 0
@@ -88,6 +89,10 @@
 
 @ (licon (list)string (element)string)
 {
+    (eq (strlen element) 0) ? {
+        return
+    }
+
     (escaped_str)string
     (i)int
     loop {
@@ -140,9 +145,28 @@
     i = 1
     loop {
         (_li_is_colon list i) ? {
-            list = (strdel list (- i 1) 1)
-            list = (strins list (- i 1) (count)string)
+	    # TODO 複数桁になった時どーすんの
+	    (bar_pos)int
+
+            (j)int
+            j = i
+            loop {
+                (_li_is_bar list j) ? {
+                    bar_pos = (+ j 1)
+                    escape
+                }
+                (eq j 0) ? {
+                    escape
+                }
+                j = (- j 1)
+            }
+            
+	    (figure_length)int
+	    figure_length = (strlen (count)string)
+            list = (strdel list bar_pos (- i bar_pos))
+            list = (strins list bar_pos (count)string)
             count = (+ count 1)
+            i = (+ i (- figure_length 1))
         }
         (eq i (- (strlen list) 1)) ? {
             escape
@@ -165,7 +189,9 @@
     end_of_element = (stridx list '|' start_of_element)
 
     (res)string
-    res = (concat (substr list 0 (+ 2 start_of_element)) elm (substr list end_of_element))
+    (figure_length)int
+    figure_length = (strlen (idx)string)
+    res = (concat (substr list 0 (+ (+ 1 figure_length) start_of_element)) elm (substr list end_of_element))
     return res
 }
 
@@ -183,6 +209,68 @@
         i = (+ i 1)
     }
     return false
+}
+
+# (liidx list elm start) -> int
+# リスト内の要素を検索
+@ (liidx (list)string (elm)string (start)int) {
+    (i)int
+    # TODO startが配列の範囲外の場合のエラー
+    i = start
+    loop {
+        (eq (liat list i) elm) ? {
+            return i
+        }
+        (eq i (- (lilen list) 1)) ? {
+            escape
+        }
+        i = (+ i 1)
+    }
+    return -1
+}
+
+
+# (lisub list start length) -> array
+# リストを切り取って新しいリストを作成
+@ (lisub (list)string (start)int (length)int) {
+    (eq length 0) ? {
+        return ''
+    }
+
+    (res)string
+    (i)int
+    i = start
+    loop {
+	res = (licon res (liat list i))
+        (eq i (- (+ start length) 1)) ? {
+            escape
+        }
+        i = (+ i 1)
+    }
+    res = (lireindex res)
+    return res
+}
+
+
+# (liins list idx elm) -> array
+# リストに要素を追加
+@ (liins (list)string (idx)int (elm)string) {
+    return (lireindex (concat (lisub list 0 (+ idx 1)) (licon '' elm) (lisub list (+ idx 1) (- (lilen list) (+ idx 1)))))
+}
+
+# (li2str list sep) -> string
+@ (li2str (list)string (sep)string) {
+    (res)string
+    (i)int
+    loop {
+        res = (concat res (liat list i))
+        (eq i (- (lilen list) 1)) ? {
+            escape
+        }
+        i = (+ i 1)
+        res = (concat res sep)
+    }
+    return res
 }
 
 abort

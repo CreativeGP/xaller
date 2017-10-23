@@ -216,8 +216,8 @@ def prepare_js():
         genfunc.out("""function stridx$(cmpstr, string, start=0) { return cmpstr.indexOf(string, start); }""")
         genfunc.out("""function strridx$(cmpstr, string, start=0) { return cmpstr.lastIndexOf(string, start); }""")
         genfunc.out("""function strrep$(src, pattern, replacement) {
-    var regExp = new RegExp(pattern, "g");
-    return src.replace(regExp, replacement); }""")
+//    var regExp = new RegExp(pattern, "g");
+        return src.split(pattern).join(replacement); }""")
         genfunc.out("$(function() {")
 
     # RUN!!!!!

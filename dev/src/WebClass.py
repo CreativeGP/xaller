@@ -14,7 +14,7 @@ class WebObject:
         "Checkbox":"input", "Color_Selector":"input", "Date_Selector":"input",
         "Email_Input":"input", "File_Selector":"input", "Month_Selector":"input",
         "Number_Selector":"input", "Password":"input", "Radio_Button":"input",
-        "Range_Selector":"input", "Reset_Button":"input", "Search_Input":"input",
+        "Xrange_Selector":"input", "Reset_Button":"input", "Search_Input":"input",
         "Submit_Button":"input", "TEL_Input":"input", "URL_Input":"input",
         "Time_Input":"input", "Week_Selector":"input", "Div":"div", "Letter":"span"
         
@@ -142,8 +142,6 @@ class WebObject:
     def refer(self, mem_name):
         """Returns a string code to refer a member of the web object."""
         attr_kind = self.is_attr_name(mem_name)
-
-        print('ppcc' + mem_name)
 
         if mem_name == 'text':
             return ("$(%s).html()"

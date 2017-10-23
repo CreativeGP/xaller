@@ -108,7 +108,7 @@ class Variable(object):
                 member_name = self.name[self.name.find('.')+1:]
                 wob = WebClass.WebObject.find_by_name(parent_name)
                 if wob:
-                    tmp = wob.refer(genfunc.expvar(self))
+                    tmp = wob.refer(member_name)
                     if tmp == '':
                         tmp = genfunc.expvar(self)
                     Global.jsbuf += tmp

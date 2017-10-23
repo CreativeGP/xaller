@@ -551,6 +551,8 @@ def get_func_idx(string):
 def out_arg_value(tkn, next_tkn, sep):
     res = 0
 
+    print('a')
+
     js_formatted_string = ("'" + tkn.string + "'"
                            if tkn.ttype.String
                            else tkn.string)
@@ -561,7 +563,7 @@ def out_arg_value(tkn, next_tkn, sep):
     else:
         Global.jsbuf += js_formatted_string
 
-    if next_tkn.string != ")" or not is_plain(next_tkn):
+    if next_tkn.string != ")":
         sep = Global.sep_type[sep]
         Global.jsbuf += ("%s"
                          % (','
@@ -617,7 +619,7 @@ def out_expression(token_list, get_string=False):
     for i, tkn in enumerate(token_list):
         if i == con: continue
         try:
-            if is_plain(tkn) and tkn.string == '(':
+            if tkn.string == '(':
                 # 関数の始まりの場合:
                 # 関数の始まりの場合は次の関数名を飛ばす
                 # 関数ではない場合があるのでその場合は値か変数
@@ -656,7 +658,7 @@ def out_expression(token_list, get_string=False):
                     buildin.append(',')
                     begof.append(len(Global.jsbuf))
                     Global.jsbuf += expname(func_name) + "("
-            elif is_plain(tkn) and tkn.string == ')':
+            elif tkn.string == ')':
                 # 関数終了の場合:
                 # 原則として終了用途じカッコをつける処理が主
                 # 確かめることは
@@ -666,7 +668,7 @@ def out_expression(token_list, get_string=False):
                 Global.jsbuf += ')'
 
                 lvl -= 1
-                is_arg = token_list[i+1].string != ")" or not is_plain(token_list[i+1])
+                is_arg = token_list[i+1].string != ")"
                 # NOTE(cgp): 文字列を表すトークンが間違って読み込まれていたので
                 # 修正。is_plain()をかませただけ。
                 cast_vt = (get_value_type(token_list[i+1].string)
@@ -683,7 +685,7 @@ def out_expression(token_list, get_string=False):
                     Global.jsbuf = ("%s(%s)"
                                     % (Global.jsbuf[:tmp] + jstype,
                                        Global.jsbuf[tmp:]))
-                    is_arg = token_list[i+2].string != ")" or not is_plain(token_list[i+2])
+                    is_arg = token_list[i+2].string != ")"
 
                 del buildin[-1]
                 del begof[-1]
