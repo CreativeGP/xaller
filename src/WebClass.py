@@ -16,8 +16,8 @@ class WebObject:
         "Number_Selector":"input", "Password":"input", "Radio_Button":"input",
         "Range_Selector":"input", "Reset_Button":"input", "Search_Input":"input",
         "Submit_Button":"input", "TEL_Input":"input", "URL_Input":"input",
-        "Time_Input":"input", "Week_Selector":"input", "Div":"div", "Letter":"span"
-        
+        "Time_Input":"input", "Week_Selector":"input", "Div":"div", "Letter":"span",
+        "Combobox":"select"
     }
 
     def __init__(self, name, pos):
@@ -143,9 +143,10 @@ class WebObject:
         """Returns a string code to refer a member of the web object."""
         attr_kind = self.is_attr_name(mem_name)
 
-        print('ppcc' + mem_name)
-
         if mem_name == 'text':
+            if self.get_web_type_name() == 'Textbox':
+                return ("$(%s).val()"
+                        % (genfunc.S("#" + genfunc.expid(self.name))))
             return ("$(%s).html()"
                     % (genfunc.S("#" + genfunc.expid(self.name))))
         elif attr_kind != 'no':
@@ -169,8 +170,12 @@ class WebObject:
         attr_kind = self.is_attr_name(mem_name)
 
         if mem_name == 'text':
-            genfunc.out("$(%s).html(%s);"
+            func_name = 'html'
+            if self.get_web_type_name() == 'Textbox':
+                func_name = 'val'
+            genfunc.out("$(%s).%s(%s);"
                         % (genfunc.S("#" + genfunc.expid(self.name)),
+                           func_name,
                            dst_string))
         elif attr_kind != 'no':
             if mem_name == 'type':

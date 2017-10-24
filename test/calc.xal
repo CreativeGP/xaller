@@ -70,10 +70,6 @@ mode = 0
             words = (liins words i (substr (liat words i) 1))
             words = (lialt words i '(')
         }
-        # (eq (strat (liat words i) -1) ')') ? {
-        #     words = (liins words (- i 1) (substr (liat words i) 0 (- (strlen (liat words i)) 1)))
-        #     words = (lialt words (+ i 1) ')')
-        # }
         (eq (- (lilen words) 1) i) ? {
             escape
         }

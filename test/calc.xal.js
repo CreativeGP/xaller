@@ -2990,7 +2990,7 @@ $(function() {
 	view._web = 'Textbox';
 	$('#main').append("<textarea id='view'></textarea>");
 	view.text = '0';
-	$('#view').html(view.text);
+	$('#view').val(view.text);
 	mode = 0;
 	function makelist(str) {
 		var words = '';
@@ -3194,7 +3194,7 @@ $(function() {
 	$('#ac_btn').html(ac_btn.text);
 	$('#ac_btn').click(function () {
 		view.text = '0';
-		$('#view').html(view.text);
+		$('#view').val(view.text);
 		mode = 0;
 	});
 	var parbeg_btn = new Button("parbeg_btn");
@@ -3203,12 +3203,12 @@ $(function() {
 	parbeg_btn.text = '(';
 	$('#parbeg_btn').html(parbeg_btn.text);
 	$('#parbeg_btn').click(function () {
-		if (($('#view').html() == '0')) {
+		if (($('#view').val() == '0')) {
 			view.text = '';
-			$('#view').html(view.text);
+			$('#view').val(view.text);
 		}
-		view.text = ($('#view').html() + '(');
-		$('#view').html(view.text);
+		view.text = ($('#view').val() + '(');
+		$('#view').val(view.text);
 	});
 	var parend_btn = new Button("parend_btn");
 	parend_btn._web = 'Button';
@@ -3216,12 +3216,12 @@ $(function() {
 	parend_btn.text = ')';
 	$('#parend_btn').html(parend_btn.text);
 	$('#parend_btn').click(function () {
-		if (($('#view').html() == '0')) {
+		if (($('#view').val() == '0')) {
 			view.text = '';
-			$('#view').html(view.text);
+			$('#view').val(view.text);
 		}
-		view.text = ($('#view').html() + ')');
-		$('#view').html(view.text);
+		view.text = ($('#view').val() + ')');
+		$('#view').val(view.text);
 	});
 	var ce_btn = new Button("ce_btn");
 	ce_btn._web = 'Button';
@@ -3229,8 +3229,8 @@ $(function() {
 	ce_btn.text = 'CE';
 	$('#ce_btn').html(ce_btn.text);
 	$('#ce_btn').click(function () {
-		view.text = strdel($('#view').html(),(strlen$($('#view').html()) -  1), 1);
-		$('#view').html(view.text);
+		view.text = strdel($('#view').val(),(strlen$($('#view').val()) -  1), 1);
+		$('#view').val(view.text);
 	});
 	var point_btn = new Button("point_btn");
 	point_btn._web = 'Button';
@@ -3238,8 +3238,8 @@ $(function() {
 	point_btn.text = '.';
 	$('#point_btn').html(point_btn.text);
 	$('#point_btn').click(function () {
-		view.text = ($('#view').html() + '.');
-		$('#view').html(view.text);
+		view.text = ($('#view').val() + '.');
+		$('#view').val(view.text);
 	});
 	function numbtn (name) {
 		var me = this;
@@ -3324,12 +3324,12 @@ $(function() {
 		};
 	}
 	numbtn.prototype.click = function (self) {
-		if (($('#view').html() == '0')) {
+		if (($('#view').val() == '0')) {
 			view.text = '';
-			$('#view').html(view.text);
+			$('#view').val(view.text);
 		}
-		view.text = ($('#view').html() + String((self.num)));
-		$('#view').html(view.text);
+		view.text = ($('#view').val() + String((self.num)));
+		$('#view').val(view.text);
 		mode = 1;
 		plus_btn.disabled = false;
 		$('#plus_btn').prop('disabled', plus_btn.disabled);
@@ -3399,51 +3399,51 @@ $(function() {
 	button0.set_num(0);
 	$('#plus_btn').click(function () {
 		if ((mode == 1)) {
-			if (limatchstr(lOperators,strat($('#view').html(),(strlen$($('#view').html()) -  1)))) {
-				view.text = strdel($('#view').html(),-1,1);
-				$('#view').html(view.text);
+			if (limatchstr(lOperators,strat($('#view').val(),(strlen$($('#view').val()) -  1)))) {
+				view.text = strdel($('#view').val(),-1,1);
+				$('#view').val(view.text);
 			}
-			view.text = ($('#view').html() + '+');
-			$('#view').html(view.text);
+			view.text = ($('#view').val() + '+');
+			$('#view').val(view.text);
 			using_operation = '+';
 		}
 	});
 	$('#product_btn').click(function () {
-		if (limatchstr(lOperators,strat($('#view').html(),(strlen$($('#view').html()) -  1)))) {
-			view.text = strdel($('#view').html(),-1,1);
-			$('#view').html(view.text);
+		if (limatchstr(lOperators,strat($('#view').val(),(strlen$($('#view').val()) -  1)))) {
+			view.text = strdel($('#view').val(),-1,1);
+			$('#view').val(view.text);
 		}
 		if ((mode == 1)) {
-			view.text = ($('#view').html() + '*');
-			$('#view').html(view.text);
+			view.text = ($('#view').val() + '*');
+			$('#view').val(view.text);
 			using_operation = '*';
 		}
 	});
 	$('#mi_btn').click(function () {
 		var prev_char = '';
-		prev_char = strat($('#view').html(),(strlen$($('#view').html()) -  1));
+		prev_char = strat($('#view').val(),(strlen$($('#view').val()) -  1));
 		if (limatchstr(lOperators,prev_char)) {
 			if (!(((prev_char == '*') ||  (prev_char == '/')))) {
-				view.text = strdel($('#view').html(),-1,1);
-				$('#view').html(view.text);
+				view.text = strdel($('#view').val(),-1,1);
+				$('#view').val(view.text);
 			}
 		}
-		if (($('#view').html() == '0')) {
+		if (($('#view').val() == '0')) {
 			view.text = '';
-			$('#view').html(view.text);
+			$('#view').val(view.text);
 		}
-		view.text = ($('#view').html() + '-');
-		$('#view').html(view.text);
+		view.text = ($('#view').val() + '-');
+		$('#view').val(view.text);
 		using_operation = '-';
 	});
 	$('#divid_btn').click(function () {
-		if (limatchstr(lOperators,strat($('#view').html(),(strlen$($('#view').html()) -  1)))) {
-			view.text = strdel($('#view').html(),-1,1);
-			$('#view').html(view.text);
+		if (limatchstr(lOperators,strat($('#view').val(),(strlen$($('#view').val()) -  1)))) {
+			view.text = strdel($('#view').val(),-1,1);
+			$('#view').val(view.text);
 		}
 		if ((mode == 1)) {
-			view.text = ($('#view').html() + '/');
-			$('#view').html(view.text);
+			view.text = ($('#view').val() + '/');
+			$('#view').val(view.text);
 			using_operation = '/';
 		}
 	});
@@ -3455,9 +3455,9 @@ $(function() {
 	$('#eq_btn').click(function () {
 		if ((mode == 1)) {
 			var ans = '';
-			ans = parse(makelist($('#view').html()));
-			view.text = ($('#view').html() + ' = ' + ans);
-			$('#view').html(view.text);
+			ans = parse(makelist($('#view').val()));
+			view.text = ($('#view').val() + ' = ' + ans);
+			$('#view').val(view.text);
 		}
 	});
 	return;

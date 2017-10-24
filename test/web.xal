@@ -310,4 +310,20 @@
     }
 }
 
+-(Combobox):Web_Object {
+    (autofocus)bool
+    (disabled)bool
+    (form)string
+    (multiple)bool
+    (name)string
+    (required)bool
+    (size)int
+
+    (choices)string
+
+    @ (__init) {
+        ._web = 'Combobox'
+    }
+}		       
+
 abort

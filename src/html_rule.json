@@ -212,6 +212,23 @@
 	"dom_interface": "HTMLSpanElement",
 	"attr": {
 	}
-    }
+    },
 
+    "select": {
+	"content_categories": ["flow", "phrasing", "interactive", "listed", "labelable", "resettable", "submittable_form_associated"],
+	"allowed_contents": ["option", "optgroup"],
+	"ommision": ["req_beg", "req_end"],
+	"permitted_parents": ["phrasing"],
+	"permitted_ARIA_roles": "menu",
+	"dom_interface": "HTMLSelectElement",
+	"attr": {
+	    "autofocus": { "type": "boolean" },
+	    "disabled": { "type": "boolean" },
+	    "form": { "type": "id" },
+	    "multiple": { "type": "boolean" },
+	    "name": { "type": "string" },
+	    "required": { "type": "boolean" },
+	    "size": { "type": "int" }
+	}
+    }
 }
