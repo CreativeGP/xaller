@@ -1,0 +1,33 @@
+<'list.xal'>
+<'web.xal'>
+<'map.xal'>
+
++(div)Div
++(srcbit)Input in div
++(src)Combobox in div
++(dst)Combobox
+
+(testmap)string
+testmap = (mapcon testmap 'Alice' '6')
+testmap = (mapcon testmap 'Bob' '14')
+testmap = (mapcon testmap 'Alex' '23')
+
+(src.add_choice 'ビット(bit)')
+(src.add_choice 'バイト(byte)')
+(src.add_choice testmap)
+(src.add_choice (maplen testmap)string)
+(src.add_choice (mapat testmap 'Alice'))
+testmap = (mapdel testmap 'Bob')
+(src.add_choice testmap)
+testmap = (mapalt testmap 'Alex' '32')
+(src.add_choice testmap)
+(src.add_choice '(bit)')
+(src.add_choice 'ビット(bit)')
+
++(go_button)Button
+go_button.text = '変換'
+@ (go_button.click) {
+    __log (src.selected_choice)string
+}
+
+end

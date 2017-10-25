@@ -1,0 +1,171 @@
+###
+###   Xaller Standard Mapbrary - map.xal
+###   CreativeGP - 2017.10.25(yyyy.mm.dd)
+###
+###   A library to use 'map' data strancture.
+
+<'str.xal'>
+
+@ (_map_is_colon (map)string (i)int) {
+    (>= (strlen map) 1) ? {
+        (> (strlen map) i) ? {
+            return (and (not (eq '%' (strat map (- i 1)))) (eq ':' (strat map i)))
+        }
+        branch true ? {
+            __log 'Error(_map_is_colon): Index error.'
+            stop
+        }
+    }
+    branch true ? {
+        return false
+    }
+}
+
+@ (_map_is_bar (map)string (i)int) {
+    (>= (strlen map) 1) ? {
+        (> (strlen map) i) ? {
+            return (and (not (eq '%' (strat map (- i 1)))) (eq '|' (strat map i)))
+        }
+        branch true ? {
+            __log 'Error(_map_is_bar): Index error.'
+            stop
+        }
+    }
+    branch true ? {
+        return false
+    }
+}
+
+
+@ (maplen (map)string) {
+    (<= (strlen map) 1) ? {
+        return 0
+    }
+    (res)int
+    (i)int
+    i = 1
+    loop {
+        (_map_is_colon map i) ? {
+            res = (+ res 1)
+        }
+        i = (+ i 1)
+        (eq i (strlen map)) ? {
+            escape
+        }
+    }
+    return res
+}
+
+
+@ (mapat (map)string (key)string) {
+    (start_of_element)int
+    # TODO コロン処理とバー処理
+    start_of_element = (stridx map (concat key ':'))
+    (eq start_of_element -1) ? {
+        __log (concat 'Error(mapat): "' key '" この名前のキーが見つかりませんでした。')
+        stop
+    }
+    start_of_element = (+ 1 (stridx map ':' start_of_element))
+    (end_of_element)int
+    end_of_element = (stridx map '|' start_of_element)
+
+    (res)string
+    res = (substr map start_of_element (- end_of_element start_of_element))
+    (i)int
+    i = 1
+    (> i 1) ? {
+        loop {
+            # エスケープ文字として%が入っていた場合それを削除
+            # (eq (strat res (- i i)) '%')
+            i = (+ i 1)
+            (eq i (strlen res)) ? {
+                escape
+            }
+        }
+    }
+    return res
+}
+
+
+@ (mapcon (map)string (key)string (value)string)
+{
+    (eq (strlen value) 0) ? {
+        return
+    }
+
+    (escaped_str)string
+    (i)int
+    loop {
+        (char)string
+        char = (strat value i)
+        (eq char ':') ? {
+            char = '%:'
+        }
+        (eq char '|') ? {
+            char = '%|'
+        }
+        (eq char '%') ? {
+            char = '%%'
+        }
+        escaped_str = (concat escaped_str char)
+        i = (+ i 1)
+        (eq i (strlen value)) ? {
+            escape
+        }
+    }
+    map = (concat map key ':' escaped_str '|')
+    return map
+}
+
+
+# (mapdel map key) -> map
+# 連想配列から指定したキーの要素を削除する関数
+@ (mapdel (map)string (key)string) {
+    (start_of_element)int
+    start_of_element = (stridx map (concat key ':'))
+    (eq start_of_element -1) ? {
+        __log (concat 'Error(mapdel): "' key '" この名前のキーが見つかりませんでした。')
+        stop
+    }
+    (end_of_element)int
+    end_of_element = (+ 1 (stridx map '|' start_of_element))
+
+    (res)string
+    res = (concat (substr map 0 start_of_element) (substr map end_of_element))
+    return res
+}
+
+# (mapalt map key value) -> map
+# リストの指定した要素を変更する関数
+@ (mapalt (map)string (key)int (value)string) {
+    (start_of_element)int
+    start_of_element = (stridx map (concat key ':'))
+    (eq start_of_element -1) ? {
+        __log (concat 'Error(mapalt): "' key '" この名前のキーが見つかりませんでした。')
+        stop
+    }
+    (end_of_element)int
+    end_of_element = (stridx map '|' start_of_element)
+
+    (res)string
+    res = (concat (substr map 0 (+ (+ 1 (strlen key)) start_of_element)) value (substr map end_of_element))
+    return res
+}
+
+# (mapmatchstr map str) -> Boolean
+# リスト内の各文字列に入力文字列と同じものがあるかどうかを判断
+@ (mapmatchstr (map)string (str)string) {
+    (i)int
+    loop {
+        (eq (mapat map i) str) ? {
+            return true
+        }
+        (eq i (- (maplen map) 1)) ? {
+            escape
+        }
+        i = (+ i 1)
+    }
+    return false
+}
+
+abort

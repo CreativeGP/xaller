@@ -179,14 +179,13 @@ def expvar(var):
 # TODO: できるだけexpvarを使う
 def expname(string):
     """Convert a xaller variable name into an valid string for JS."""
-    string = string.replace('.', '.')
     class_name = "this"
     if is_adding_type():
         if 'type:evfunc' in Global.translate_seq[-1]:
             class_name = "self"
         # NOTE(cgp) ドットが２個続けて出力されることがあったのでそのようなことがないように
         # こっちで調整する
-        string = class_name + ('' if string[0] == '.' else '.') + string
+        string = (class_name if string[0] == '.' else '') + string
     return string
 
 
@@ -573,7 +572,7 @@ def out_arg_value(tkn, next_tkn, sep):
 # TODO(cgp) 不等号関数の複数引数指定時の処理
 def out_expression(token_list, get_string=False):
     """Output to JS file an expression."""
-    if get_string: backup = Global.jsbuf
+    if get_string: backup = Global.outjs
 
     lvl = 0
     con = -1
@@ -595,7 +594,8 @@ def out_expression(token_list, get_string=False):
          and token_list[2].string == ')'
          and not is_func_exists(token_list[1].string))):
         # TODO(cgp) is_var_exists関数とかぶっているので、下を消す方向で
-        if FunctionClass.Function.n2i(token_list[1].string) == -1:
+        if get_func_idx(token_list[1].string) == -1:
+            print(token_list[1].string)
             cast = ''
             if len(token_list) == 4:
                 cast = get_value_type(token_list[3].string).race
@@ -709,8 +709,9 @@ def out_expression(token_list, get_string=False):
             pass
 
     if get_string:
-        diff = Global.jsbuf - tmp
-        Global.jsbuf = tmp
+        # NOTE バックアップとの差分を取るため
+        diff = Global.outjs.replace(backup, '')
+        Global.outjs = backup
         return diff
     else:
         solvebuf()
@@ -944,7 +945,7 @@ def add_type(block_ind):
         # NOTE(cgp): We can't call ValueClass.Variable.create() to ouput
         # JS code creating variable. Instead, call out_varcreation(), the local
         # function defined in this function.
-        out_varcreation(var.name, var.value.type)
+        if var.name != '__name': out_varcreation(var.name, var.value.type)
         if var.name == '_web':
             out('me.__element = $("#"+me.__name);')
 
@@ -1103,10 +1104,10 @@ def translate(token_list, static_default=None):
     if len(token_list) > 0 and token_list[0].ttype.Comment:
         return True
 
-    for tkn in run_tokens:
-        if '$' in tkn.string and not tkn.ttype.Comment:
-            tkn.string = prepro(tkn.string)
-            dbgprint(tkn.string)
+    # for tkn in run_tokens:
+    #     if '$' in tkn.string and not tkn.ttype.Comment:
+    #         tkn.string = prepro(tkn.string)
+    #         dbgprint(tkn.string)
 
     if len(run_tokens) == 1 and run_tokens[0].string == "{":
         Global.brace_requests.append(get_js_indent_level())
@@ -1245,6 +1246,19 @@ def translate(token_list, static_default=None):
             out_expression(run_tokens[1:])
             solvebuf()
             outnoln(");")
+        except IndexError:
+            pass
+
+    if ((len(run_tokens) > 0
+         and is_plain(run_tokens[0])
+         and run_tokens[0].string == '__src')):
+        try:
+#            code = out_expression(run_tokens[1:], True)
+            outnoln(run_tokens[1].string)
+            # NOTE この場合は文字列ではなくてコードを出力するので''を取る
+#            code = code[2:-1]
+#            out(code)
+#            solvebuf()
         except IndexError:
             pass
 

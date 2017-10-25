@@ -4,7 +4,10 @@
 ###
 ###   A library to defube web types.
 
+<'list.xal'>
+
 -(Web_Object) {
+    (__name)string
     (_web)string
 
     (accesskey)string
@@ -320,9 +323,21 @@
     (size)int
 
     (choices)string
+    (text)string
+    (val)string
 
     @ (__init) {
         ._web = 'Combobox'
+    }
+
+    @ (add_choice (choi)string) {
+#        __src '$("#"+this.__name).append(`<option value="`+choi+`">`+choi+`</option>`)'
+        .text = (concat .text '<option value="' choi '">' choi '</option>`)')
+        .choices = (licon .choices choi)
+    }
+
+    @ (selected_choice) {
+        return .val
     }
 }		       
 

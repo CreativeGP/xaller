@@ -142,11 +142,11 @@ class WebObject:
     def refer(self, mem_name):
         """Returns a string code to refer a member of the web object."""
         attr_kind = self.is_attr_name(mem_name)
-
+        
+        if mem_name == 'val':
+            return ("$(%s).val()"
+                    % (genfunc.S("#" + genfunc.expid(self.name))))
         if mem_name == 'text':
-            if self.get_web_type_name() == 'Textbox':
-                return ("$(%s).val()"
-                        % (genfunc.S("#" + genfunc.expid(self.name))))
             return ("$(%s).html()"
                     % (genfunc.S("#" + genfunc.expid(self.name))))
         elif attr_kind != 'no':
@@ -169,10 +169,14 @@ class WebObject:
         """Change a web parts."""
         attr_kind = self.is_attr_name(mem_name)
 
+        if mem_name == 'val':
+            func_name = 'val'
+            genfunc.out("$(%s).%s(%s);"
+                        % (genfunc.S("#" + genfunc.expid(self.name)),
+                           func_name,
+                           dst_string))
         if mem_name == 'text':
             func_name = 'html'
-            if self.get_web_type_name() == 'Textbox':
-                func_name = 'val'
             genfunc.out("$(%s).%s(%s);"
                         % (genfunc.S("#" + genfunc.expid(self.name)),
                            func_name,

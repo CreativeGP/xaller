@@ -103,6 +103,9 @@ class Variable(object):
         """
 
         if js_out:
+            if self.name == 'val':
+                Global.jsbuf += '$("#" + this.id).val()'
+                return
             if '.' in self.name and not self.name[0] == '.':
                 parent_name = self.name[:self.name.find('.')]
                 member_name = self.name[self.name.find('.')+1:]
@@ -160,6 +163,10 @@ class Variable(object):
                 variables, external, jsout=False)
 
         for func in var.value.type.functions:
+            instance_func = copy.deepcopy(func)
+            instance_func.name = var.name + "." + instance_func.name
+            Global.Funcs.append(instance_func)
+
             if func.name == '__init':
                 # NOTE(cgp) __init関数は呼ばないで直接書かなければならない。
                 # なぜなら、その中で行われる_web変数の変更をXallerが動的に読み込まなければ
@@ -182,7 +189,6 @@ class Variable(object):
                             del tmp[:]
                 Global.tfs.pop()
                 func.name = tmpname
-                break
 
         if external:
             variables[-1].external = True
