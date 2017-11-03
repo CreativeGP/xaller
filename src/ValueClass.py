@@ -110,16 +110,23 @@ class Variable(object):
             if '.' in self.name and not self.name[0] == '.':
                 parent_name = self.name[:self.name.find('.')]
                 member_name = self.name[self.name.find('.')+1:]
-                print(parent_name)
                 wob = WebClass.WebObject.find_by_name(parent_name)
+                print(wob)
+                print('')
                 if wob:
                     tmp = wob.refer(member_name)
                     if tmp == '':
                         tmp = genfunc.expvar(self)
                     Global.jsbuf += tmp
                     return
+                # NOTE(2017:11:03)@cgp
+                # 型の実体化の際にはまだwobが作られていないのでそのまま出力するようにする
+                # つまり、.textや.varなどの属性変数は正しく展開されない
+                elif genfunc.is_materializing_type():
+                    Global.jsbuf += genfunc.expvar(self)
             else:
                 Global.jsbuf += genfunc.expvar(self)
+            
         return self.value
 
 
@@ -137,6 +144,8 @@ class Variable(object):
             external (=False): Turn on to create external variable.
             pos (='at end'): The string indicater where to put a web part. (external only)
         """
+
+        Global.translate_seq.append('materialize ' + var.value.type.name)
 
         if variables is None:
             variables = Global.Vars
@@ -192,7 +201,12 @@ class Variable(object):
                 Global.tfs.pop()
                 func.name = tmpname
 
-        if external:
+        if ((external
+             # NOTE(cgp/2017:11:03)
+             # メンバの変数も実際に作っている（かつその際externalはTrueな）ので
+             # メンバ変数でWOBを作らないように_webメンバの存在を確認している。
+             # これだとこの変数が何かの型のメンバにあった場合にも対応できるはず。
+             and genfunc.get_var(var.name + "._web") is not None)):
             variables[-1].external = True
             Global.wobs.append(WebClass.WebObject(var.name, pos))
             Global.wobs[-1].create()
@@ -213,4 +227,7 @@ class Variable(object):
 
         # constructor = Global.Funcs[FunctionClass.Function.n2i(var.name+".__init")]
        # constructor.run([])
+
+        Global.translate_seq.pop()
+
         return

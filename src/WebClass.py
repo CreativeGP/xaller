@@ -107,6 +107,7 @@ class WebObject:
     def find_by_name(name):
         """Find the web object by its name."""
         for wob in Global.wobs:
+            print((wob.name, name))
             if wob.name == name:
                 return wob
         return None

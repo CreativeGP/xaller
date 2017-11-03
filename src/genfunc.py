@@ -366,6 +366,21 @@ def get_var(string, care=True):
     return None
 
 
+def is_materializing_type():
+    if len(Global.translate_seq) == 0:
+        return False
+    if 'materialize' in Global.translate_seq[-1]:
+        return True
+    return False
+
+def is_adding_type():
+    if len(Global.translate_seq) == 0:
+        return False
+    if 'add_type' in ''.join(Global.translate_seq):
+        return True
+    return False
+
+
 def is_adding_type():
     if len(Global.translate_seq) == 0:
         return False
@@ -556,6 +571,7 @@ def out_arg_value(tkn, next_tkn, sep):
 
     if get_var(tkn.string) is not None:
         var = get_var(tkn.string)
+        print(var.name)
 #        Global.jsbuf += expvar(var)
         var.refer()
     else:
@@ -583,6 +599,9 @@ def out_expression(token_list, get_string=False):
     if len(token_list) == 1:
         if is_var_exists(token_list[0].string):
             get_var(token_list[0].string).refer()
+            # NOTE(2017:11:03)@cgp
+            # 参照した内容を再表示する
+            solvebuf()
         else:
             outnoln((S(token_list[0].string)
                      if token_list[0].ttype.String else
