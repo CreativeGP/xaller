@@ -28,6 +28,7 @@ import Global
 import TokenClass
 
 import ValueClass
+import WebClass
 
 import genfunc
 
@@ -99,7 +100,7 @@ def out_html():
     <meta charset="UTF-8">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.0/jquery.min.js"></script>
     </head>
-    <body>
+    <body style="margin: 0; padding: 0; background-color: black;">
 
     <script src="%s">
     </script>
@@ -218,6 +219,8 @@ def prepare_js():
         genfunc.out("""function strrep$(src, pattern, replacement) {
 //    var regExp = new RegExp(pattern, "g");
         return src.split(pattern).join(replacement); }""")
+        genfunc.out("""function timeout$(func, ms) { setTimeout(func, ms); }""")
+        genfunc.out("""function css$(target, proper, value) { target.css(proper, value); }""")
         genfunc.out("$(function() {")
 
     # RUN!!!!!

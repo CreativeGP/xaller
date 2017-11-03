@@ -50,7 +50,7 @@ class WebObject:
         if " end" in self.pos:
             selector = 'body'
             func = 'append'
-        elif " begnn" in self.pos:
+        elif " beg" in self.pos:
             selector = 'body'
             func = 'prepend'
         else:
@@ -89,14 +89,14 @@ class WebObject:
         this = """$("#" + me.id)."""
         for attr in Global.html_rules['global']['attr']:
             if attr == "type":
-                res += this + "get(0).type = me.type;\n"
+                res += "if(" + this + "get(0)) " + this + "get(0).type = me.type;\n"
             else:
                 res += this + "attr('%s', me.%s);\n" % (attr, attr)
         for attr in Global.html_rules[tagname]['attr']:
             if Global.html_rules[tagname]['attr'][attr]['type'] == 'boolean':
                 res += this + "prop('%s', me.%s);\n" % (attr, attr)
             elif attr == "type":
-                res += this + "get(0).type = me.type;\n"
+                res += "if(" + this + "get(0)) " + this + "get(0).type = me.type;\n"
             else:
                 res += this + "attr('%s', me.%s);\n" % (attr, attr)
         res += this + """html(me.text);
@@ -155,9 +155,10 @@ class WebObject:
                         ("#" + genfunc.expid(self.name),
                          mem_name))
             elif attr_kind == 'boolean_attr':
-                return ("$('%s').prop('%s')" %
-                        ("#" + genfunc.expid(self.name),
-                         mem_name))
+                pass
+                # return ("$('%s').prop('%s')" %
+                #         ("#" + genfunc.expid(self.name),
+                #          mem_name))
             else:
                 return ("$('%s').attr('%s')" %
                         ("#" + genfunc.expid(self.name),

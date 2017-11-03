@@ -2,32 +2,266 @@
 <'web.xal'>
 <'map.xal'>
 
-+(div)Div
-+(srcbit)Input in div
-+(src)Combobox in div
-+(dst)Combobox
+-(category_btn):Button {
+    @ (__init) {
+        .class = 'category'
+        .style = 'border: none'
+    }
+    # @ (mouseenter) {
+    #     .style = 'color: blue; border: none'
+    # }
+    # @ (mouseleave) {
+    #     .style = 'color: black; border: none'
+    # }
+}
 
-(testmap)string
-testmap = (mapcon testmap 'Alice' '6')
-testmap = (mapcon testmap 'Bob' '14')
-testmap = (mapcon testmap 'Alex' '23')
++(categories)Div
++(L)category_btn
+L.text = 'length'
++(S)category_btn
+S.text = 'scale'
++(W)category_btn
+W.text = 'weight'
++(Spd)category_btn
+Spd.text = 'speed'
++(V)category_btn
+V.text = 'volume'
++(D)category_btn
+D.text = 'data'
++(F)category_btn
+F.text = 'force'
 
-(src.add_choice 'ビット(bit)')
-(src.add_choice 'バイト(byte)')
-(src.add_choice testmap)
-(src.add_choice (maplen testmap)string)
-(src.add_choice (mapat testmap 'Alice'))
-testmap = (mapdel testmap 'Bob')
-(src.add_choice testmap)
-testmap = (mapalt testmap 'Alex' '32')
-(src.add_choice testmap)
-(src.add_choice '(bit)')
-(src.add_choice 'ビット(bit)')
++(src_set)Div
++(dst_set)Div
++(srcview)Input in src_set
++(src)Combobox in src_set
++(dstview)Input in dst_set
++(dst)Combobox in dst_set
+
+(units)string
+units = (mapcon units 'メートル(m)' '1')
+units = (mapcon units 'キロメートル(km)' '0.001')
+units = (mapcon units 'センチメートル(cm)' '100')
+units = (mapcon units 'ミリメートル(mm)' '1000')
+units = (mapcon units 'マイクロメートル(μm)' '1000000')
+units = (mapcon units 'ナノメートル(nm)' '1000000000')
+units = (mapcon units 'インチ(in)' '39.3701')
+units = (mapcon units 'フィート(ft)' '3.28084')
+units = (mapcon units 'ヤード(yd)' '1.09361')
+units = (mapcon units 'チェーン(ch)' '0.0497097')
+units = (mapcon units 'ハロン(fur)' '0.00497096')
+units = (mapcon units 'マイル(mile)' '0.000621371')
+units = (mapcon units '海里(M)' '0.000539957')
+units = (mapcon units '里（リ）' '0.0002546304548209184')
+units = (mapcon units '町（チョウ）' '0.009166743056192134')
+units = (mapcon units '間（ケン）' '0.5500550055005501')
+units = (mapcon units '丈（ジョウ）' '0.33003300330033003')
+units = (mapcon units '尺(シャク)' '3.3000033000032998')
+units = (mapcon units '寸（スン）' '33.000033000033')
+units = (mapcon units '分（ブ）' '330.00033000033')
+units = (mapcon units '厘（リン）' '3300.3300330033003')
+units = (mapcon units '東京タワー' '0.0030066145520144315')
+units = (mapcon units '東京スカイツリー' '0.0015772870662460567')
+units = (mapcon units '歩幅(78.45cm)' '1.274697259')
+units = (mapcon units '身体(170cm)' '0.588235294')
+units = (mapcon units 'バイト(B)' '1')
+units = (mapcon units 'ビット(Bit)' '8')
+units = (mapcon units 'キロバイト(KB)' '0.0009765625')
+units = (mapcon units 'メガバイト(MB)' '0.00000095367431640625')
+units = (mapcon units 'ギガバイト(GB)' '0.00000000093132257462')
+units = (mapcon units 'テラバイト(TB)' '0.00000000000090949470')
+units = (mapcon units '平方メートル(m2)' '1')
+units = (mapcon units '平方キロメートル(km2)' '0.000001')
+units = (mapcon units '平方センチメートル(cm2)' '10000')
+units = (mapcon units '平方インチ' '1550.0031000062002')
+units = (mapcon units '平方フィート' '10.763910416709722')
+units = (mapcon units '平方ヤード' '1.1959900463010802')
+units = (mapcon units 'エーカー' '0.0002460145640621925')
+units = (mapcon units 'アール(a)' '0.01')
+units = (mapcon units 'ヘクタール(ha)' '0.0001')
+units = (mapcon units '町（チョウ）' '0.00010083328627779973')
+units = (mapcon units '段・反（タン）' '0.0010083328627779973')
+units = (mapcon units '畝（セ）' '0.010083328627779975')
+units = (mapcon units '坪（ツボ）' '0.30249955381315813')
+units = (mapcon units '尺坪（シャクツボ）' '10.889687465969727')
+units = (mapcon units '合（ゴウ）' '3.024986387561256')
+units = (mapcon units '勺（シャク）' '30.248033877797944')
+units = (mapcon units '畳' '0.5494505494505494')
+units = (mapcon units '東京ドーム' '0.000021388086835632552')
+units = (mapcon units 'グラム(g)' '1')
+units = (mapcon units 'キログラム(kg)' '0.001')
+units = (mapcon units 'ミリグラム(mg)' '1000')
+units = (mapcon units '貫(カン)' '0.0002666666666666667')
+units = (mapcon units '斤(キン)' '0.0016666666666666668')
+units = (mapcon units '匁(モンメ)' '0.26666666666666666')
+units = (mapcon units '斤' '0.0016666666666666668')
+# units = (mapcon units '中国斤' '')
+units = (mapcon units '両' '0.0267')
+units = (mapcon units '毛' '266.6667')
+units = (mapcon units 'トン(t)' '0.000001')
+units = (mapcon units 'グレイン' '15.4324')
+units = (mapcon units 'カラット(ct)' '5')
+units = (mapcon units 'オンス(oz)' '0.353')
+units = (mapcon units '薬用オンス(ozt)' '0.322')
+units = (mapcon units 'ポンド(lb)' '0.0022')
+units = (mapcon units 'リットル(L)' '1')
+units = (mapcon units 'キロリットル(kL)' '0.001')
+units = (mapcon units 'ミリリットル(mL)' '1000')
+units = (mapcon units '立方メートル(m3)' '0.001')
+units = (mapcon units 'cc(cm3)' '1000')
+units = (mapcon units '石(コク)' '0.005544466622310933')
+units = (mapcon units '斗(ト)' '0.05543544542380398')
+units = (mapcon units '升(ショウ)' '0.5543544542380398')
+units = (mapcon units '合(ゴウ)' '5.5432372505543235')
+units = (mapcon units '勺(シャク)' '55.55555555555556')
+units = (mapcon units '立方坪' '0.00016637550952499792')
+units = (mapcon units '才(サイ)' '0.035937612305038454')
+units = (mapcon units 'ガロン(英)' '0.22')
+units = (mapcon units 'ガロン(米液用)' '0.2642')
+units = (mapcon units 'ガロン(米穀用)' '0.227')
+units = (mapcon units 'ガロン(計量法)' '0.2642')
+units = (mapcon units 'キロメートル毎時(km/h)' '1')
+units = (mapcon units 'メートル毎時(m/h)' '1000')
+units = (mapcon units 'メートル毎分(m/min)' '16.666666666666668')
+units = (mapcon units 'メートル毎秒(m/s)' '0.2777777777777778')
+units = (mapcon units 'フィート毎時(fph)' '3280.8398950131236')
+units = (mapcon units 'フィート毎秒(fps)' '1.0972805000087782')
+units = (mapcon units 'マイル毎時(mph)' '1.6093444978925633')
+units = (mapcon units 'ノット(kn)' '1.8519993258722454')
+units = (mapcon units 'マッハ(M)' '0.0008169934640522876')
+# units = (mapcon units '光速' '')
+units = (mapcon units '音速' '0.0008162972105491721')
+
+@ (L.click) {
+    src.text = ''
+    (src.add_choice 'メートル(m)')
+    (src.add_choice 'キロメートル(km)')
+    (src.add_choice 'センチメートル(cm)')
+    (src.add_choice 'ミリメートル(mm)')
+    (src.add_choice 'マイクロメートル(μm)')
+    (src.add_choice 'ナノメートル(nm)')
+    (src.add_choice 'インチ(in)')
+    (src.add_choice 'フィート(ft)')
+    (src.add_choice 'ヤード(yd)')
+    (src.add_choice 'チェーン(ch)')
+    (src.add_choice 'ハロン(fur)')
+    (src.add_choice 'マイル(mile)')
+    (src.add_choice '海里(M)')
+    (src.add_choice '里（リ）')
+    (src.add_choice '町（チョウ）')
+    (src.add_choice '間（ケン）')
+    (src.add_choice '丈（ジョウ）')
+    (src.add_choice '尺(シャク)')
+    (src.add_choice '寸（スン）')
+    (src.add_choice '分（ブ）')
+    (src.add_choice '厘（リン）')
+    (src.add_choice '歩幅(78.45cm)')
+    (src.add_choice '身体(170cm)')
+    dst.text = src.text
+}
+
+@ (S.click) {
+    src.text = ''
+    (src.add_choice '平方メートル(m2)')
+    (src.add_choice '平方キロメートル(km2)')
+    (src.add_choice '平方センチメートル(cm2)')
+    (src.add_choice '平方インチ')
+    (src.add_choice '平方フィート')
+    (src.add_choice '平方ヤード')
+    (src.add_choice 'エーカー')
+    (src.add_choice 'アール(a)')
+    (src.add_choice 'ヘクタール(ha)')
+    (src.add_choice '町（チョウ）')
+    (src.add_choice '段・反（タン）')
+    (src.add_choice '畝（セ）')
+    (src.add_choice '坪（ツボ）')
+    (src.add_choice '尺坪（シャクツボ）')
+    (src.add_choice '合（ゴウ）')
+    (src.add_choice '勺（シャク）')
+    (src.add_choice '畳')
+    (src.add_choice '東京ドーム')
+    dst.text = src.text
+}
+
+@ (W.click) {
+    src.text = ''
+    (src.add_choice 'グラム(g)')
+    (src.add_choice 'キログラム(kg)')
+    (src.add_choice 'ミリグラム(mg)')
+    (src.add_choice '貫(カン)')
+    (src.add_choice '斤(キン)')
+    (src.add_choice '匁(モンメ)')
+    (src.add_choice '斤')
+    (src.add_choice '両')
+    (src.add_choice '毛')
+    (src.add_choice 'トン(t)')
+    (src.add_choice 'グレイン')
+    (src.add_choice 'カラット(ct)')
+    (src.add_choice 'オンス(oz)')
+    (src.add_choice '薬用オンス(ozt)')
+    (src.add_choice 'ポンド(lb)')
+    dst.text = src.text
+}
+
+@ (V.click) {
+    src.text = ''
+    (src.add_choice 'リットル(L)')
+    (src.add_choice 'キロリットル(kL)')
+    (src.add_choice 'ミリリットル(mL)')
+    (src.add_choice '立方メートル(m3)')
+    (src.add_choice 'cc(cm3)')
+    (src.add_choice '石(コク)')
+    (src.add_choice '斗(ト)')
+    (src.add_choice '升(ショウ)')
+    (src.add_choice '合(ゴウ)')
+    (src.add_choice '勺(シャク)')
+    (src.add_choice '立方坪')
+    (src.add_choice '才(サイ)')
+    (src.add_choice 'ガロン(英)')
+    # (src.add_choice 'ガロン(米液用)')
+    # (src.add_choice 'ガロン(米穀用)')
+    # (src.add_choice 'ガロン(計量法)')
+    dst.text = src.text
+}
+
+@ (Spd.click) {
+    src.text = ''
+    (src.add_choice 'キロメートル毎時(km/h)')
+    (src.add_choice 'メートル毎時(m/h)')
+    (src.add_choice 'メートル毎分(m/min)')
+    (src.add_choice 'メートル毎秒(m/s)')
+    (src.add_choice 'フィート毎時(fph)')
+    (src.add_choice 'フィート毎秒(fps)')
+    (src.add_choice 'マイル毎時(mph)')
+    (src.add_choice 'ノット(kn)')
+    (src.add_choice 'マッハ(M)')
+    (src.add_choice '光速')
+    (src.add_choice '音速')
+    dst.text = src.text
+}
+
+@ (D.click) {
+    src.text = ''
+    (src.add_choice 'バイト(B)')
+    (src.add_choice 'ビット(Bit)')
+    (src.add_choice 'キロバイト(KB)')
+    (src.add_choice 'メガバイト(MB)')
+    (src.add_choice 'ギガバイト(GB)')
+    (src.add_choice 'テラバイト(TB)')
+    dst.text = src.text
+}
 
 +(go_button)Button
 go_button.text = '変換'
 @ (go_button.click) {
-    __log (src.selected_choice)string
+    (source)string
+    source = (src.selected_choice)string
+    (destination)string
+    destination = (dst.selected_choice)string
+    (magnif)int
+    magnif = (/ (srcview.val)int (mapat units source)int)
+    magnif = (* magnif (mapat units destination)int)
+    dstview.val = (magnif)string
 }
 
 end

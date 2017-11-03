@@ -106,9 +106,11 @@ class Variable(object):
             if self.name == 'val':
                 Global.jsbuf += '$("#" + this.id).val()'
                 return
+
             if '.' in self.name and not self.name[0] == '.':
                 parent_name = self.name[:self.name.find('.')]
                 member_name = self.name[self.name.find('.')+1:]
+                print(parent_name)
                 wob = WebClass.WebObject.find_by_name(parent_name)
                 if wob:
                     tmp = wob.refer(member_name)
@@ -196,6 +198,8 @@ class Variable(object):
             Global.wobs[-1].create()
 
         for func in var.value.type.functions:
+            if func.name == '__init':
+                genfunc.out(var.name + ".__update();")
             if "." + func.name in Global.eventlist:
                 # イベント関数の場合
                 eventname = Global.eventlist[Global.eventlist.index("." + func.name)][1:]
@@ -208,5 +212,5 @@ class Variable(object):
         #     return
 
         # constructor = Global.Funcs[FunctionClass.Function.n2i(var.name+".__init")]
-        # constructor.run([])
+       # constructor.run([])
         return

@@ -8,6 +8,7 @@
 
 -(Web_Object) {
     (__name)string
+    (__element)string
     (_web)string
 
     (accesskey)string
@@ -94,7 +95,9 @@
     }
 }
 
--(Div):Web_Object {    
+-(Div):Web_Object {
+    (text)string
+
     @ (__init) {
 	._web = 'Div'
     }
@@ -182,11 +185,12 @@
     (spellcheck)string
     (src)string
     (step)string
-    (value)string
+    (val)string
     (width)int
 
     @ (__init) {
         ._web = 'Input'
+        .maxlength = 40
     }
 }
 

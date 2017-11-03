@@ -556,6 +556,7 @@ def out_arg_value(tkn, next_tkn, sep):
 
     if get_var(tkn.string) is not None:
         var = get_var(tkn.string)
+#        Global.jsbuf += expvar(var)
         var.refer()
     else:
         Global.jsbuf += js_formatted_string
@@ -927,27 +928,64 @@ def add_type(block_ind):
                     token_list[1].string,
                     get_default_value(value_type), is_member=True))
 
-            elif len(token_list) >= 5 and \
+            elif (len(token_list) >= 5 or len(token_list) >= 7) and \
                  is_plain(token_list[0]) and token_list[0].string == '+' and \
                  is_plain(token_list[1]) and token_list[1].string == '(' and \
                  is_plain(token_list[2]) and \
                  is_plain(token_list[3]) and token_list[3].string == ')' and \
                  is_plain(token_list[4]):
+                name = token_list[2].string[:]
+                pos = "at end"
+                if len(token_list) == 7:
+                    pos = token_list[5].string + " " + token_list[6].string
+
+                # 内包要素関係
+                if len(translate.element_stack) > 0:
+                    # 内包される要素があった場合
+                    included_block = Global.blocks[translate.element_stack[-1]]
+                    pos = "in " + included_block.root[2].string
+                if get_block_idx(Global.exel + 1) != -1:
+                    out("{")
+                    translate.element_stack.append(get_block_idx(Global.exel + 1))
+
+                # ドットが変数名に入っているときにはエラー
+                if '.' in name:
+                    err("ValueClass.Variable name couldn't contain '.'")
                 value_type = get_value_type(token_list[4].string)
                 if value_type is None:
-                    err("Undefined type '%s'." % token_list[4].string)
-                new_type.variables.append(ValueClass.Variable(
-                    token_list[2].string,
-                    get_default_value(value_type), is_member=True))
+                    err("Undefined type '%s'" % token_list[4].string)
+                ValueClass.Variable.create(ValueClass.Variable(
+                    name, get_default_value(value_type)), new_type.variables, True, pos)
+
+            # elif len(token_list) >= 5 and \
+            #      is_plain(token_list[0]) and token_list[0].string == '+' and \
+            #      is_plain(token_list[1]) and token_list[1].string == '(' and \
+            #      is_plain(token_list[2]) and \
+            #      is_plain(token_list[3]) and token_list[3].string == ')' and \
+            #      is_plain(token_list[4]):
+            #     value_type = get_value_type(token_list[4].string)
+            #     if value_type is None:
+            #         err("Undefined type '%s'." % token_list[4].string)
+            #     new_type.variables.append(ValueClass.Variable(
+            #         token_list[2].string,
+            #         get_default_value(value_type), is_member=True))
             del token_list[:]
 
     for var in new_type.variables:
         # NOTE(cgp): We can't call ValueClass.Variable.create() to ouput
         # JS code creating variable. Instead, call out_varcreation(), the local
         # function defined in this function.
-        if var.name != '__name': out_varcreation(var.name, var.value.type)
+        if var.name != '__name' and var.name != '__element': out_varcreation(var.name, var.value.type)
         if var.name == '_web':
             out('me.__element = $("#"+me.__name);')
+
+            # # NOTE __elementや__nameなど勝手に追加している変数を保持しておく
+            # new_type.variables.append(
+            #     ValueClass.Variable(
+            #         '__element', ValueClass.Value('', get_value_type('string'))))
+            # new_type.variables.append(
+            #     ValueClass.Variable(
+            #         '__name', ValueClass.Value('', get_value_type('string'))))
 
     for var in new_type.variables:
         if var.name == '_web':
@@ -1756,4 +1794,9 @@ def report():
         dbgprint("func >")
         for func in vtype.functions:
             dbgprint(func.name)
+
+    # Display all types
+    dbgprint("\nWEB OBJECTS: "+str(len(Global.wobs)))
+    for wob in Global.wobs:
+        dbgprint(wob.name + "@" + wob.pos)
         

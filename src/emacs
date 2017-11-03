@@ -1,0 +1,20 @@
+./calc.xal.js:    var Letter = function (__name) {
+./calc.xal.js:	this.__name = __name;
+./calc.xal.js:	    $("#" + this.__name).html('clicked!');
+./calc.xal.js:	$(this.__name).click(this.click);
+./calc.xal.js:	$(body).append("<span id=" + this.__name + "></span>");
+Binary file ./FunctionClass.pyc matches
+./genfunc.py:    out("me.__name = name;")
+./genfunc.py:        if var.name != '__name' and var.name != '__element': out_varcreation(var.name, var.value.type)
+./genfunc.py:            out('me.__element = $("#"+me.__name);')
+./genfunc.py:            # # NOTE __elementや__nameなど勝手に追加している変数を保持しておく
+./genfunc.py:            #         '__name', ValueClass.Value('', get_value_type('string'))))
+./genfunc.py:            out('me.id = me.__name;')
+Binary file ./genfunc.pyc matches
+Binary file ./TokenClass.pyc matches
+./ValueClass.py:            # NOTE __elementや__nameなど勝手に追加している変数の展開方法
+./ValueClass.py:            if self.name == '__name':
+./ValueClass.py:                Global.jsbuf += 'this.__name'
+Binary file ./ValueClass.pyc matches
+Binary file ./WebClass.pyc matches
+./xaller.py:if __name__ == '__main__':

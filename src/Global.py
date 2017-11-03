@@ -43,13 +43,13 @@ eventlist = ['.blur', '.click', '.change', '.ctxmenu',
 
 
 buildin_func_names = [
-'+', '-', '*', '/',
-'%', 'neg', 'and', 'or',
-'xor', 'not', 'eq', '>',
-'<', '>=', '<=', 'concat',
-'strlen', 'substr', 'strtrimr', 'strtriml',
-'strtrim', 'strmatch', 'stridx', 'strridx',
-'strrep',
+    '+', '-', '*', '/',
+    '%', 'neg', 'and', 'or',
+    'xor', 'not', 'eq', '>',
+    '<', '>=', '<=', 'concat',
+    'strlen', 'substr', 'strtrimr', 'strtriml',
+    'strtrim', 'strmatch', 'stridx', 'strridx',
+    'strrep', 'timeout', 'css'
 ]
 
 jstypes = {'Integer':'Number', 'String':'String', 'Boolean':'Boolean'}
@@ -60,7 +60,7 @@ sep_type = {
     '<':'<', '>':'>', '<=':'<=', '>=':'>=',
     'concat':'+', 'strlen':',', 'substr':',', 'strtrimr':',',
     'strtriml':',', 'strtrim':',', 'strmatch':',', 'stridx':',',
-    'strridx':',', 'strrep':',',
+    'strridx':',', 'strrep':',', 'timeout':',', 'css':','
 }
 
 output = ''
