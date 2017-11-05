@@ -34,7 +34,6 @@ class WebObject:
     def create(self, web_type_name):
         """Output a JS code creating a DOM variable."""
         # HACK: ここのコードだけ継承されても型を識別できるように特別な変数だけ動的に参照するようにしている
-        print(web_type_name)
         type_name = web_type_name
 
         selector = ""
@@ -124,6 +123,20 @@ class WebObject:
                 return wob
         return None
 
+    @staticmethod
+    def static_is_attr_name(name, webtype):
+        if name in Global.html_rules['global']['attr']:
+            return 'global'
+
+        if webtype in WebObject.html_tag_names:
+            rules = Global.html_rules[WebObject.html_tag_names[webtype]]
+            if name in rules['attr'].keys():
+                if rules['attr'][name]['type'] == 'boolean':
+                    # NOTE(cgp) 論理属性なのでJSの出力にはprop関数を使う
+                    return 'boolean_attr'
+                return 'attr'
+        return 'no'
+
 
     def is_attr_name(self, name):
         if name in Global.html_rules['global']['attr']:
@@ -209,6 +222,54 @@ class WebObject:
                 return ("$('%s').attr('%s')" %
                         ("#" + genfunc.expid(self.name),
                          mem_name))
+        return ''
+
+
+    @staticmethod
+    def static_change(mem_name, dst_string, webtype):
+        """Change a web parts staticly.
+
+        NOTE that do not use this function anytime 
+        but while is_adding_type().
+        """
+        if not genfunc.is_adding_type(): return
+
+        attr_kind = WebObject.static_is_attr_name(mem_name, webtype)
+        jquery_selector = '$("#" + ' + genfunc.expname('id') + ')'
+
+        if mem_name == 'val':
+            func_name = 'val'
+            genfunc.out(jquery_selector + ".%s(%s);"
+                        % (func_name, dst_string))
+        if mem_name == 'text':
+            func_name = 'html'
+            genfunc.out(jquery_selector + ".%s(%s);" % (func_name, dst_string))
+        elif attr_kind != 'no':
+            if mem_name == 'type':
+                genfunc.out(jquery_selector + ".get(0).%s = %s;" %
+                            (mem_name, dst_string))
+            elif attr_kind == 'boolean_attr':
+                genfunc.out(jquery_selector + ".prop('%s', %s);" %
+                            (mem_name, dst_string))
+            else:
+                genfunc.out(jquery_selector + ".attr('%s', %s);" %
+                            (mem_name, dst_string))
+        # if genfunc.is_materializing_type():
+        #     if mem_name[mem_name.find('.')+1:] == "__element":
+        #         return ('$("#" + ' + mem_name[:mem_name.find('.')] + ".id" + ')')
+
+        # if genfunc.is_adding_type():
+        #     webtype = ''
+        #     for var in genfunc.get_value_type(genfunc.get_adding_type_name()).variables:
+        #         if var.name == "_web":
+        #             webtype = var.value.string
+        #             if WebObject.check_attr_name_from_webtype(mem_name, webtype) != 'no':
+        #                 return (
+        #                     '$("#" + '
+        #                     + genfunc.expname('id')
+        #                     + ').attr(\'%s\')' % mem_name)
+        #             if mem_name == "text":
+        #                 return ('$("#" + ' + genfunc.expname('id') + ').html()')
         return ''
 
 

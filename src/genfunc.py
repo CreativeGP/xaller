@@ -64,7 +64,6 @@ def get_web_type_name(var):
 
     for mem in var.value.type.variables:
         if mem.name == "_web":
-            print(var.value.type.name, mem.value.string)
             return mem.value.string
 
 def is_var_web(var):
@@ -940,10 +939,10 @@ def add_type(block_ind):
         new_type.variables.extend(varlist_to_inherit)
 
         funclist_to_inherit = copy.deepcopy(tmp.functions)
-        for func in tmp.functions:
-            for new_type_member_func in new_type.functions:
-                if new_type_member_func.name == func.name:
-                    del new_type_member_func
+        # for func in tmp.functions:
+        #     for new_type_member_func in new_type.functions:
+        #         if new_type_member_func.name == func.name:
+        #             del new_type_member_func
         new_type.functions.extend(funclist_to_inherit)
 
     out("function %s (name) {" % new_type.name)
@@ -999,18 +998,6 @@ def add_type(block_ind):
                 ValueClass.Variable.create(ValueClass.Variable(
                     name, get_default_value(value_type)), new_type.variables, True, pos)
 
-            # elif len(token_list) >= 5 and \
-            #      is_plain(token_list[0]) and token_list[0].string == '+' and \
-            #      is_plain(token_list[1]) and token_list[1].string == '(' and \
-            #      is_plain(token_list[2]) and \
-            #      is_plain(token_list[3]) and token_list[3].string == ')' and \
-            #      is_plain(token_list[4]):
-            #     value_type = get_value_type(token_list[4].string)
-            #     if value_type is None:
-            #         err("Undefined type '%s'." % token_list[4].string)
-            #     new_type.variables.append(ValueClass.Variable(
-            #         token_list[2].string,
-            #         get_default_value(value_type), is_member=True))
             del token_list[:]
 
     for var in new_type.variables:
@@ -1020,14 +1007,6 @@ def add_type(block_ind):
         if var.name != '__name' and var.name != '__element': out_varcreation(var.name, var.value.type)
         if var.name == '_web':
             out('me.__element = $("#"+me.__name);')
-
-            # # NOTE __elementや__nameなど勝手に追加している変数を保持しておく
-            # new_type.variables.append(
-            #     ValueClass.Variable(
-            #         '__element', ValueClass.Value('', get_value_type('string'))))
-            # new_type.variables.append(
-            #     ValueClass.Variable(
-            #         '__name', ValueClass.Value('', get_value_type('string'))))
 
     for var in new_type.variables:
         if var.name == '_web':
@@ -1093,13 +1072,16 @@ me.%s(me);
             Global.exel = func.block.body[-1].line
         # NOTE 初期化関数もＨＴＭＬ属性を変更する可能性があるので
         # しっかり更新しておく。
-        out("this.__update();")
+        # NOTE (2017:11:06)@cgp
+        # update関数は甘えなので廃止
+#        out("this.__update();")
         out("};")
 
-    for var in new_type.variables:
-        if var.name == '_web':
-#            print('inited', var.value.string)
-            out(WebClass.WebObject.get_applying_js(var.value.string))
+    # NOTE (2017:11:06)@cgp
+    # update関数は甘えなので廃止
+    # for var in new_type.variables:
+    #     if var.name == '_web':
+    #         out(WebClass.WebObject.get_applying_js(var.value.string))
 
     # NOTE Output of type definition is processed in this function.
     # Here is the end of output of type definition.
@@ -1126,7 +1108,9 @@ me.%s(me);
             exel += 1
         Global.exel = func.block.body[-1].line
         Global.translate_seq.pop()
-        out("self.__update();")
+        # NOTE (2017:11:06)@cgp
+        # update関数は甘えなので廃止
+#        out("self.__update();")
         out("};")
         
     for func in normal_funcs:
@@ -1151,7 +1135,9 @@ me.%s(me);
 
         # NOTE 普通関数もＨＴＭＬ属性を変更する可能性があるので
         # しっかり更新しておく。
-        out("this.__update();")
+        # NOTE (2017:11:06)@cgp
+        # update関数は甘えなので廃止
+#        out("this.__update();")
         out("};")
         
     out("")
@@ -1838,6 +1824,8 @@ def report():
         dbgprint("func >")
         for func in vtype.functions:
             dbgprint(func.name)
+            dbgprint(func.block)
+        dbgprint("init_functions: " + str(len(vtype.blocks_for_init)))
 
     # Display all types
     dbgprint("\nWEB OBJECTS: "+str(len(Global.wobs)))

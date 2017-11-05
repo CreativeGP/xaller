@@ -91,12 +91,27 @@ class Variable(object):
             genfunc.solvebuf()
             genfunc.out(";")
 
+        if js_out:
             member_name = genfunc.expid(self.name[self.name.find(".")+1:])
             parent_name = genfunc.expid(self.name[:self.name.find(".")])
+            parent = genfunc.get_var(parent_name)
+            parent_type = (genfunc.get_var(parent_name).value.type
+                           if parent is not None else
+                           None)
+            if parent_type is None and genfunc.is_adding_type():
+                parent_type = genfunc.get_value_type(genfunc.get_adding_type_name())
+            if parent_type is not None:
+                for var in parent_type.variables:
+                    if var.name == '_web':
+                        webtype = var.value.string
 
-            wob = WebClass.WebObject.find_by_name(parent_name)
-            if wob is None: return
-            wob.change(member_name, genfunc.expvar(self))
+                        wob = WebClass.WebObject.find_by_name(parent_name)
+                        if wob is None and genfunc.is_adding_type():
+                            WebClass.WebObject.static_change(
+                                member_name, genfunc.expvar(self), webtype)
+                        else:
+                            wob.change(member_name, genfunc.expvar(self))
+                        return
 
 
     # NOTE: JS出力はバッファに行います
@@ -186,7 +201,6 @@ class Variable(object):
         if var.value.type.is_dirty():
             have_to_pop = True
             Global.translate_seq.append('materialize ' + var.value.type.name)
-            print(('materialize ' + var.value.type.name))
             genfunc.dbgprint(('materialize ' + var.value.type.name))
 
         if variables is None:
@@ -234,7 +248,13 @@ class Variable(object):
             instance_func = copy.deepcopy(func)
             instance_func.name = var.name + "." + instance_func.name
             Global.Funcs.append(instance_func)
+            if "." + func.name in Global.eventlist:
+                # イベント関数の場合
+                eventname = Global.eventlist[Global.eventlist.index("." + func.name)][1:]
+                genfunc.out("$('#%s').%s(%s._%s);" % (
+                    var.name, eventname, var.name, eventname))
 
+        for func in var.value.type.functions:
             if func.name == '__init':
                 # NOTE(cgp) __init関数は呼ばないで直接書かなければならない。
                 # なぜなら、その中で行われる_web変数の変更をXallerが動的に読み込まなければ
@@ -257,15 +277,7 @@ class Variable(object):
                             del tmp[:]
                 Global.tfs.pop()
                 func.name = tmpname
-
-        for func in var.value.type.functions:
-            if func.name == '__init':
-                genfunc.out(var.name + ".__update();")
-            if "." + func.name in Global.eventlist:
-                # イベント関数の場合
-                eventname = Global.eventlist[Global.eventlist.index("." + func.name)][1:]
-                genfunc.out("$('#%s').%s(%s._%s);" % (
-                    var.name, eventname, var.name, eventname))
+                break
 
         # TODO: コンストラクタを呼び出す
         # NOTE: コンストラクタの静的な呼び出しは上のコードで終わっている
