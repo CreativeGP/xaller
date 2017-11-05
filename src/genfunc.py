@@ -53,6 +53,20 @@ def is_bool(tkn):
     return is_plain(tkn) and (tkn.string == 'true' or tkn.string == 'false')
 
 
+def get_web_type_name(var):
+    """Get the name of web-type of a variable..
+
+    If the variable isn't for web, this method will return an empty string.
+    """
+    # None時の処理
+    if not is_var_web(var):
+        return ''
+
+    for mem in var.value.type.variables:
+        if mem.name == "_web":
+            print(var.value.type.name, mem.value.string)
+            return mem.value.string
+
 def is_var_web(var):
     """Check if the variable is for web.
 
@@ -62,9 +76,15 @@ def is_var_web(var):
     # None時の処理
     if var is None: return False
 
-    return (var.external
-            and get_var(var.name[:var.name.rfind(".")]+"._web") != -1
-            and get_var(var.name[:var.name.rfind(".")]+"._web") is not var)
+    for mem in var.value.type.variables:
+        if mem.name == "_web":
+            return True
+
+    return False
+
+    # return (var.external
+    #         and get_var(var.name[:var.name.rfind(".")]+"._web") != -1
+    #         and get_var(var.name[:var.name.rfind(".")]+"._web") is not var)
 
 
 def dbgprint(string):
@@ -169,7 +189,7 @@ def expvar(var):
     if is_adding_type():
         if 'type:evfunc' in Global.translate_seq[-1]:
             class_name = "self"
-        # NOTE(cgp) ドットが２個続けて出力されることがあったのでそのようなことがないように
+        # NOTE ドットが２個続けて出力されることがあったのでそのようなことがないように
         # こっちで調整する
         if var.is_member:
             res = class_name + ('' if var.name[0] == '.' else '.') + var.name
@@ -183,9 +203,10 @@ def expname(string):
     if is_adding_type():
         if 'type:evfunc' in Global.translate_seq[-1]:
             class_name = "self"
-        # NOTE(cgp) ドットが２個続けて出力されることがあったのでそのようなことがないように
+        # NOTE ドットが２個続けて出力されることがあったのでそのようなことがないように
         # こっちで調整する
-        string = (class_name if string[0] == '.' else '') + string
+        class_name += "."
+        string = (class_name + string[1:] if string[0] == '.' else class_name + string)
     return string
 
 
@@ -250,7 +271,7 @@ def subst_external(var, token_list):
     """Output a JS code substitution for DOM variable.
 
     Silly things may happen if the variable to be substituted is not external.
-    NOTE(cgp) Do not use this method! Use Value.subst() insteadly.
+    NOTE Do not use this method! Use Value.subst() insteadly.
     """
     vname = var.name
 
@@ -318,15 +339,18 @@ def get_var(string, care=True):
          # and len(Global.translate_seq) > 0
          # and 'add_type' in Global.translate_seq[-1])):
         # NOTE(cpg) 型定義の時で関数翻訳時にドットをthis.に変える。
-        defining_type_name = Global.translate_seq[-1].replace("add_type:", '')
-        for var in get_value_type(get_adding_type_name()).variables:
+        adding_vtype = get_value_type(get_adding_type_name())
+#        print('')
+#        print(adding_vtype.name)
+        for var in adding_vtype.variables:
+#            print(var.name)
             if string[1:] == var.name:
                 return var
     elif ((care
            and len(Global.tfs) > 0
            and Global.tfs[-1] is not None
            and len(string) > 0)):
-        # NOTE(cgp) __init関数の出力の際に必要
+        # NOTE __init関数の出力の際に必要
         runf = Global.tfs[-1]
         tmp = ''
         if string[0] == '.': tmp = runf.name[:runf.name.rfind(".")]
@@ -409,7 +433,7 @@ def is_func_exists(string):
             return True
     if is_adding_type():
         for func in get_value_type(get_adding_type_name()).functions:
-            # NOTE(cgp) .が邪魔なのでそれを取り除いてもじれつを比較
+            # NOTE .が邪魔なのでそれを取り除いてもじれつを比較
             if func.name == string[1:]:
                 return True
     return False
@@ -422,7 +446,7 @@ def get_func(string):
             return func
     if is_adding_type():
         for func in get_value_type(get_adding_type_name()).functions:
-            # NOTE(cgp) .が邪魔なのでそれを取り除いてもじれつを比較
+            # NOTE .が邪魔なのでそれを取り除いてもじれつを比較
             if func.name == string[1:]:
                 return func
     return None
@@ -571,7 +595,6 @@ def out_arg_value(tkn, next_tkn, sep):
 
     if get_var(tkn.string) is not None:
         var = get_var(tkn.string)
-        print(var.name)
 #        Global.jsbuf += expvar(var)
         var.refer()
     else:
@@ -586,7 +609,7 @@ def out_arg_value(tkn, next_tkn, sep):
     return res
 
 
-# TODO(cgp) 不等号関数の複数引数指定時の処理
+# TODO 不等号関数の複数引数指定時の処理
 def out_expression(token_list, get_string=False):
     """Output to JS file an expression."""
     if get_string: backup = Global.outjs
@@ -608,14 +631,13 @@ def out_expression(token_list, get_string=False):
                      token_list[0].string))
         return
 
-    # NOTE(cgp) 関数ではない呼び出し
+    # NOTE 関数ではない呼び出し
     if (((len(token_list) == 3 or len(token_list) == 4)
          and token_list[0].string == '('
          and token_list[2].string == ')'
          and not is_func_exists(token_list[1].string))):
-        # TODO(cgp) is_var_exists関数とかぶっているので、下を消す方向で
+        # TODO is_var_exists関数とかぶっているので、下を消す方向で
         if get_func_idx(token_list[1].string) == -1:
-            print(token_list[1].string)
             cast = ''
             if len(token_list) == 4:
                 cast = get_value_type(token_list[3].string).race
@@ -658,7 +680,7 @@ def out_expression(token_list, get_string=False):
                     buildin.append(func_name)
                     begof.append(len(Global.jsbuf))
 
-                    # NOTE(cgp) 関数がビルドインだけど単純な演算子で表現で
+                    # NOTE 関数がビルドインだけど単純な演算子で表現で
                     # きない場合に専用の処理をする
                     if Global.sep_type[func_name] == ",":
                         Global.jsbuf += func_name + "$"
@@ -687,7 +709,7 @@ def out_expression(token_list, get_string=False):
 
                 lvl -= 1
                 is_arg = token_list[i+1].string != ")" or not is_plain(token_list[i+1])
-                # NOTE(cgp): 文字列を表すトークンが間違って読み込まれていたので
+                # NOTE: 文字列を表すトークンが間違って読み込まれていたので
                 # 修正。is_plain()をかませただけ。
                 cast_vt = (get_value_type(token_list[i+1].string)
                            if is_plain(token_list[i+1]) else
@@ -710,7 +732,7 @@ def out_expression(token_list, get_string=False):
 
                 if is_arg:
                     # 引数だった場合
-                    # NOTE(cgp) 区切り文字を加える、注意する点は”buildin[-1]は消した後である"
+                    # NOTE 区切り文字を加える、注意する点は”buildin[-1]は消した後である"
                     # からこのコードは正常に動くのであること
                     sep = Global.sep_type[buildin[-1]]
                     Global.jsbuf += ("%s "
@@ -887,7 +909,7 @@ def add_type(block_ind):
     """Create new type."""
     inh_count = int((len(Global.blocks[block_ind].root) - 4) / 2)
     new_type = ValueClass.Type(Global.blocks[block_ind].root[2].string, 'Dirty')
-    # NOTE(cgp) この関数内でドットを変更するので、先に追加しておく
+    # NOTE この関数内でドットを変更するので、先に追加しておく
     Global.vtypes.append(new_type)
 
     dbgprint("SEQENCE >>> add_type")
@@ -911,17 +933,19 @@ def add_type(block_ind):
         dbgprintnoln(Global.blocks[block_ind].root[5].string+"', ")
         # コピー指定されている型の変数と関数をすべて雑にコピー
         # 同じ名前があれば古い方を削除
-        for var in tmp.variables:
+        varlist_to_inherit = copy.deepcopy(tmp.variables)
+        for var in varlist_to_inherit:
             for new_type_member in new_type.variables:
                 if new_type_member.name == var.name:
                     del new_type_member
-        new_type.variables.extend(tmp.variables)
+        new_type.variables.extend(varlist_to_inherit)
 
+        funclist_to_inherit = copy.deepcopy(tmp.functions)
         for func in tmp.functions:
             for new_type_member_func in new_type.functions:
                 if new_type_member_func.name == func.name:
                     del new_type_member_func
-        new_type.functions.extend(tmp.functions)
+        new_type.functions.extend(funclist_to_inherit)
 
     out("function %s (name) {" % new_type.name)
     out("var me = this;")
@@ -991,7 +1015,7 @@ def add_type(block_ind):
             del token_list[:]
 
     for var in new_type.variables:
-        # NOTE(cgp): We can't call ValueClass.Variable.create() to ouput
+        # NOTE: We can't call ValueClass.Variable.create() to ouput
         # JS code creating variable. Instead, call out_varcreation(), the local
         # function defined in this function.
         if var.name != '__name' and var.name != '__element': out_varcreation(var.name, var.value.type)
@@ -1021,7 +1045,7 @@ def add_type(block_ind):
                 for block in Global.blocks:
                     if block.root[0].line == token.line:
                         func = FunctionClass.Function(block)
-                        # NOTE(cgp) 型の関数リストに入れておく
+                        # NOTE 型の関数リストに入れておく
                         new_type.functions.append(func)
             del token_list[:]
 
@@ -1042,11 +1066,12 @@ me.%s(me);
         else:
             normal_funcs.append(func)
 
-    # NOTE(cgp) 継承元のコンストラクタはまとめて一つの関数として出力
+    # NOTE 継承元のコンストラクタはまとめて一つの関数として出力
+    # NOTE ここのコードで_webには型名が入る
     if len(init_funcs) > 0:
         outnoln("me.__init = ")
         init_funcs[0].name = "__init"
-        # HACK(cgp) Global.Varsに無名関数を追加することになるコード
+       # HACK Global.Varsに無名関数を追加することになるコード
         tmp_funcs = copy.deepcopy(init_funcs[0])
         tmp_funcs.name = ''
         tmp_funcs.add()
@@ -1058,25 +1083,32 @@ me.%s(me);
             # 関数内容を出力
             while True:
                 translate(Global.lines[exel].tokens)
-                # NOTE(cgp) 最後の閉じ括弧まで読み込まないようにする
+                # NOTE 最後の閉じ括弧まで読み込まないようにする
                 if exel == func.block.body[-1].line - 2:
                     Global.tfs.pop()
                     break
                 exel += 1
             # new_func = FunctionClass.Function(i)
-            # # NOTE(cgp) For js output.
+            # # NOTE For js output.
             # new_type.functions.append(new_func)
             Global.exel = func.block.body[-1].line
-        # NOTE(cgp) 初期化関数もＨＴＭＬ属性を変更する可能性があるので
+        # NOTE 初期化関数もＨＴＭＬ属性を変更する可能性があるので
         # しっかり更新しておく。
         out("this.__update();")
         out("};")
 
     for var in new_type.variables:
         if var.name == '_web':
+#            print('inited', var.value.string)
             out(WebClass.WebObject.get_applying_js(var.value.string))
 
-    # NOTE(cgp) Output of type definition is processed in this function.
+    for vtype in Global.vtypes:
+        print('')
+        print(vtype.name)
+        for mem in vtype.variables:
+            print((mem.name, mem.value.string))
+
+    # NOTE Output of type definition is processed in this function.
     # Here is the end of output of type definition.
     out("}")
 
@@ -1086,7 +1118,7 @@ me.%s(me);
         # 処理変更に必要になってくる
         Global.translate_seq.append("type:evfunc:" + func.name)
         outnoln(new_type.name + ".prototype.%s = " % func.name)
-        # HACK(cgp) Global.Varsに無名関数を追加することになるコード
+        # HACK Global.Varsに無名関数を追加することになるコード
         tmp_func = copy.deepcopy(func)
         tmp_func.name = ''
         tmp_func.add()
@@ -1095,7 +1127,7 @@ me.%s(me);
         # 関数内容を出力
         while True:
             translate(Global.lines[exel].tokens)
-            # NOTE(cgp) 最後の閉じ括弧まで読み込まないようにする
+            # NOTE 最後の閉じ括弧まで読み込まないようにする
             if exel == func.block.body[-1].line - 2:
                 break
             exel += 1
@@ -1106,7 +1138,7 @@ me.%s(me);
         
     for func in normal_funcs:
         outnoln(new_type.name + ".prototype.%s = " % func.name)
-        # HACK(cgp) Global.Varsに無名関数を追加することになるコード
+        # HACK Global.Varsに無名関数を追加することになるコード
         tmp_func = copy.deepcopy(func)
         tmp_func.name = ''
         tmp_func.add()
@@ -1115,16 +1147,16 @@ me.%s(me);
         # 関数内容を出力
         while True:
             translate(Global.lines[exel].tokens)
-            # NOTE(cgp) 最後の閉じ括弧まで読み込まないようにする
+            # NOTE 最後の閉じ括弧まで読み込まないようにする
             if exel == func.block.body[-1].line - 2:
                 break
             exel += 1
         # new_func = FunctionClass.Function(i)
-        # # NOTE(cgp) For js output.
+        # # NOTE For js output.
         # new_type.functions.append(new_func)
         Global.exel = func.block.body[-1].line
 
-        # NOTE(cgp) 普通関数もＨＴＭＬ属性を変更する可能性があるので
+        # NOTE 普通関数もＨＴＭＬ属性を変更する可能性があるので
         # しっかり更新しておく。
         out("this.__update();")
         out("};")
@@ -1285,7 +1317,7 @@ def translate(token_list, static_default=None):
                 idx = i
                 break
         if idx == -1:
-            # TODO(cgp) 上と同じなのになぜかエラー
+            # TODO 上と同じなのになぜかエラー
             pass
             # err("It is impossible to use 'continue' outside of Global.blocks.")
         return True

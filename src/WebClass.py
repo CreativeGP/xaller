@@ -31,12 +31,11 @@ class WebObject:
         return genfunc.get_var(name_to_find).value.string
 
 
-    def create(self):
+    def create(self, web_type_name):
         """Output a JS code creating a DOM variable."""
         # HACK: ここのコードだけ継承されても型を識別できるように特別な変数だけ動的に参照するようにしている
-        type_name = ""
-        if genfunc.is_var_exists(self.name + "._web"):
-            type_name = genfunc.get_var(self.name + "._web").value.string
+        print(web_type_name)
+        type_name = web_type_name
 
         selector = ""
         func = ""
@@ -99,15 +98,15 @@ class WebObject:
                 res += "if(" + this + "get(0)) " + this + "get(0).type = me.type;\n"
             else:
                 res += this + "attr('%s', me.%s);\n" % (attr, attr)
-        res += this + """html(me.text);
-};"""
+        res += "};"
+#         res += this + """html(me.text);
+# };"""
         return res
 
     @staticmethod
     def find_by_name(name):
         """Find the web object by its name."""
         for wob in Global.wobs:
-            print((wob.name, name))
             if wob.name == name:
                 return wob
         return None
@@ -140,15 +139,61 @@ class WebObject:
         return 'no'
 
 
+    @staticmethod
+    def check_attr_name_from_webtype(name, webtype):
+        """Identify type of a member. Returns 'global' or 'attr' or 'no'
+        """
+        if name in Global.html_rules['global']['attr']:
+            return 'global'
+
+        if webtype in WebObject.html_tag_names:
+            rules = Global.html_rules[WebObject.html_tag_names[webtype]]
+            if name in rules['attr'].keys():
+                if rules['attr'][name]['type'] == 'boolean':
+                    # NOTE(cgp) 論理属性なのでJSの出力にはprop関数を使う
+                    return 'boolean_attr'
+                return 'attr'
+        return 'no'
+
+
+    @staticmethod
+    def static_refer(mem_name):
+        """Returns a string code to refer a member of the web object."""
+        if genfunc.is_materializing_type():
+            if mem_name[mem_name.find('.')+1:] == "__element":
+                return ('$("#" + ' + mem_name[:mem_name.find('.')] + ".id" + ')')
+
+        if genfunc.is_adding_type():
+            webtype = ''
+            for var in genfunc.get_value_type(genfunc.get_adding_type_name()).variables:
+                if var.name == "_web":
+                    webtype = var.value.string
+                    if WebObject.check_attr_name_from_webtype(mem_name, webtype) != 'no':
+                        return (
+                            '$("#" + '
+                            + genfunc.expname('id')
+                            + ').attr(\'%s\')' % mem_name)
+                    if mem_name == "text":
+                        return ('$("#" + ' + genfunc.expname('id') + ').html()')
+        return ''
+
+
     def refer(self, mem_name):
         """Returns a string code to refer a member of the web object."""
         attr_kind = self.is_attr_name(mem_name)
-        
+
+        # NOTE 下の３つはWOB作成後(__init関数出力完了後)のメンバ呼び出しのコードの翻訳
+        # __init関数出力時や型定義時の出力はこれらのコードが使えない（WOBインスタンスがない）
+        # のでValueClss.pyのrefer関数の方で出力している。
         if mem_name == 'val':
             return ("$(%s).val()"
                     % (genfunc.S("#" + genfunc.expid(self.name))))
         if mem_name == 'text':
             return ("$(%s).html()"
+                    % (genfunc.S("#" + genfunc.expid(self.name))))
+        if mem_name == '__element':
+            # TODO このコードはもしidメンバが変更されたときのことを考えられていない
+            return ("$(%s)"
                     % (genfunc.S("#" + genfunc.expid(self.name))))
         elif attr_kind != 'no':
             if mem_name == 'type':

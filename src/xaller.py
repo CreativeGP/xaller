@@ -307,6 +307,12 @@ def main():
     if Global.bTime: print("Elapsed time: " + str(time.time()-now))
     out_js()
 
+    for vtype in Global.vtypes:
+        print('')
+        print(vtype.name)
+        for mem in vtype.variables:
+            print((mem.name, mem.value.string))
+
 #    if Global.bTime: print("Elapsed time: " + str(time.time()-now))
 
 if __name__ == '__main__':
