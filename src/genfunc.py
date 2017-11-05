@@ -340,10 +340,7 @@ def get_var(string, care=True):
          # and 'add_type' in Global.translate_seq[-1])):
         # NOTE(cpg) 型定義の時で関数翻訳時にドットをthis.に変える。
         adding_vtype = get_value_type(get_adding_type_name())
-#        print('')
-#        print(adding_vtype.name)
         for var in adding_vtype.variables:
-#            print(var.name)
             if string[1:] == var.name:
                 return var
     elif ((care
@@ -933,6 +930,8 @@ def add_type(block_ind):
         dbgprintnoln(Global.blocks[block_ind].root[5].string+"', ")
         # コピー指定されている型の変数と関数をすべて雑にコピー
         # 同じ名前があれば古い方を削除
+        # NOTE(2017:11:05)@cgp
+        # 変数や関数の競合時に深いコピーをしていなかったのでその修正
         varlist_to_inherit = copy.deepcopy(tmp.variables)
         for var in varlist_to_inherit:
             for new_type_member in new_type.variables:
@@ -1101,12 +1100,6 @@ me.%s(me);
         if var.name == '_web':
 #            print('inited', var.value.string)
             out(WebClass.WebObject.get_applying_js(var.value.string))
-
-    for vtype in Global.vtypes:
-        print('')
-        print(vtype.name)
-        for mem in vtype.variables:
-            print((mem.name, mem.value.string))
 
     # NOTE Output of type definition is processed in this function.
     # Here is the end of output of type definition.

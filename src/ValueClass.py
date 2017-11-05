@@ -228,7 +228,7 @@ class Variable(object):
                 if mem.name == "_web":
                     variables[-1].external = True
                     Global.wobs.append(WebClass.WebObject(var.name, pos))
-                    Global.wobs[-1].create(genfunc.get_web_type_name(mem))
+                    Global.wobs[-1].create(genfunc.get_web_type_name(var))
 
         for func in var.value.type.functions:
             instance_func = copy.deepcopy(func)
